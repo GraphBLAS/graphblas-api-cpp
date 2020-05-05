@@ -1,0 +1,54 @@
+\chapter{Classes and Methods}
+\label{Chp:Methods}
+
+This chapter defines the behavior of all the methods in the GraphBLAS C API.
+All methods can be declared for use in programs by including the {\tt GraphBLAS.h} header file.
+
+We would like to emphasize that no GraphBLAS method will imply a predefined order over any associative operators. Implementations of the GraphBLAS are encouraged to exploit associativity to optimize performance of any GraphBLAS method. This holds even if the definition of the GraphBLAS method implies a fixed order for the associative operations.
+
+%-----------------------------------------------------------------------------
+\section{Context Methods}
+
+%-----------------------------------------------------------------------------
+\section{Object Classes}
+
+This section describes methods that setup and operate on GraphBLAS opaque objects
+but are not part of the the GraphBLAS math specification.
+
+\subsection{Algebra Classes}
+
+\scott{There are no separate "Types".  UnaryOp and BinaryOps are all callable objects.  Monoids and Semirings are class templates}
+
+
+\subsection{Vector Class}
+
+\scott{template class specification.}
+
+
+\subsection{Matrix Class}
+
+\scott{template class specification.}
+
+
+\subsection{Descriptor Class}
+
+\scott{There should be no Descriptors...I hope...maybe Views}.
+
+
+\subsection{{\sf free} Methods}
+
+\scott{should be replaced with class destructors}.
+
+%-----------------------------------------------------------------------------
+\section{GraphBLAS Operations}
+
+\subsection{ops\_mxm\_vxm\_mxv}
+\subsection{ops\_ewisemult\_ewiseadd}
+\subsection{ops\_extract}
+\subsection{ops\_assign} 
+\subsection{ops\_apply}
+\subsection{ops\_reduce\_transpose}
+\subsection{ops\_kronecker}
+
+%-----------------------------------------------------------------------------
+\section{Sequence Termination Methods}

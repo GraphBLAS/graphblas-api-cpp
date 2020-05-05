@@ -1,0 +1,303 @@
+\documentclass[11pt]{extbook}
+
+\usepackage{geometry}
+
+\usepackage{fancyvrb}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{verbatim}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage[yyyymmdd,hhmmss]{datetime}
+\usepackage{rotating}
+\usepackage{authblk}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{todonotes}
+\usepackage{titlesec}
+\usepackage[mathlines]{lineno}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{bm}
+\usepackage{etoolbox}
+\usepackage{pdflscape}
+\usepackage{threeparttable}
+
+%TGM:  Added these packages to fix underscore rendering
+\usepackage{lmodern} 
+\usepackage[T1]{fontenc}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+%SM:  Comment these to remove DRAFT watermark
+\usepackage{draftwatermark}
+\SetWatermarkText{DRAFT}
+\SetWatermarkScale{1.2}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\setcounter{footnote}{1}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\newtoggle{assign}
+\toggletrue{assign}
+
+\newcommand{\qg}{\u{g}}
+\newcommand{\qG}{\u{G}}
+\newcommand{\qc}{\c{c} }
+\newcommand{\qC}{\c{C}}
+\newcommand{\qs}{\c{s}}
+\newcommand{\qS}{\c{S}}
+\newcommand{\qu}{\"{u}}
+\newcommand{\qU}{\"{U}}
+\newcommand{\qo}{\"{o}}
+\newcommand{\qO}{\"{O}}
+\newcommand{\qI}{\.{I}}
+\newcommand{\wa}{\^{a}}
+\newcommand{\wA}{\^{A}}
+
+\begin{document}
+
+\linenumbers
+
+\title{
+The GraphBLAS C++ API Specification
+\footnote{Based on \emph{GraphBLAS Mathematics} by Jeremy Kepner}: \\ 
+{\large Version 1.x.x} \\
+{\normalsize \scott{Remember to update acknowledgements and remove DRAFT}}
+}
+
+\author{Benjamin Brock, Ayd\i n Bulu\c{c}, Timothy Mattson, Scott McMillan, Jos\'e Moreira}
+
+\date{Generated on \today\ at \currenttime\ EDT}
+
+\newcommand{\kron}{\mathbin{\text{\footnotesize \textcircled{\raisebox{-0.3pt}{\footnotesize $\otimes$}}}}}
+\newcommand{\grbarray}[1]{\bm{#1}}
+\renewcommand{\vector}[1]{{\bf #1}}
+\renewcommand{\matrix}[1]{{\bf #1}}
+\renewcommand{\arg}[1]{{\sf #1}}
+\newcommand{\zip}{{\mbox{zip}}}
+\newcommand{\zap}{{\mbox{zap}}}
+\newcommand{\ewiseadd}{{\mbox{\bf ewiseadd}}}
+\newcommand{\ewisemult}{{\mbox{\bf ewisemult}}}
+\newcommand{\mxm}{{\mbox{\bf mxm}}}
+\newcommand{\vxm}{{\mbox{\bf vxm}}}
+\newcommand{\mxv}{{\mbox{\bf mxv}}}
+\newcommand{\gpit}[1]{{\sf #1}}
+\newcommand{\ie}{{i.e.}}
+\newcommand{\eg}{{e.g.}}
+\newcommand{\nan}{{\sf NaN}}
+\newcommand{\nil}{{\bf nil}}
+\newcommand{\ifif}{{\bf if}}
+\newcommand{\ifthen}{{\bf then}}
+\newcommand{\ifelse}{{\bf else}}
+\newcommand{\ifendif}{{\bf endif}}
+\newcommand{\zero}{{\bf 0}}
+\newcommand{\one}{{\bf 1}}
+\newcommand{\true}{{\sf true}}
+\newcommand{\false}{{\sf false}}
+\newcommand{\syntax}{{C Syntax}}
+
+\newcommand{\Dinn}{\mbox{$D_{in}$}}
+\newcommand{\Din}[1]{\mbox{$D_{in_{#1}}$}}
+\newcommand{\Dout}{\mbox{$D_{out}$}}
+
+\newcommand{\bDinn}{\mbox{$\mathbf{D}_{in}$}}
+\newcommand{\bDin}[1]{\mbox{$\mathbf{D}_{in_{#1}}$}}
+\newcommand{\bDout}{\mbox{$\mathbf{D}_{out}$}}
+
+\newcommand{\aydin}[1]{{{\color{orange}[Aydin: #1]}}}
+\newcommand{\scott}[1]{{{\color{violet}[Scott: #1]}}}
+\newcommand{\tim}[1]{{{\color{teal}[Tim: #1]}}}
+\newcommand{\jose}[1]{{{\color{red}[Jose: #1]}}}
+\newcommand{\ben}[1]{{{\color{blue}[Ben: #1]}}}
+
+%\newcommand{\aydin}[1]{}
+%\newcommand{\scott}[1]{}
+%\newcommand{\tim}[1]{}
+%\newcommand{\jose}[1]{}
+%\newcommand{\ben}[1]{}
+
+%\carl{testing}
+%\scott{testing}
+%\aydin{testing}
+%\tim{testing}
+%\jose{testing}
+%\ajy{testing}
+
+\renewcommand{\comment}[1]{{}}
+\newcommand{\glossBegin}{\begin{itemize}}
+\newcommand{\glossItem}[1]{\item \emph{#1}: }
+\newcommand{\glossEnd}{\end{itemize}}
+
+\setlength{\parskip}{0.5\baselineskip}
+\setlength{\parindent}{0ex}
+
+\maketitle
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\setcounter{footnote}{0}
+
+\vfill
+
+Copyright \copyright\ 2020 Carnegie Mellon University, The Regents 
+of the University of California, through Lawrence Berkeley National 
+Laboratory (subject to receipt of any required approvals from the 
+U.S. Dept. of Energy), the Regents of the University of California 
+(U.C. Berkeley), Intel Corporation, International Business Machines 
+Corporation, and Massachusetts Institute of Technology Lincoln
+Laboratory. 
+
+Any opinions, findings and conclusions or recommendations expressed in 
+this material are those of the author(s) and do not necessarily reflect 
+the views of the United States Department of Defense, the United States 
+Department of Energy, Carnegie Mellon University, the Regents of the 
+University of California, Intel Corporation, or the IBM Corporation.  
+
+NO WARRANTY. THIS MATERIAL IS FURNISHED ON AN AS-IS BASIS. THE COPYRIGHT 
+OWNERS AND/OR AUTHORS MAKE NO WARRANTIES OF ANY KIND, EITHER EXPRESSED 
+OR IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF 
+FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED 
+FROM USE OF THE MATERIAL. THE COPYRIGHT OWNERS AND/OR AUTHORS DO NOT MAKE 
+ANY WARRANTY OF ANY KIND WITH RESPECT TO FREEDOM FROM PATENT, TRADE MARK, 
+OR COPYRIGHT INFRINGEMENT.
+
+\vspace{1.5cm}
+
+\vspace{2cm}
+%{\Large This version is a definitive release of the GraphBLAS C API
+%specification. As of the date of this document, at least two independent
+%and functionally complete implementations are available.}
+
+{\Large This version is a provisional release of the GraphBLAS C++ API specification.
+Once two functionally complete reference implementations are available, we
+will remove the "provisional" clause.}
+
+
+\vspace{1.5cm}
+
+
+%[Distribution Statement A] This material has been approved for public release and unlimited distribution.  
+%Please see Copyright notice for non-US Government use and distribution.
+
+Except as otherwise noted, this material is licensed under a Creative Commons Attribution 4.0 license (\href{http://creativecommons.org/licenses/by/4.0/legalcode}{http://creativecommons.org/licenses/by/4.0/legalcode}), 
+and examples are licensed under the BSD License (\href{https://opensource.org/licenses/BSD-3-Clause}{https://opensource.org/licenses/BSD-3-Clause}).
+
+%\begin{abstract}
+%\end{abstract}
+
+\vfill
+\pagebreak
+
+%-----------------------------------------------------------------------------
+\tableofcontents
+\vfill
+\pagebreak
+
+%-----------------------------------------------------------------------------
+\addcontentsline{toc}{section}{List of Tables}
+\listoftables
+\vfill
+\pagebreak
+
+\addcontentsline{toc}{section}{List of Figures}
+\listoffigures
+\vfill
+\pagebreak
+
+%-----------------------------------------------------------------------------
+
+\section*{Acknowledgments}
+\addcontentsline{toc}{section}{Acknowledgments}
+
+This document represents the work of the people who have served on the C++ API
+Subcommittee of the GraphBLAS Forum.
+
+Those who served as C++ API Subcommittee members for GraphBLAS 1.x.x are (in alphabetical order):
+\begin{itemize}
+\item Benjamin Brock (UC Berkeley)
+\item Ayd\i n Bulu\c{c} (Lawrence Berkeley National Laboratory)
+\item Timothy G. Mattson (Intel Corporation)
+\item Scott McMillan (Software Engineering Institute at Carnegie Mellon University)
+\item Jos\'e Moreira (IBM Corporation)
+\end{itemize}
+
+The GraphBLAS specification is based upon work funded and supported in part by:
+\begin{itemize}
+\item The Department of Energy Office of Advanced Scientific Computing Research under contract number DE-AC02-05CH11231
+\item Intel Corporation
+\item Department of Defense under Contract No. FA8702-15-D-0002 with Carnegie Mellon University for the operation of the Software Engineering Institute [DM-0003727, DM19-0929]
+\item International Business Machines Corporation
+\item Department of Defense under contract No. W911QX-12-C-0059, L-3 Data Tactics subcontract SCT-14-004 with University of California, Davis
+\item NSF Graduate Research Fellowship under Grant No. DGE 1752814 and by the NSF under Award No. 1823034 with the University of California, Berkeley
+\end{itemize}
+
+The following people provided valuable input and feedback during the development of the specification (in alphabetical order):
+Hollen Barmer, Tim Davis, Jeremy Kepner, Peter Kogge, Manoj Kumar, Andrew Mellinger, 
+Maxim Naumov, Nancy M. Ott, Ping Tak Peter Tang, Michael Wolf, Carl Yang, Albert-Jan Yzelman.
+\vfill
+\pagebreak
+
+%-----------------------------------------------------------------------------
+
+\chapter{Introduction}
+
+The GraphBLAS standard defines a set of matrix and vector operations 
+based on semi-ring algebraic structures.  
+These operations can be used
+to express a wide range of graph algorithms.   This document 
+defines the C++ binding to the GraphBLAS standard.   We refer to 
+this as the {\it GraphBLAS C++ API} (Application Programming Interface).   
+
+The GraphBLAS C++ API is built on a collection of   
+objects exposed to the C++ programmer as opaque data types. 
+Functions that manipulate these
+objects are referred to as {\it methods}.  These methods fully define the 
+interface to GraphBLAS objects to create or destroy them, modify their 
+contents, and copy the contents of opaque objects into non-opaque objects; the 
+contents of which are under direct control of the programmer.
+\scott{We need to adopt C++ terminology, class methods or member functions, and free functions for operations}.
+
+The GraphBLAS C++ API is designed to work with C++17/14/11 (ISO/IEC xxxx:xxx) 
+\scott{need to figure out which version of the language we are going to require}
+extended with {\it static type-based} and {\it number of parameters-based}.  
+Furthermore, the standard assumes programs using the GraphBLAS C++ API
+will execute on hardware that supports floating point arithmetic
+such as that defined by the IEEE~754 (IEEE 754-2008) standard. 
+
+The remainder of this document is organized as follows:
+\begin{itemize}
+\item Chapter~\ref{Chp:Concepts}: Basic Concepts
+\item Chapter~\ref{Chp:Objects}: Objects
+\item Chapter~\ref{Chp:Methods}: Methods
+\item Appendix~\ref{Chp:RevHistory}: Revision History
+\item Appendix~\ref{Chp:Examples}: Examples
+\end{itemize}
+
+%=============================================================================
+%=============================================================================
+
+\input{basic_concepts}
+\input{objects}
+\input{methods}
+
+
+%=============================================================================
+%=============================================================================
+
+\appendix
+\input{appendices}
+
+%\def\IEEEbibitemsep{3pt plus .5pt}
+%\bibliographystyle{IEEEtran}
+%\bibliography{refs}
+
+\end{document}
