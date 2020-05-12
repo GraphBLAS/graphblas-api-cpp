@@ -10,6 +10,14 @@
 
 \subsection{Algebraic structures used in the GraphBLAS}
 
+Operators must comply with the style dictated for callables from {\sf <functional>} 
+header file and lambdas.  Recommend C++14 approach that has deprecated use of {\sf result\_type}
+typedefs and instead use
+\begin{verbatim}
+   decltype(binaryop(std::declval<typename LHS::ScalarType>(),
+                     std::declval<typename RHS::ScalarType>()))
+\end{verbatim}
+
 \subsection{The execution of an application using the GraphBLAS C API}
 
 \subsection{GraphBLAS methods: behaviors and error conditions}
@@ -26,6 +34,14 @@
 % ========================================================================
 \section{GraphBLAS Opaque Objects}
 
+Not GrB\_Type? (should not exist)\\
+Not GrB\_Descriptor (does not exist)
+
+While we have the concepts of UnaryOp, BinaryOp, Monoid, and Semiring we do not have such classes
+
+Right now only Vector and Matrix for sure.
+
+There is a frontend Matrix and Vector class that take the place of C handles.
 
 % ========================================================================
 \section{Domains}
@@ -34,10 +50,19 @@
 % ========================================================================
 \section{Operators and Associated Functions}
 
+While we have the concepts of UnaryOp, BinaryOp, Monoid, and Semiring we do not have such classes
+
+See GBTL's {\sf algrebra.hpp} for demonstration of all "predefined" operators.
+
 
 % ========================================================================
 \section{Indices, Index Arrays, and Scalar Arrays}
 
+Unlike the C API, GraphBLAS Vectors and Matrices in C++ can be templatized on
+the index type and so can take on any unsigned integer type; therefore, there is
+no equivalent to GrB\_Index.
+
+Need to deal with mismatched index types?
 
 % ========================================================================
 \section{Execution Model}

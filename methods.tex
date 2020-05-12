@@ -10,31 +10,204 @@ We would like to emphasize that no GraphBLAS method will imply a predefined orde
 \section{Context Methods}
 
 %-----------------------------------------------------------------------------
-\section{Object Classes}
+\section{Object Classes and Methods}
 
 This section describes methods that setup and operate on GraphBLAS opaque objects
-but are not part of the the GraphBLAS math specification.
+but are not part of the the GraphBLAS math specification.  \scott{Does this need to be said?  Is it accurate?}
 
+%-----------------------------------------------------------------------------
 \subsection{Algebra Classes}
 
 \scott{There are no separate "Types".  UnaryOp and BinaryOps are all callable objects.  Monoids and Semirings are class templates}
 
+We could further define the concept and give a few examples of functions, functors and lambdas  that can be used where a unaryop, binaryop, monoid and semiring are needed.
 
+Do we provide and list all of the predefined structs?
+
+
+%-----------------------------------------------------------------------------
 \subsection{Vector Class}
 
-\scott{template class specification.}
+This section defines the minimum required public interface to the "API" (I refer to it
+as the frontend) Vector class.  \scott{Are implementers free to add to the public API?
+I think it is possible it may be necessary?}
+
+\subsubsection{Template and Type Definitions}
+
+No subclassing in API
+
+\begin{verbatim}
+    template<typename ScalarT, typename IndexT, typename... TagsT>
+    class Vector
+    {
+    public:
+        typedef ScalarT ScalarType;
+        typedef IndexT  IndexType;
+        
+        // TODO: I think this can move to private section and be removed from spec:
+        // implementation detail... implementations can add to this minimum specification
+        //typedef typename detail::vector_generator::result<
+        //    ScalarT,
+        //    IndexT,
+        //    detail::SparsenessCategoryTag,
+        //    TagsT... ,
+        //    detail::NullTag >::type BackendType;
+
+        ...
+    };
+\end{verbatim}
+
+We need to defined the template parameters:
+\begin{itemize}
+\item ScalarT
+\item IndexT
+\item TagsT variadic arguments
+\end{itemize}
+
+What are the possible types sent through TagsT?
+
+The class needs to define a few typedefs
+\begin{itemize}
+\item ScalarType
+\item IndexType
+\end{itemize}
+
+\subsubsection{Constructors and Destructors, Copies and Moves}
+
+\begin{verbatim}
+    // construction
+    Vector() = delete;
+    Vector(IndexType nsize);
+    ~Vector();   // not virtual
+    
+    // copies (dup functionality)
+    // moves (do we require move semantics?)
+\end{verbatim}
+
+\scott{class is a base class}
+\scott{default constructor deleted}
+\scott{destructor not virtual, do we allow implicit destructor?}
+\scott{"dup" functionality: copy ctor and assignment operator both? What form?}
+\scott{Do we require move semantics}
 
 
+\subsubsection{{\sf build} Methods}
+
+How many different overloads should be supported.
+
+\begin{verbatim}
+    // build methods
+    template<typename RAIteratorI,
+             typename RAIteratorV,
+             typename BinaryOpT = GraphBLAS::Second<ScalarType> >
+    void build(RAIteratorI  i_it,
+               RAIteratorV  v_it,
+               IndexType    num_vals,
+               BinaryOpT    dup = BinaryOpT());
+
+    template<typename BinaryOpT = GraphBLAS::Second<ScalarType> >
+    inline void build(std::vector<IndexType>     const &indices,
+                      std::vector<ScalarType>    const &values,
+                      BinaryOpT                   dup = BinaryOpT());
+\end{verbatim}
+
+\subsubsection{{\sf clear} Method}
+\begin{verbatim}
+    void clear();
+\end{verbatim}
+
+\subsubsection{{\sf size} Method}
+\begin{verbatim}
+    IndexType size() const;
+\end{verbatim}
+
+\subsubsection{{\sf nvals} Method}
+\begin{verbatim}
+    IndexType nvals() const;
+\end{verbatim}
+
+\subsubsection{{\sf resize} Method}
+\begin{verbatim}
+    void resize(IndexType new_size);
+\end{verbatim}
+
+
+\subsubsection{{\sf hasElement} Method}
+\begin{verbatim}
+    bool hasElement(IndexType index) const;
+\end{verbatim}
+
+\subsubsection{{\sf setElement} Method}
+\begin{verbatim}
+    void setElement(IndexType index, ScalarT const &new_val);
+\end{verbatim}
+
+\subsubsection{{\sf removeElement} Method}
+\begin{verbatim}
+    void removeElement(IndexType index);
+\end{verbatim}
+
+\subsubsection{{\sf extractElement} Method}
+\begin{verbatim}
+    ScalarT extractElement(IndexType index) const;
+\end{verbatim}
+
+
+\subsubsection{{\sf extractTuples} Method}
+\begin{verbatim}
+    template<typename RAIteratorIT,
+             typename RAIteratorVT>
+    void extractTuples(RAIteratorIT        i_it,
+                       RAIteratorVT        v_it) const;
+
+    void extractTuples(IndexArrayType        &indices,
+                       std::vector<ScalarT>  &values) const;
+\end{verbatim}
+
+
+%-----------------------------------------------------------------------------
 \subsection{Matrix Class}
 
-\scott{template class specification.}
+This section defines the minimum required public interface to the "API" (I refer to it
+as the frontend) Matrix class.  \scott{Are implementers free to add to the public API?
+I think it is possible it may be necessary?}
 
-
+%-----------------------------------------------------------------------------
 \subsection{Descriptor Class}
 
 \scott{There should be no Descriptors...I hope...maybe Views}.
 
+%-----------------------------------------------------------------------------
+%-----------------------------------------------------------------------------
+\subsection{Views}
 
+\subsubsection{transpose method, TransposeView class}
+
+Only for matrices.  Do we need to specify the TransposeView class?
+Is the class an implementation detail?  Can we specify the method without stating its return type?
+
+
+\subsubsection{structure method, StructureView class}
+
+Only for masks.  Do we need to specify the StructureView class?
+Is the class an implementation detail?  Can we specify the method without stating its return type?
+
+
+\subsubsection{complement method, ComplementView class}
+
+Only for masks.  Do we need to specify the ComplementView class?
+Is the class an implementation detail?  Can we specify the method without stating its return type?
+
+
+\subsubsection{Composing mask views}
+
+Only complement(structure(mask)) is valid  (structure(complement(mask) is not valid).
+
+Do we talk about StructuralComplementView class?
+
+Is the class an implementation detail?  Can we specify the method without stating its return type?
+
+%-----------------------------------------------------------------------------
 \subsection{{\sf free} Methods}
 
 \scott{should be replaced with class destructors}.

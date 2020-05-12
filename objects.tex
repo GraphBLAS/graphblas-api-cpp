@@ -10,18 +10,35 @@
 % ========================================================================
 \section{Monoids}
 
-\scott{Callables + identity()?}
+Do we define the concept of a Monoid here.  We don't "new" them, rather they
+are passed as templated arguments to the backend implementation.
+
+
+\scott{Likely only structs, with operator() + identity()? Do we support result\_type?}
+
 
 % ========================================================================
 \section{Semirings}
 
-\scott{likely only structs}
+Do we define the concept of a Semiring here.  We don't "new" them, rather they
+are passed as templated arguments to the backend implementation.
+
+
+\scott{likely only structs with add90, mult(), and zero().  Do we support 
+first/second\_argument\_type and result\_type?}
 
 % ========================================================================
 \section{Vectors}
 \label{Sec:Vectors}
 
 \scott{Add a discussion of template parameters}
+Template arguments:
+\begin{itemize}[leftmargin=1.1in]
+\item[ScalarT]  the scalar/value/domain type stored as values in the vector (i.e. the domain)
+\item[IndexT]   the unsigned integer type used to specify a location in the vector.
+\item[...TagsT] variadic (variable number of type params) to be unpacked by the implementation.
+Implementation "hints" or "suggestions" like sparse vs dense.
+\end{itemize}
 
 % ========================================================================
 \section{Matrices}
@@ -29,12 +46,22 @@
 
 \scott{Add a discussion of template parameters}
 
+Template arguments:
+\begin{itemize}[leftmargin=1.1in]
+\item[ScalarT]  the scalar/value/domain type stored as values in the vector (i.e. the domain)
+\item[IndexT]   the unsigned integer type used to specify a location in the vector.
+\item[...TagsT] variadic (variable number of type params) to be unpacked by the implementation.
+Implementation "hints" or "suggestions" like sparse vs dense.
+\end{itemize}
+
 % ========================================================================
 \section{Masks}
 \label{Sec:Masks}
+
+Do we support void Scalar type for matrices and vectors?
 
 % ========================================================================
 \section{Descriptors}
 \label{Sec:Descriptors}
 
-\scott{There will be no descriptors...I hope}
+\scott{There will be no descriptors...so let it be written...so let it be done.}
