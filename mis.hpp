@@ -2,32 +2,9 @@
 // Copyright 2020, Carnegie Mellon University, Battelle Memorial Institute, and
 // Authors. All Rights Reserved.
 
-#include <vector>
 #include <random>
 #include <graphblas.hpp>
 
-//************************************************************************
-// Return a random value that is scaled by the inverse of the degree passed in.
-template <typename T=float>
-class SetInvDegreeRandom
-{
-public:
-    typedef T result_type;
-    SetInvDegreeRandom(double seed = 0.) { m_generator.seed(seed); }
-
-    template <typename DegreeT>
-    inline result_type operator()(bool,   // candidate_flag,
-                                  DegreeT degree)
-    {
-        return static_cast<T>(0.0001 +
-                              m_distribution(m_generator)/(1. + 2.*degree));
-    }
-
-private:
-    std::default_random_engine             m_generator;
-    std::uniform_real_distribution<double> m_distribution;
-};
-    
 //************************************************************************
 // Compute the Maximal Independent Set for a given graph using a variant
 // of Luby's randomized algorithm (Luby 1985).
@@ -48,7 +25,10 @@ template <typename MatrixT>
 void mis_appendixB6(grb::Vector<bool> &iset, MatrixT const &A,
                     double seed = 0.)
 {
-    gen.seed(seed);
+    std::default_random_engine             generator;
+    std::uniform_real_distribution<double> distribution;
+    generator.seed(seed);
+
     grb::IndexType N(A.nrows());
 
     grb::Vector<float> prob(N);
@@ -70,9 +50,12 @@ void mis_appendixB6(grb::Vector<bool> &iset, MatrixT const &A,
     SetInvDegreeRandom<RealT> set_random(seed);
 
     while (candidates.nvals() > 0) {
-        // compute a random probability scaled by inverse of degree.
+        // compute a random probability of each candidate scaled by inverse of degree.
         grb::eWiseMult(prob, grb::NoMask(), grb::NoAccumulate(),
-                       set_random, candidates, degrees);
+                       [&](bool candidate, float const &degree)
+                       { return static_cast<float>(
+                             0.0001 + distribution(generator)/(1. + 2.*degree)); },
+                       candidates, degrees);
 
         // find the max probability of all neighbors
         grb::mxv(neighbor_max, candidates, grb::NoAccumulate(),

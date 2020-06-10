@@ -43,46 +43,25 @@ No subclassing in API
     public:
         typedef ScalarT ScalarType;
         typedef IndexT  IndexType;
-        
-        // TODO: I think this can move to private section and be removed from spec:
-        // implementation detail... implementations can add to this minimum specification
-        //typedef typename detail::vector_generator::result<
-        //    ScalarT,
-        //    IndexT,
-        //    detail::SparsenessCategoryTag,
-        //    TagsT... ,
-        //    detail::NullTag >::type BackendType;
 
         ...
     };
 \end{verbatim}
 
 We need to defined the template parameters:
-\begin{itemize}
-\item ScalarT
-\item IndexT
-\item TagsT variadic arguments
+\begin{itemize}[leftmargin=1.1in]
+\item[\sf ScalarT]  The type of the elements.  Must they meet the requirements of CopyAssignable and CopyConstructible (pre C++11) or something else.  \scott{Here is the statement from the C++ Standard Graph Library proposal: "The graph value type defined by the user.  It can be most valid C++ value type including class, struct, tuple, union, enum, array, reference or scalar value. If no value is needed then the empty\_value struct can be used."}
+\item[\sf IndexT] this type is used for a vertex’s index. \scott{Should we restrict to unsigned integer types?}
+\item[\sf TagsT] variadic arguments TBD
 \end{itemize}
 
 What are the possible types sent through TagsT?
 
 The class needs to define a few typedefs
-\begin{itemize}
-\item ScalarType
-\item IndexType
+\begin{itemize}[leftmargin=1.1in]
+\item[\sf ScalarType] Echos the ScalarT template argument used
+\item[\sf IndexType]  Echos the IndexT template argument used
 \end{itemize}
-
-\subsubsection{Constructors and Destructors, Copies and Moves}
-
-\begin{verbatim}
-    // construction
-    Vector() = delete;
-    Vector(IndexType nsize);
-    ~Vector();   // not virtual
-    
-    // copies (dup functionality)
-    // moves (do we require move semantics?)
-\end{verbatim}
 
 \scott{class is a base class}
 \scott{default constructor deleted}
@@ -91,68 +70,270 @@ The class needs to define a few typedefs
 \scott{Do we require move semantics}
 
 
-\subsubsection{{\sf build} Methods}
+\subsubsection{Standard Constructors}
 
-How many different overloads should be supported.
+\paragraph{\syntax}
+
+\begin{verbatim}
+    Vector() = delete;         // default construction not supported
+    Vector(Vector const &rsh); // Should we specify copy constructor?
+    Vector(Vector &&rhs);      // Should we specify move constructor?
+\end{verbatim}
+
+\paragraph{Description}
+
+\scott{How should we document the various constructors}
+
+Default construction is not supported; i.e., a size must be specified.
+
+Copying and moving vectors of exactly the same type could be supported.  
+Copy would be O(nsize) complexity, move could be O(1).
+
+
+\subsubsection{Constructor: create a new Vector}
+
+\paragraph{\syntax}
+
+\begin{verbatim}
+    Vector(IndexType nsize);   // Standard constructor
+\end{verbatim}
+
+\paragraph{Parameters}
+
+\begin{itemize}[leftmargin=1.1in]
+    \item[{\sf nsize}] ({\sf IN}) The initial size of the vector being created.
+\end{itemize}
+
+\paragraph{Exceptions}
+
+\begin{itemize}[leftmargin=2.1in]
+    \item[{\sf grb::PanicException}]   Unknown internal error.
+    \item[{\sf std::bad\_alloc}]        Not enough memory available for operation.
+    \item[{\sf std::invalid\_argument}] {\sf nsize} is zero.
+\end{itemize}
+
+\paragraph{Description}
+
+Creates a new vector $\vector{v}$ that can store {\sf ScalarT} type elements, with size {\sf nsize}, 
+and empty $\mathbf{L}(\vector{v})$.
+
+\scott{should we leverage as many STL exceptions classes as possible?}
+
+%-----------------------
+\subsubsection{Destructor}
+
+\paragraph{\syntax}
+
+\begin{verbatim}
+    ~Vector();                  // not virtual (i.e. no subclassing)
+\end{verbatim}
+
+\paragraph{Description}
+
+Releases all resources held by this container including all implementation data structures.
+The destructor is not virtual as this class is not intended to participate in runtime polymorphism.
+
+%-----------------------
+\subsubsection{Assignment Operator}
+
+\paragraph{\syntax}
+
+\begin{verbatim}
+    Vector& operator=(Vector const &rhs)
+\end{verbatim}
+
+\paragraph{Parameters}
+
+\begin{itemize}[leftmargin=1.1in]
+    \item[{\sf rhs}] ({\sf IN}) The vector to copy from (was constructed with the same template arguments).
+\end{itemize}
+
+\paragraph{Exceptions}
+
+\begin{itemize}[leftmargin=2.1in]
+    \item[{\sf grb::PanicException}]   Unknown internal error.
+    \item[{\sf std::bad\_alloc}]        Not enough memory available for operation.
+\end{itemize}
+
+\paragraph{Description}
+
+A copy is made of {\sf rsh} into this vector.  This vector changes size and content to match {\sf rhs}.
+On return the state of {\sf rhs} is unchanged.
+
+\scott{Should we support copy assignment?}  
+
+
+%-----------------------
+\subsubsection{Move operator}
+
+\paragraph{\syntax}
+
+\begin{verbatim}
+    Vector& operator=(Vector const &&rhs)
+\end{verbatim}
+
+\paragraph{Exceptions}
+
+\begin{itemize}[leftmargin=2.1in]
+    \item[{\sf grb::PanicException}]   Unknown internal error.
+\end{itemize}
+
+\paragraph{Description}
+
+The contents of {\sf rhs} moved into this vector.  This vector changes size and content to match {\sf rhs}.
+On return the state of {\sf rhs} is "indeterminate".
+
+\scott{Should we support move assignment?}
+\scott{is this noexcept?}
+
+%-----------------------
+\subsubsection{{\sf build} Method: from iterators}
+
+\scott{How many different overloads should be supported?}
+
+\paragraph{\syntax}
 
 \begin{verbatim}
     // build methods
     template<typename RAIteratorI,
              typename RAIteratorV,
-             typename BinaryOpT = GraphBLAS::Second<ScalarType> >
+             typename BinaryOpT = GraphBLAS::Second<ScalarT> >
     void build(RAIteratorI  i_it,
                RAIteratorV  v_it,
-               IndexType    num_vals,
+               IndexT       nvals,   // size_t?
                BinaryOpT    dup = BinaryOpT());
-
-    template<typename BinaryOpT = GraphBLAS::Second<ScalarType> >
-    inline void build(std::vector<IndexType>     const &indices,
-                      std::vector<ScalarType>    const &values,
-                      BinaryOpT                   dup = BinaryOpT());
 \end{verbatim}
 
+\paragraph{Template Parameters}
+
+\begin{itemize}[leftmargin=1.1in]
+    \item[{\sf RAIteratorI}] A random access iterator over IndexT objects.  (type traits needed to enforce?)
+    \item[{\sf RAIteratorV}] A random access iterator over ScalarT objects.  (type traits needed to enforce?)
+    \item[{\sf BinarOpT}]    A callable in the form of a binary function
+                             that takes two ScalarT items and returns a ScalarT. (type traits needed to enforce)
+\end{itemize}
+
+\paragraph{Parameters}
+
+\begin{itemize}[leftmargin=1.1in]
+    \item[{\sf i\_it}]   ({\sf IN}) OUT? Iterator over a sequence of indices
+    \item[{\sf v\_it}]   ({\sf IN}) OUT? Iterator over a sequence of values
+    \item[{\sf nvals}]   ({\sf IN}) The number of entries that will be iterated over from each sequence
+    \item[{\sf dup}]     ({\sf IN}) An associative and commutative binary operator
+                                    to apply when duplicate values for the same
+                                    location (index) are present in the input sequences.
+\end{itemize}
+
+\paragraph{Exceptions}
+
+\begin{itemize}[leftmargin=2.1in]
+    \item[{\sf grb::PanicException}]   Unknown internal error.
+    \item[{\sf std::bad\_alloc}]       Not enough memory available for operation.
+    \item[{\sf std::out\_of\_range}]   A value in the index sequence is outside the
+                                       allowed range for the vector.
+    \item[{\sf grb::OutputNotEmpty}]   Vector is not empty when this is called.                                  
+\end{itemize}
+
+\paragraph{Description}
+
+%-----------------------
+\subsubsection{{\sf build} Method: from containers.}
+
+\scott{How many different overloads should be supported?}
+
+\paragraph{\syntax}
+
+\begin{verbatim}
+    template<typename BinaryOpT = GraphBLAS::Second<ScalarType> >
+    inline void build(std::vector<IndexT>     const &indices,
+                      std::vector<ScalarT>    const &values,
+                      BinaryOpT                      dup = BinaryOpT());
+\end{verbatim}
+
+\paragraph{Template Parameters}
+
+\begin{itemize}[leftmargin=1.1in]
+    \item[{\sf BinarOpT}]    A callable in the form of a binary function
+                             that takes two ScalarT items and returns a ScalarT. (type traits needed to enforce)
+\end{itemize}
+
+\paragraph{Parameters}
+
+\begin{itemize}[leftmargin=1.1in]
+    \item[{\sf indices}]  ({\sf IN}) container of indices
+    \item[{\sf values}]   ({\sf IN}) container of values
+    \item[{\sf dup}]      ({\sf IN}) An associative and commutative binary operator
+                                     to apply when duplicate values for the same
+                                     location (index) are present in the input sequences.
+\end{itemize}
+
+\paragraph{Exceptions}
+
+\begin{itemize}[leftmargin=2.1in]
+    \item[{\sf grb::PanicException}]   Unknown internal error.
+    \item[{\sf grb::BadSize}]          indices and values containers do not have
+                                       the same number of elements (or should we 
+                                       also provide nvals? In which case, BadSize 
+                                       means not enough values in containers).
+    \item[{\sf std::bad\_alloc}]       Not enough memory available for operation.
+    \item[{\sf std::out\_of\_range}]   A value in the index sequence is outside the
+                                       allowed range for the vector.
+    \item[{\sf grb::OutputNotEmpty}]   Vector is not empty when this is called.                                  
+\end{itemize}
+
+\paragraph{Description}
+
+%-----------------------
 \subsubsection{{\sf clear} Method}
 \begin{verbatim}
-    void clear();
+    void clear(); // noexcept?
 \end{verbatim}
 
+%-----------------------
 \subsubsection{{\sf size} Method}
 \begin{verbatim}
-    IndexType size() const;
+    IndexType size() const noexcept;
 \end{verbatim}
 
+%-----------------------
 \subsubsection{{\sf nvals} Method}
 \begin{verbatim}
-    IndexType nvals() const;
+    IndexType nvals() const noexcept;
 \end{verbatim}
 
+%-----------------------
 \subsubsection{{\sf resize} Method}
 \begin{verbatim}
     void resize(IndexType new_size);
 \end{verbatim}
 
 
+%-----------------------
 \subsubsection{{\sf hasElement} Method}
 \begin{verbatim}
     bool hasElement(IndexType index) const;
 \end{verbatim}
 
+%-----------------------
 \subsubsection{{\sf setElement} Method}
 \begin{verbatim}
     void setElement(IndexType index, ScalarT const &new_val);
 \end{verbatim}
 
+%-----------------------
 \subsubsection{{\sf removeElement} Method}
 \begin{verbatim}
     void removeElement(IndexType index);
 \end{verbatim}
 
+%-----------------------
 \subsubsection{{\sf extractElement} Method}
 \begin{verbatim}
     ScalarT extractElement(IndexType index) const;
 \end{verbatim}
 
 
+%-----------------------
 \subsubsection{{\sf extractTuples} Method}
 \begin{verbatim}
     template<typename RAIteratorIT,
@@ -164,7 +345,13 @@ How many different overloads should be supported.
                        std::vector<ScalarT>  &values) const;
 \end{verbatim}
 
+%-----------------------
+\subsubsection{Iterators or ranges?}
 
+\scott{Do we require iterators to iterate over stored elements?}
+
+
+%-----------------------------------------------------------------------------
 %-----------------------------------------------------------------------------
 \subsection{Matrix Class}
 
