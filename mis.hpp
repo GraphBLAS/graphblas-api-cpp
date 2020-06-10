@@ -47,8 +47,6 @@ void mis_appendixB6(grb::Vector<bool> &iset, MatrixT const &A,
     grb::assign(iset, grb::complement(degrees), grb::NoAccumulate(),
                 true, grb::AllIndices(), grb::REPLACE);
 
-    SetInvDegreeRandom<RealT> set_random(seed);
-
     while (candidates.nvals() > 0) {
         // compute a random probability of each candidate scaled by inverse of degree.
         grb::eWiseMult(prob, grb::NoMask(), grb::NoAccumulate(),
