@@ -28,6 +28,24 @@ are passed as templated arguments to the backend implementation.
 first/second\_argument\_type and result\_type?}
 
 % ========================================================================
+\section{Sequences}
+\label{Sec:Sequences}
+
+{\sf GrB\_ALL} (AllIndices class in GBTL) is an example of a compact sequence.
+
+There should be other sequences that replace "arrays of indices" that can also be substituted.
+
+This is also important for distributed implementations where enumerating all indices in a range can be too large.
+
+% ========================================================================
+\section{{\sf GrB\_NULL} for Mask and Accumulator}
+\label{Sec:NoMaskNoAccum}
+
+Do we want a single GrB_NULL type that can be passed as the mask or accumulator 
+to indicate "no mask" and "no accumulate", respectively.  GBTL currently has two
+different empty classes N={\sf NoMask} and {\sf NoAccumulate}
+
+% ========================================================================
 \section{Vectors}
 \label{Sec:Vectors}
 

@@ -18,6 +18,15 @@ typedefs and instead use
                      std::declval<typename RHS::ScalarType>()))
 \end{verbatim}
 
+
+GBTL demostrates how lambas and things like std::bind objects can be passed 
+as arguments in place of UnaryOp and BinaryOp (they follow the Callable 
+concept).  
+
+Monoids and Semirings do not follow the Callable Concept.  These are
+structs with methods not restricted to operator()().
+
+
 \subsection{The execution of an application using the GraphBLAS C API}
 
 \subsection{GraphBLAS methods: behaviors and error conditions}
@@ -37,7 +46,11 @@ typedefs and instead use
 Not GrB\_Type? (should not exist)\\
 Not GrB\_Descriptor (does not exist)
 
-While we have the concepts of UnaryOp, BinaryOp, Monoid, and Semiring we do not have such classes
+While we have the concepts of UnaryOp, BinaryOp, Monoid, and Semiring we 
+do not need to have such classes.  GBTL demostrates how lambas and things 
+like std::bind objects can be passed as arguments in place of UnaryOp and
+BinaryOp (they follow the Callable concept).  Monoids and Semirings do not 
+follow the Callable Concept.
 
 Right now only Vector and Matrix for sure.
 
