@@ -24,6 +24,8 @@ We could further define the concept and give a few examples of functions, functo
 
 Do we provide and list all of the predefined structs?
 
+subsubsection{
+
 
 %-----------------------------------------------------------------------------
 \subsection{Vector Class}
@@ -360,7 +362,7 @@ as the frontend) Matrix class.  \scott{Are implementers free to add to the publi
 I think it is possible it may be necessary?}
 
 %-----------------------------------------------------------------------------
-\subsection{Descriptor Class}
+\subsection{Descriptor Class...There isn't one}
 
 \scott{There should be no Descriptors...I hope...maybe Views}.
 
@@ -400,15 +402,10 @@ Is the class an implementation detail?  Can we specify the method without statin
 \scott{should be replaced with class destructors}.
 
 %-----------------------------------------------------------------------------
-\section{GraphBLAS Operations}
-
-\subsection{ops\_mxm\_vxm\_mxv}
-\subsection{ops\_ewisemult\_ewiseadd}
-\subsection{ops\_extract}
-\subsection{ops\_assign} 
-\subsection{ops\_apply}
-\subsection{ops\_reduce\_transpose}
-\subsection{ops\_kronecker}
+%-----------------------------------------------------------------------------
+\input{operations}
+%-----------------------------------------------------------------------------
+%-----------------------------------------------------------------------------
 
 %-----------------------------------------------------------------------------
 \section{Sequence Termination Methods}
