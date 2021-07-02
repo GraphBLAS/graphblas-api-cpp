@@ -4,19 +4,36 @@
 %-----------------------------------------------------------------------------
 \subsection{{\sf mxm}: Matrix-matrix multiply}
 
-Multiplies a matrix with another matrix on a semiring. The result is a matrix.
+Multiplies a matrix with another matrix on a semiring. The result is stored in a matrix.
 
 \paragraph{\syntax}
 
 \begin{verbatim}
-        GrB_Info GrB_mxm(GrB_Matrix             C,
-                         const GrB_Matrix       Mask,
-                         const GrB_BinaryOp     accum,
-                         const GrB_Semiring     op,
-                         const GrB_Matrix       A,
-                         const GrB_Matrix       B,
-                         const GrB_Descriptor   desc);
+    template<typename CMatrixT,
+             typename MaskT,
+             typename AccumT,
+             typename SemiringT,
+             typename AMatrixT,
+             typename BMatrixT>
+    void mxm(CMatrixT         &C,
+             MaskT      const &Mask,
+             AccumT     const &accum,
+             SemiringT         op,
+             AMatrixT   const &A,
+             BMatrixT   const &B,
+             OutputControlEnum outp = MERGE)
 \end{verbatim}
+
+\paragraph{Template Parameters}
+
+\begin{itemize}[leftmargin=1.1in]
+    \item[{\sf CMatrixT}]    The type of the output Matrix (Matrix concept)
+    \item[{\sf MaskT}]       The type of the write mask Matrix (Matrix concept)
+    \item[{\sf AccumT}]      The type of the accumulation binary operator
+    \item[{\sf SemiringT}]   The type of the semiring to use for matrix multiplication \scott{TODO: should this be separate map and reduce operators}
+    \item[{\sf AMatrixT}]    The type of the left-hand input Matrix (Matrix concept)
+    \item[{\sf BMatrixT}]    The type of the right-hand input Matrix (Matrix concept)
+\end{itemize}
 
 \paragraph{Parameters}
 
