@@ -120,7 +120,7 @@ fulfills the \textit{BinaryOperator} requirement in addition to two other requir
 We say that an object is a monoid on type \texttt{T} if:
 
 \begin{enumerate}
-   \item The monoid is a valid \textit{BinaryOperator} on type \texttt{T} and has a return value of type \texttt{T}, \texttt{T} $\times$ \texttt{U} $\rightarrow$ \texttt{V}.
+   \item The monoid is a valid \textit{BinaryOperator} on type \texttt{T} and has a return value of type \texttt{T}, \texttt{T} $\times$ \texttt{T} $\rightarrow$ \texttt{T}.
    \item The monoid has a method \texttt{identity} that is callable with template parameter \texttt{T}, returning an object of type \texttt{T} which is the identity for the binary operator on that type.
 \end{enumerate}
 
