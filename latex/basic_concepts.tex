@@ -89,3 +89,45 @@ Need to deal with mismatched index types?
 % ========================================================================
 \section{Error Model}
 \label{Sec:ErrorModel}
+
+
+\section{Named Requirements}
+This section contains \textit{named requirements} describing the requirements for
+various types to be used by the C++ GraphBLAS standard.
+GraphBLAS implementations may choose to formalize these named requirements with
+C++ concepts.  Regardless, C++ GraphBLAS implementers are responsible for
+ensuring that their implementations comply with these named requirements, and
+users who pass in custom objects to the GraphBLAS API are responsible for
+ensuring that their types satisfy the corresponding named requirements.
+
+\subsection{Binary Operators}
+An object whose type fulfills the \textit{BinaryOperator} requirement is a C++
+\textit{Callable} that can be called with two arguments, returning a single
+value.  We call the type of the lefthand argument passed in to the binary operator
+\texttt{T} and the type of the righthand argument \texttt{U}.  A callable is a
+valid binary operator for types \texttt{T} and \texttt{U} if it is callable with
+arguments of those types, returning an object of type \texttt{V}.
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Expression} & \textbf{Return Type} & \textbf{Requirements}\\
+\hline
+\texttt{binary\_op(T(), U())} & \texttt{V} & \texttt{binary\_op} is callable \texttt{T} $\times$ \texttt{U} $\rightarrow$ \texttt{V}.\\
+\end{tabularx}
+
+\subsection{Monoids}
+An object whose type fulfills the \textit{Monoid} requirement is a callable that
+fulfills the \textit{BinaryOperator} requirement in addition to two other requirements.
+We say that an object is a monoid on type \texttt{T} if:
+
+\begin{enumerate}
+   \item The monoid is a valid \textit{BinaryOperator} on type \texttt{T} and has a return value of type \texttt{T}, \texttt{T} $\times$ \texttt{U} $\rightarrow$ \texttt{V}.
+   \item The monoid has a method \texttt{identity} that is callable with template parameter \texttt{T}, returning an object of type \texttt{T} which is the identity for the binary operator on that type.
+\end{enumerate}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Expression} & \textbf{Return Type} & \textbf{Requirements}\\
+\hline
+\texttt{monoid(T(), T())} & \texttt{T} & \texttt{monoid} is callable \texttt{T} $\times$ \texttt{T} $\rightarrow$ \texttt{T}.\\
+\hline
+\texttt{monoid.identity<T>()} & \texttt{T} & \texttt{identity()} method callable with template parameter \texttt{T}.\\
+\end{tabularx}
