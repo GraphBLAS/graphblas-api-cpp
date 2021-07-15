@@ -62,15 +62,92 @@ Implementation "hints" or "suggestions" like sparse vs dense.
 \section{Matrices}
 \label{Sec:Matrices}
 
-\scott{Add a discussion of template parameters}
+Definition:
 
-Template arguments:
-\begin{itemize}[leftmargin=1.1in]
-\item[ScalarT]  the scalar/value/domain type stored as values in the vector (i.e. the domain)
-\item[IndexT]   the unsigned integer type used to specify a location in the vector.
-\item[...TagsT] variadic (variable number of type params) to be unpacked by the implementation.
-Implementation "hints" or "suggestions" like sparse vs dense.
-\end{itemize}
+\begin{verbatim}
+template <typename T,
+          typename I = std::size_t,
+          typename Hint = grb::sparse,
+          typename Allocator = std::allocator<T>>
+class matrix;
+\end{verbatim}
+
+\subsection{Member Types}
+
+\begin{tabularx}{\textwidth}{l X}
+\textbf{Member Type} & \textbf{Definition}\\
+\hline
+\texttt{value\_type} & \texttt{T} \\
+\hline
+\texttt{index\_type} & \texttt{I} \\
+\hline
+\texttt{size\_type} & Unsigned integer type (usually \texttt{std::size\_t}\\
+\hline
+\texttt{difference\_type} & Signed integer type (usually \texttt{std::ptrdiff\_t}\\
+\hline
+\texttt{hint\_type} & \texttt{Hint}\\
+\hline
+\texttt{allocator\_type} & \texttt{Allocator}\\
+\hline
+\texttt{reference} & \textit{MatrixReference} to \texttt{value\_type}\\
+\hline
+\texttt{const\_reference} & \textit{MatrixReference} to \texttt{const value\_type}\\
+\hline
+\texttt{pointer} & \textit{MatrixIterator} to \texttt{value\_type}\\
+\hline
+\texttt{const\_pointer} & \textit{MatrixIterator} to \texttt{const value\_type}\\
+\hline\
+texttt{iterator} & \textit{MatrixIterator} to \texttt{value\_type}\\
+\hline
+\texttt{const\_iterator} & \textit{Matrixiterator} to \texttt{const value\_type}\\
+\end{tabularx}
+
+\subsection{Member Functions}
+
+\begin{tabularx}{\textwidth}{l X}
+\textbf{Constructors}\\
+\hline
+\texttt{matrix()} & Construct empty matrix of dimension $0 \times 0$\\
+\hline
+\texttt{matrix(index\_t dim)} & Construct matrix of dimension $\texttt{dim[0]} \times \texttt{dim[1]}$\\
+\hline
+\texttt{matrix(std::initializer\_list<size\_type> dim)} & Construct matrix of dimension $\texttt{*dim.begin()} \times \texttt{*(++dim.begin)}$\\
+\hline
+\texttt{matrix(std::string fname)} & Construct matrix object from Matrix Market file at filepath \texttt{fname}.\\
+\hline
+\texttt{matrix(const matrix\& other)} & Copy construct matrix from \texttt{other}.\\
+\hline
+\texttt{matrix(matrix\&\& other)} & Move construct matrix from \texttt{other}.\\
+\hline
+\textbf{Iterators}\\
+\hline
+\texttt{iterator begin()} & Non-const iterator to the beginning\\
+\hline
+\texttt{const\_iterator begin() const} & Const iterator to the beginning\\
+\hline
+\texttt{iterator end()} & Non-const iterator to the end\\
+\hline
+\texttt{const\_iterator end() const} & Const iterator to the end\\
+\hline
+\textbf{Capacity and Dimensions}\\
+\hline
+\texttt{size\_type size() const} & Number of stored values\\
+\hline
+\texttt{index\_t shape() const} & Dimensions of matrix\\
+\hline
+\textbf{Lookup}\\
+\texttt{reference at(index\_t index)} & Access specific element with bounds checking\\
+\hline
+\texttt{const\_reference at(index\_t index) const} & Access specific element with bounds checking\\
+\hline
+\texttt{reference operator[](index\_t index)} & Access or insert a specified element\\
+\hline
+\texttt{const\_reference operator[](index\_t index) const} & Access a specified element\\
+\hline
+\texttt{iterator find(index\_t index)} & Find element at a specific index\\
+\hline
+\texttt{const\_iterator find(index\_t index) const} & Find element at a specific index\\
+\end{tabularx}
 
 % ========================================================================
 \section{Masks}
