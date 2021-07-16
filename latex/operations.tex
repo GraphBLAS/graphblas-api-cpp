@@ -9,121 +9,116 @@ Multiplies a matrix with another matrix on a semiring. The result is stored in a
 \paragraph{\syntax}
 
 \begin{verbatim}
-    template<typename CMatrixT,
-             typename MaskT,
-             typename AccumT,
-             typename SemiringT,
-             typename AMatrixT,
-             typename BMatrixT>
-    void mxm(CMatrixT         &C,
-             MaskT      const &Mask,
-             AccumT     const &accum,
-             SemiringT         op,
-             AMatrixT   const &A,
-             BMatrixT   const &B,
-             OutputControlEnum outp = MERGE)
+  namespace grb 
+  {
+    template<typename CMatrixType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename SemiringType,
+             typename AMatrixType,
+             typename BMatrixType>
+    void mxm(CMatrixType            &C,
+             MaskType         const &Mask,
+             AccumulatorType  const &accum,
+             SemiringType            op,
+             AMatrixType      const &A,
+             BMatrixType      const &B,
+             OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
+
+    // consider an additional form
+    template<typename AMatrixType,
+             typename BMatrixType,
+             typename SemiringType,
+             typename MaskType=grb::NoMask>
+    auto multiply(AMatrixType A, BMatrixType B,
+                  SemiringType semiring_op, MaskType Mask=MaskType());
+  }
 \end{verbatim}
 
-\paragraph{Template Parameters}
+\paragraph{Template Parameters / Type Requirements}
 
 \begin{itemize}[leftmargin=1.1in]
-    \item[{\sf CMatrixT}]    The type of the output Matrix (Matrix concept)
-    \item[{\sf MaskT}]       The type of the write mask Matrix (Matrix concept)
-    \item[{\sf AccumT}]      The type of the accumulation binary operator
-    \item[{\sf SemiringT}]   The type of the semiring to use for matrix multiplication \scott{TODO: should this be separate map and reduce operators}
-    \item[{\sf AMatrixT}]    The type of the left-hand input Matrix (Matrix concept)
-    \item[{\sf BMatrixT}]    The type of the right-hand input Matrix (Matrix concept)
+    \item[{\sf CMatrixType}]    The type of the output Matrix (Matrix concept)
+    \item[{\sf MaskType}]       The type of the write mask Matrix (Matrix concept)
+    \item[{\sf AccumType}]      The type of the accumulation binary operator
+    \item[{\sf SemiringType}]   The type of the semiring to use for matrix multiplication \scott{TODO: should this be separate map and reduce operators}
+    \item[{\sf AMatrixType}]    The type of the left-hand input Matrix (Matrix concept)
+    \item[{\sf BMatrixType}]    The type of the right-hand input Matrix (Matrix concept)
 \end{itemize}
 
 \paragraph{Parameters}
 
 \begin{itemize}[leftmargin=1.1in]
-    \item[{\sf C}]    ({\sf INOUT}) An existing GraphBLAS matrix. On input,
+    \item[{\sf C}]    ({\sf INOUT}) A GraphBLAS matrix. On input,
     the matrix provides values that may be accumulated with the result of the
     matrix product.  On output, the matrix holds the results of the
     operation.
 
-    \item[{\sf Mask}] ({\sf IN}) An optional ``write'' mask that controls which
+    \item[{\sf Mask}] ({\sf IN}) An optional ``write'' mask (a GraphBLAS matrix) that controls which
     results from this operation are stored into the output matrix {\sf C}. The 
-    mask dimensions must match those of the matrix {\sf C}. If the 
-    {\sf GrB\_STRUCTURE} descriptor is {\em not} set for the mask, the domain 
-    of the {\sf Mask} matrix must be of type {\sf bool} or any of the predefined 
-    ``built-in'' types in Table~\ref{Tab:PredefinedTypes}.  If the default
+    mask dimensions must match those of the matrix {\sf C}. 
+    \scott{
+    To complement/invert the logic of a mask, wrap the mask in a complement view by calling {\sf grb::complement(Mask)}.
+    To use the structure of this matrix only, wrap the mask in a structure view by calling {\sf grb::structure(Mask)}.
+    These views can be compose to get the complement of the structure of a mask by nesting these calls:
+    {\sf grb::complement(grb::structure(Mask))} (Note that grb::structure(grb::complement(Mask)) is invalid and should not compile).
+    If it is not wrapped in the {\sf grb::structure} view, the domain 
+    of the {\sf Mask} matrix must be of type that can be compared to {\sf bool}.}
+    If the default
     mask is desired (\ie, a mask that is all {\sf true} with the dimensions of {\sf C}), 
-    {\sf GrB\_NULL} should be specified. \scott{STRUCTURE\_ONLY changes.}
+    {\sf grb::no\_mask} should be passed in for this argument.
 
     \item[{\sf accum}] ({\sf IN}) An optional binary operator used for accumulating
-    entries into existing {\sf C} entries.
-    %: ${\sf accum} = \langle \bDout({\sf accum}),\bDin1({\sf accum}),
-    %\bDin2({\sf accum}), \odot \rangle$. 
-    If assignment rather than accumulation is
-    desired, {\sf GrB\_NULL} should be specified.
+    entries into existing {\sf C} entries.  If assignment rather than accumulation is
+    desired, {\sf grb::no\_accum} should be specified.
 
     \item[{\sf op}]   ({\sf IN}) The semiring used in the matrix-matrix
     multiply.
-    %: ${\sf op}=\langle \bDout({\sf op}),\bDin1({\sf op}),\bDin2({\sf op}),\oplus,\otimes,0 \rangle$.
+    \scott{We could split this into two binary operators, map and reduce, one of which a monoid could be supplied.}
 
     \item[{\sf A}]    ({\sf IN}) The GraphBLAS matrix holding the values
     for the left-hand matrix in the multiplication.
+    \scott{To used the transpose of a matrix, wrap this matrix in a transpose view by calling {\sf grb::transpose(A)}.}
 
     \item[{\sf B}]    ({\sf IN}) The GraphBLAS matrix holding the values for
     the right-hand matrix in the multiplication.
+    \scott{To used the transpose of a matrix, wrap this matrix in a transpose view by calling {\sf grb::transpose(B)}.}
 
-    \item[{\sf desc}] ({\sf IN}) An optional operation descriptor. If
-    a \emph{default} descriptor is desired, {\sf GrB\_NULL} should be
-    specified. Non-default field/value pairs are listed as follows:  \\
-    
-    \hspace*{-2em}\begin{tabular}{lllp{2.7in}}
-        Param & Field  & Value & Description \\
-        \hline
-        {\sf C}    & {\sf GrB\_OUTP} & {\sf GrB\_REPLACE} & Output matrix {\sf C}
-        is cleared (all elements removed) before the result is stored in it.\\
-
-        {\sf Mask} & {\sf GrB\_MASK} & {\sf GrB\_STRUCTURE}   & The write mask is
-        constructed from the structure (pattern of stored values) of the input
-        {\sf Mask} matrix. The stored values are not examined.\\
-
-        {\sf Mask} & {\sf GrB\_MASK} & {\sf GrB\_COMP}   & Use the
-        complement of {\sf Mask}. \\
-
-        {\sf A}    & {\sf GrB\_INP0} & {\sf GrB\_TRAN}   & Use transpose of {\sf A}
-        for the operation. \\
-
-        {\sf B}    & {\sf GrB\_INP1} & {\sf GrB\_TRAN}   & Use transpose of {\sf B}
-        for the operation. \\
-    \end{tabular}
+    \item[{\sf outp/replace\_flag}] ({\sf IN}) If a non-default mask (i.e. {\sf grb::no\_mask}) is specified,
+    this flag controls what happens to the unmasked elements of the output.  If the flag is {\sf true/grb::REPLACE}
+    then the unmasked elements are cleared.  If the flag is {\sf false/grb::MERGE}, the unmask elements are preserved in the final output. \\
 \end{itemize}
 
 \paragraph{Return Values}
 
+This function returns no values.  All errors result in exceptions being thrown.
+
+\scott{There is a company that did not support exceptions and needed a return value semantic.}
+
+\paragraph{Exceptions}
+
 \begin{itemize}[leftmargin=2.1in]
-    \item[{\sf GrB\_SUCCESS}]         In blocking mode, the operation completed
-    successfully. In non-blocking mode, this indicates that the compatibility 
-    tests on dimensions and domains for the input arguments passed successfully. 
-    Either way, output matrix {\sf C} is ready to be used in the next method of
-    the sequence.
+    \item[{\sf grb::panic\_error}]           (execution error, grb::runtime\_error) Unknown internal error.
 
-    \item[{\sf GrB\_PANIC}]           Unknown internal error.
-
-    \item[{\sf GrB\_INVALID\_OBJECT}] This is returned in any execution mode 
+    \item[{\sf grb::invalid\_object}] (execution error, runtime error) This is returned in any execution mode 
     whenever one of the opaque GraphBLAS objects (input or output) is in an invalid 
     state caused by a previous execution error.  Call {\sf GrB\_error()} to access 
     any error messages generated by the implementation.
 
-    \item[{\sf GrB\_OUT\_OF\_MEMORY}] Not enough memory available for the operation.
+    \item[{\sf grb::bad\_alloc}] (execution error, runtime error) Not enough memory available for the operation.
+    \scott{is there a std::exception, std::bad\_alloc?}
 
-    \item[{\sf GrB\_UNINITIALIZED\_OBJECT}] One or more of the GraphBLAS objects 
-    has not been initialized by a call to {\sf new} (or {\sf Matrix\_dup} for matrix
-    parameters).
-
-    \item[{\sf GrB\_DIMENSION\_MISMATCH}] Mask and/or matrix
-    dimensions are incompatible.
-
-    \item[{\sf GrB\_DOMAIN\_MISMATCH}]    The domains of the various matrices are
-    incompatible with the corresponding domains of the semiring or
-    accumulation operator, or the mask's domain is not compatible with {\sf bool}
-    (in the case where {\sf desc[GrB\_MASK].GrB\_STRUCTURE} is not set).\scott{STRUCTURE\_ONLY changes.}
+    \item[{\sf grb::dimension\_mismatch}] (API error, logic error). Mask and/or matrix
+    dimensions are incompatible. \scott{std::range\_error ?}
 \end{itemize}
+
+\paragraph{Blocking vs Non-Blocking Behaviour}
+
+In blocking mode, the operation has completed successfully on return.
+In non-blocking mode, this indicates that the compatibility 
+tests on dimensions \scott{and domains for the input arguments passed successfully}. 
+Either way, output matrix {\sf C} is ready to be used in the next method of
+the sequence.
 
 \paragraph{Description}
 
@@ -134,19 +129,28 @@ Multiplies a matrix with another matrix on a semiring. The result is stored in a
 
 
 %-----------------------------------------------------------------------------
-\subsection{ops\_ewisemult\_ewiseadd}
+\subsection{{\sf ewisemult}: }
 
 %-----------------------------------------------------------------------------
-\subsection{ops\_extract}
+\subsection{{\sf ewiseadd}: }
 
 %-----------------------------------------------------------------------------
-\subsection{ops\_assign} 
+\subsection{{\sf extract}: }
 
 %-----------------------------------------------------------------------------
-\subsection{ops\_apply}
+\subsection{{\sf assign}: }
 
 %-----------------------------------------------------------------------------
-\subsection{ops\_reduce\_transpose}
+\subsection{{\sf apply}: }
 
 %-----------------------------------------------------------------------------
-\subsection{ops\_kronecker}
+\subsection{{\sf select}: }
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf reduce}: }
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf transpose}: }
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf kronecker}: }

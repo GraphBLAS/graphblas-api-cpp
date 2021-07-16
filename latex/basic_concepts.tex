@@ -90,7 +90,29 @@ Need to deal with mismatched index types?
 \section{Error Model}
 \label{Sec:ErrorModel}
 
+Depending on support for execution models we may or may not have two 
+categories of errors: API and execution errors.
 
+All runtime errors are reported by throwing exceptions.  All exceptions generated
+by the library inherit from {\sf grb::exception} that (in turn) inherits 
+from {\sf std::exception}.
+
+Exceptions subclassed from {\sf grb::exception}:
+
+\begin{itemize}
+\item {\sf logic\_error} base class for API errors.
+    \begin{itemize}
+    \item {\sf dimension\_mismatch}
+    \end{itemize}
+\item {\sf runtime\_error} base class for execution errors.
+    \begin{itemize}
+    \item {\sf panic\_error}
+    \item {\sf bad\_alloc}... should we use {\sf std::bad\_alloc} instead?
+    \item {\sf invalid\_object}
+    \end{itemize}
+\end{itemize}
+
+% ========================================================================
 \section{Named Requirements}
 This section contains \textit{named requirements} describing the requirements for
 various types to be used by the C++ GraphBLAS standard.
