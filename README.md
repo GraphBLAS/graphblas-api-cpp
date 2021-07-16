@@ -1,6 +1,6 @@
 # GraphBLAS C++ API
 
-The currently being developed GraphBLAS C++ API aims to provide a C++ API for implementing graph algorithms in the language of linear algebra, and is part of the larger [GraphBLAS](https://graphblas.github.io/) project.  The API provides data structures for storing matrices and vectors, as well as a collection of algorithms, such as generalized matrix multiplication, that can be used with custom or pre-defined operators, monoids, and semirings.
+The currently under development GraphBLAS C++ API aims to provide a C++ API for implementing graph algorithms in the language of linear algebra, and is part of the larger [GraphBLAS](https://graphblas.github.io/) project.  The API provides data structures for storing matrices and vectors, as well as a collection of algorithms, such as generalized matrix multiplication, that can be used with custom or pre-defined operators, monoids, and semirings.
 
 The standard document itself can be found in the folder [latex](https://github.com/GraphBLAS/graphblas-api-cpp/tree/master/latex),
 while minutes for meetings of the GraphBLAS C++ API subcommittee can be found in the folder [minutes](https://github.com/GraphBLAS/graphblas-api-cpp/tree/master/minutes).
