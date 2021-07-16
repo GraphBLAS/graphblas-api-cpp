@@ -17,7 +17,6 @@ while minutes for meetings of the GraphBLAS C++ API subcommittee can be found in
   
   // Sum up all the elements stored in the matrix.
   float sum = std::reduce(x.begin(), x.end(), 0);
-  
 ```
 
 
