@@ -1,10 +1,9 @@
+\pagebreak
 %-----------------------------------------------------------------------------
 \section{GraphBLAS Operations}
 
 %-----------------------------------------------------------------------------
 \subsection{{\sf mxm}: Matrix-matrix multiply}
-
-Multiplies a matrix with another matrix on a semiring. The result is stored in a matrix.
 
 \paragraph{\syntax}
 
@@ -20,7 +19,24 @@ Multiplies a matrix with another matrix on a semiring. The result is stored in a
     void mxm(CMatrixType            &C,
              MaskType         const &Mask,
              AccumulatorType  const &accum,
-             SemiringType            op,
+             SemiringType            op,         // pass by value or ref? const?
+             AMatrixType      const &A,
+             BMatrixType      const &B,
+             OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
+
+    // Not using a semiring
+    template<typename CMatrixType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename ReduceType,
+             typename MapType,
+             typename AMatrixType,
+             typename BMatrixType>
+    void mxm(CMatrixType            &C,
+             MaskType         const &Mask,
+             AccumulatorType  const &accum,
+             ReduceType              reduce,     // pass by value or ref? const?
+             MapType                 map,
              AMatrixType      const &A,
              BMatrixType      const &B,
              OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
@@ -30,21 +46,17 @@ Multiplies a matrix with another matrix on a semiring. The result is stored in a
              typename BMatrixType,
              typename SemiringType,
              typename MaskType=grb::NoMask>
-    auto multiply(AMatrixType A, BMatrixType B,
-                  SemiringType semiring_op, MaskType Mask=MaskType());
+    auto multiply(AMatrixType const &A, BMatrixType const &B,
+                  SemiringType semiring_op, MaskType const &Mask=MaskType());  // const& ?
   }
 \end{verbatim}
 
-\paragraph{Template Parameters / Type Requirements}
+Multiplies two GraphBLAS matrices using the operators and identity defined by a GraphBLAS semiring. An optional accumulator and write mask can also be specified. The result is stored in third GraphBLAS matrix.
 
-\begin{itemize}[leftmargin=1.1in]
-    \item[{\sf CMatrixType}]    The type of the output Matrix (Matrix concept)
-    \item[{\sf MaskType}]       The type of the write mask Matrix (Matrix concept)
-    \item[{\sf AccumType}]      The type of the accumulation binary operator
-    \item[{\sf SemiringType}]   The type of the semiring to use for matrix multiplication \scott{TODO: should this be separate map and reduce operators}
-    \item[{\sf AMatrixType}]    The type of the left-hand input Matrix (Matrix concept)
-    \item[{\sf BMatrixType}]    The type of the right-hand input Matrix (Matrix concept)
-\end{itemize}
+\begin{enumerate}
+\item Any notes go here.
+\item The "additional" form creates a new output matrix to hold the result.  Accumulation is not supported.
+\end{enumerate}
 
 \paragraph{Parameters}
 
@@ -88,6 +100,21 @@ Multiplies a matrix with another matrix on a semiring. The result is stored in a
     this flag controls what happens to the unmasked elements of the output.  If the flag is {\sf true/grb::REPLACE}
     then the unmasked elements are cleared.  If the flag is {\sf false/grb::MERGE}, the unmask elements are preserved in the final output. \\
 \end{itemize}
+
+\subparagraph{Type Requirements}
+
+\begin{itemize}[leftmargin=1.1in]
+    \item {\sf CMatrixType, MaskType, AMatrixType, BMatrixType} must meet the requirements of a \emph{GraphBLASMatrix} or \emph{GraphBLASMatrixView}.
+    \item {\sf AccumulatorType} must meet the requirements of a \emph{BinaryOperator}
+    \item {\sf SemiringType} must meet the requirements of a \emph{GraphBLASSemiring}
+    \item {\sf ReduceType} must meet the requirements of a \emph{CommutativeAssociativeBinaryOperator}
+    \item {\sf MapType} must meet the requirements of a \emph{BinaryOperator}
+\end{itemize}
+
+\begin{tabularx}{\textwidth}{X l}
+Defined in header \texttt{<operations.hpp>}  &  \textbf{Notes} \\
+\hline
+\end{tabularx}
 
 \paragraph{Return Values}
 
