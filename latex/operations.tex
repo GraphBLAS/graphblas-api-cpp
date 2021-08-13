@@ -1,15 +1,28 @@
-\pagebreak
-%-----------------------------------------------------------------------------
-\section{GraphBLAS Operations}
+
+%=============================================================================
+\chapter{GraphBLAS Operations}
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf mxm}: Matrix-matrix multiply}
+\section{{\sf grb::multiply}: Matrix-matrix multiply}
 
 \paragraph{\syntax}
 
 \begin{verbatim}
-  namespace grb 
-  {
+    // consider an additional form
+    template<typename AMatrixType,
+             typename BMatrixType,
+             typename SemiringType,
+             typename MaskType=grb::NoMask>
+    auto multiply(AMatrixType const &A, BMatrixType const &B,
+                  SemiringType semiring_op, MaskType const &Mask=MaskType());  // const& ?
+\end{verbatim}
+
+%-----------------------------------------------------------------------------
+\section{{\sf grb::mxm}: Matrix-matrix multiply}
+
+\paragraph{\syntax}
+
+\begin{verbatim}
     template<typename CMatrixType,
              typename MaskType,
              typename AccumulatorType,
@@ -23,32 +36,6 @@
              AMatrixType      const &A,
              BMatrixType      const &B,
              OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
-
-    // Not using a semiring
-    template<typename CMatrixType,
-             typename MaskType,
-             typename AccumulatorType,
-             typename ReduceType,
-             typename MapType,
-             typename AMatrixType,
-             typename BMatrixType>
-    void mxm(CMatrixType            &C,
-             MaskType         const &Mask,
-             AccumulatorType  const &accum,
-             ReduceType              reduce,     // pass by value or ref? const?
-             MapType                 map,
-             AMatrixType      const &A,
-             BMatrixType      const &B,
-             OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
-
-    // consider an additional form
-    template<typename AMatrixType,
-             typename BMatrixType,
-             typename SemiringType,
-             typename MaskType=grb::NoMask>
-    auto multiply(AMatrixType const &A, BMatrixType const &B,
-                  SemiringType semiring_op, MaskType const &Mask=MaskType());  // const& ?
-  }
 \end{verbatim}
 
 Multiplies two GraphBLAS matrices using the operators and identity defined by a GraphBLAS semiring. An optional accumulator and write mask can also be specified. The result is stored in third GraphBLAS matrix.
@@ -104,11 +91,33 @@ Multiplies two GraphBLAS matrices using the operators and identity defined by a 
 \subparagraph{Type Requirements}
 
 \begin{itemize}[leftmargin=1.1in]
-    \item {\sf CMatrixType, MaskType, AMatrixType, BMatrixType} must meet the requirements of a \emph{GraphBLASMatrix} or \emph{GraphBLASMatrixView}.
+    \item {\sf CMatrixType} must meet the requirements of a \textit{MatrixView}.  What are the basic matrix requirements?
+    \item {\sf MaskType} must meet the requirements of a \emph{GraphBLASMatrix} (or is it \emph{GraphBLASMaskMatrix}: stored scalars must be convertible to bool) or \emph{GraphBLASMatrixComplementView} (convertible to bool) or \emph{GraphBLASStructureMatrixView} (range of index pairs denoting locations of the stored values) or  \emph{GraphBLASStructuralComplementMatrixView}..
+    \item {\sf AMatrixType} and {\sf BMatrixType} must meet the requirements of a const \textit{ConstMatrixView}.
     \item {\sf AccumulatorType} must meet the requirements of a \emph{BinaryOperator}
     \item {\sf SemiringType} must meet the requirements of a \emph{GraphBLASSemiring}
     \item {\sf ReduceType} must meet the requirements of a \emph{CommutativeAssociativeBinaryOperator}
     \item {\sf MapType} must meet the requirements of a \emph{BinaryOperator}
+\end{itemize}
+
+Placeholder for named requirements:
+
+\begin{itemize}
+\item \emph{GraphBLASMatrix} - needs to satisfy the interface of a mutable GraphBLAS Matrix: nrows(), ncols(), nvals()
+\item \emph{GraphBLASMaskMatrix} - A graphblas Matrix whose values are convertable to bool.
+\item \emph{GraphBLASMatrixView} - Can provide a reference to a const GraphBLAS matrix
+    \begin{itemize}
+    \item \emph{GraphBLASMatrixComplementView}
+    \item \emph{GraphBLASStructureMatrixView}
+    \item \emph{GraphBLASStructuralComplementMatrixView}
+    \item \emph{GraphBLASMatrixTransposeView}
+    \end{itemize}
+\item \emph{BinaryOperator}
+\item \emph{GraphBLASSemiring}
+    \begin{itemize}
+    \item \emph{CommutativeAssociativeBinaryOperator}
+    \item \emph{BinaryOperator}
+    \end{itemize}
 \end{itemize}
 
 \begin{tabularx}{\textwidth}{X l}
@@ -148,6 +157,10 @@ Either way, output matrix {\sf C} is ready to be used in the next method of
 the sequence.
 
 \paragraph{Description}
+
+%-----------------------------------------------------------------------------
+%-----------------------------------------------------------------------------
+\section{Older stuff}
 
 %-----------------------------------------------------------------------------
 \subsection{{\sf mxv}: Matrix-vector multiply}

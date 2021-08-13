@@ -1,11 +1,14 @@
-\chapter{Objects}
-\label{Chp:Objects}
+\chapter{Classes}
+\label{Chp:Classes}
 
 
 % ========================================================================
 \section{Operators}
 
 \scott{All callable objects must be supported, including <functional> and lambdas.}
+
+\scott{There are no separate "Types".  UnaryOp and BinaryOps are all callable objects.  Monoids and Semirings are class templates}
+\scott{Is there a set of the predefined operators? If so, list them.}
 
 % ========================================================================
 \section{Monoids}
@@ -46,21 +49,138 @@ to indicate "no mask" and "no accumulate", respectively.  GBTL currently has two
 different empty classes N={\sf NoMask} and {\sf NoAccumulate}
 
 % ========================================================================
-\section{Vectors}
+\section{\sf grb::vector}
 \label{Sec:Vectors}
 
-\scott{Add a discussion of template parameters}
-Template arguments:
-\begin{itemize}[leftmargin=1.1in]
-\item[ScalarT]  the scalar/value/domain type stored as values in the vector (i.e. the domain)
-\item[IndexT]   the unsigned integer type used to specify a location in the vector.
-\item[...TagsT] variadic (variable number of type params) to be unpacked by the implementation.
-Implementation "hints" or "suggestions" like sparse vs dense.
-\end{itemize}
+This section defines the minimum required public interface to the "API"  Vector class.  It satisfies \textit{VectorCollection}?
+\scott{Implementers free to add to the public API so long as the named requirement is still satisfied.}
+
+Definition:
+
+\begin{verbatim}
+template <typename T,
+          typename I = std::size_t,
+          typename Hint = grb::bitmap_sparse,
+          typename Allocator = std::allocator<T>>
+class vector;
+\end{verbatim}
+
+\paragraph{Member Types}
+
+\begin{tabularx}{\textwidth}{l X}
+\textbf{Member Type} & \textbf{Definition}\\
+\hline
+\texttt{value\_type} or \texttt{ScalarType} & \texttt{T}.  The type of elements stored in the Vector. \textit{CopyAssignable}. \textit{CopyConstructible} (pre C++11?) \scott{Here is the statement from the C++ Standard Graph Library proposal: "The graph value type defined by the user.  It can be most valid C++ value type including class, struct, tuple, union, enum, array, reference or scalar value. If no value is needed then the empty\_value struct can be used."}\\
+\hline
+\texttt{index\_type} or \texttt{IndexType} & \texttt{I}, \scott{Should we restrict this to unsigned integer types?} \\
+\hline
+\texttt{size\_type} & Unsigned integer type (usually \texttt{std::size\_t}).  \scott{For vector, size\_type and index\_type could be same.} \\
+\hline
+\texttt{difference\_type} & Signed integer type (usually \texttt{std::ptrdiff\_t})\\
+\hline
+\texttt{hint\_type} & \texttt{Hint}\\
+\hline
+\texttt{allocator\_type} & \texttt{Allocator}\\
+\hline
+\texttt{reference} & \textit{VectorReference} to \texttt{value\_type}\\
+\hline
+\texttt{const\_reference} & \textit{VectorReference} to \texttt{const value\_type}\\
+\hline
+\texttt{pointer} & \textit{VectorIterator} to \texttt{value\_type}\\
+\hline
+\texttt{const\_pointer} & \textit{VectorIterator} to \texttt{const value\_type}\\
+\hline
+\texttt{iterator} & \textit{VectorIterator} to \texttt{value\_type}\\
+\hline
+\texttt{const\_iterator} & \textit{Vectoriterator} to \texttt{const value\_type}\\
+\end{tabularx}
+
+\paragraph{Member functions}
+
+\begin{tabularx}{\textwidth}{l X}
+\textbf{Constructors}\\
+\hline
+\texttt{vector()} & Construct empty vector of size $0$, \scott{Should we " = delete" this constructor?} \\ 
+\hline
+\texttt{vector(index\_type size)} & Construct vector of size $\texttt{size}$. \scott{should zero be disallowed...throw?} \\
+& \texttt{panic\_exception} with unknown internal error \\
+& \texttt{bad\_alloc} if not enough memory \\
+& \texttt{invalid\_value} is size is zero. \\
+\hline
+\texttt{vector(std::string fname)} & Construct vector object from an \scott{XXX (what format?)} file at filepath \texttt{fname}.\\
+\hline
+\texttt{vector(const vector\& other)} & Copy construct vector from \texttt{other}.\\
+\hline
+\texttt{vector(vector\&\& other)} & Move construct vector from \texttt{other}.\\
+\hline
+\texttt{vector\& operator=(vector\& other)} & Assignment operator from \texttt{other}. \scott{Check signature} \\
+\hline
+\texttt{vector\& operator=(vector\&\& other)} & Move assignment operator from \texttt{other} return state of \texttt{other} is implementation defined?. \scott{Check signature. is this noexcept?} \\
+\hline
+\texttt{~vector()} & Destructor. Releases all resource held by the container within this object including all implementation data structures related to this object. \scott{Not virtual} \\
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l X}
+\textbf{Iterators}\\
+\hline
+\texttt{iterator begin()} & Non-const iterator to the beginning\\
+\hline
+\texttt{const\_iterator begin() const} & Const iterator to the beginning\\
+\hline
+\texttt{iterator end()} & Non-const iterator to the end\\
+\hline
+\texttt{const\_iterator end() const} & Const iterator to the end\\
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l X}
+\textbf{Capacity and Dimensions }\\
+\hline
+\texttt{size\_type reserve(size\_type capacity)} & \scott{(reserve not supported by opacity?)}\\
+\hline
+\texttt{size\_type capacity() const} & \scott{(capacity not supported by opacity?)}\\
+\hline
+\texttt{size\_type nvals() const} & Number of values stored in the vector\\
+\hline
+\texttt{index\_type size() const} & Size (dimension) of vector\\
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l X}
+\textbf{Lookup}\\
+\hline
+\texttt{reference at(index\_type index)} & Access specific element with bounds checking\\
+\hline
+\texttt{const\_reference at(index\_type index) const} & Access specific element with bounds checking\\
+\hline
+\texttt{reference operator[](index\_type index)} & Access or insert a specified element\\
+\hline
+\texttt{const\_reference operator[](index\_type index) const} & Access a specified element\\
+\hline
+\texttt{iterator find(index\_type index)} & Find element at a specific index\\
+\hline
+\texttt{const\_iterator find(index\_type index) const} & Find element at a specific index\\
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l X}
+\textbf{Other}\\
+\hline
+\texttt{iterator remove(index\_type index)} & Annihilate element at a specific index \scott{erase(ix)?} \\
+\hline
+\texttt{void clear()} &  \\
+\hline
+\texttt{void build(RAIndexIterator  i\_it,}  & container version?? \\
+\texttt{~~~~~~~~~~~RAValueIterator  v\_it,}  & not empty exception?? index out of bounds exception?? \\
+\texttt{~~~~~~~~~~~size\_type       nval,}  & ?? \\
+\texttt{~~~~~~~~~~~BinaryOperator \&dup)}   & reference?? \\
+\hline
+\end{tabularx}
+
+How should exceptions be documented?
 
 % ========================================================================
 \section{Matrices}
 \label{Sec:Matrices}
+
+\scott{define index\_t, shape\_t, location\_t, or whatever.}
 
 Definition:
 
@@ -72,7 +192,7 @@ template <typename T,
 class matrix;
 \end{verbatim}
 
-\subsection{Member Types}
+\paragraph{Member Types}
 
 \begin{tabularx}{\textwidth}{l X}
 \textbf{Member Type} & \textbf{Definition}\\
@@ -102,7 +222,7 @@ class matrix;
 \texttt{const\_iterator} & \textit{Matrixiterator} to \texttt{const value\_type}\\
 \end{tabularx}
 
-\subsection{Member Functions}
+\paragraph{Member Functions}
 
 \begin{tabularx}{\textwidth}{l X}
 \textbf{Constructors}\\
@@ -111,14 +231,18 @@ class matrix;
 \hline
 \texttt{matrix(index\_t dim)} & Construct matrix of dimension $\texttt{dim[0]} \times \texttt{dim[1]}$\\
 \hline
-\texttt{matrix(std::initializer\_list<size\_type> dim)} & Construct matrix of dimension $\texttt{*dim.begin()} \times \texttt{*(++dim.begin)}$\\
+\texttt{matrix(\scott{shape\_t} dim)} & Construct matrix of dimension $\texttt{dim[0]} \times \texttt{dim[1]}$\\
 \hline
-\texttt{matrix(std::string fname)} & Construct matrix object from Matrix Market file at filepath \texttt{fname}.\\
+\texttt{matrix(std::initializer\_list<{\color{red} index\_type}> dim)} & Construct matrix of dimension $\texttt{*dim.begin()} \times \texttt{*(++dim.begin)}$\\
+\hline
+\texttt{matrix(std::string fname)} & Construct matrix object from Matrix Market file \scott{(don't limit to MTX.)} at filepath \texttt{fname}.\\
 \hline
 \texttt{matrix(const matrix\& other)} & Copy construct matrix from \texttt{other}.\\
 \hline
 \texttt{matrix(matrix\&\& other)} & Move construct matrix from \texttt{other}.\\
-\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l X}
 \textbf{Iterators}\\
 \hline
 \texttt{iterator begin()} & Non-const iterator to the beginning\\
@@ -128,13 +252,17 @@ class matrix;
 \texttt{iterator end()} & Non-const iterator to the end\\
 \hline
 \texttt{const\_iterator end() const} & Const iterator to the end\\
-\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l X}
 \textbf{Capacity and Dimensions}\\
 \hline
 \texttt{size\_type size() const} & Number of stored values\\
 \hline
 \texttt{index\_t shape() const} & Dimensions of matrix\\
-\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l X}
 \textbf{Lookup}\\
 \texttt{reference at(index\_t index)} & Access specific element with bounds checking\\
 \hline

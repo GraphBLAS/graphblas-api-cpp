@@ -113,7 +113,9 @@ Exceptions subclassed from {\sf grb::exception}:
 \end{itemize}
 
 % ========================================================================
-\section{Named Requirements}
+\chapter{Named Requirements}
+\label{Chp:NamedRequirements}
+
 This section contains \textit{named requirements} describing the requirements for
 various types to be used by the C++ GraphBLAS standard.
 GraphBLAS implementations may choose to formalize these named requirements with
@@ -122,7 +124,8 @@ ensuring that their implementations comply with these named requirements, and
 users who pass in custom objects to the GraphBLAS API are responsible for
 ensuring that their types satisfy the corresponding named requirements.
 
-\subsection{Binary Operators}
+% ========================================================================
+\section{Binary Operators}
 An object whose type fulfills the \textit{BinaryOperator} requirement is a C++
 \textit{Callable} that can be called with two arguments, returning a single
 value.  We call the type of the lefthand argument passed in to the binary operator
@@ -136,7 +139,8 @@ arguments of those types, returning an object of type \texttt{V}.
 \texttt{binary\_op(T(), U())} & \texttt{V} & \texttt{binary\_op} is callable \texttt{T} $\times$ \texttt{U} $\rightarrow$ \texttt{V}.\\
 \end{tabularx}
 
-\subsection{Monoids}
+% ========================================================================
+\section{Monoids}
 An object whose type fulfills the \textit{Monoid} requirement is a callable that
 fulfills the \textit{BinaryOperator} requirement in addition to two other requirements.
 We say that an object is a monoid on type \texttt{T} if:
@@ -153,3 +157,71 @@ We say that an object is a monoid on type \texttt{T} if:
 \hline
 \texttt{monoid.identity<T>()} & \texttt{T} & \texttt{identity()} method callable with template parameter \texttt{T}.\\
 \end{tabularx}
+
+% ========================================================================
+\section{GraphBLAS Container? Matrix? Vector? Scalar?}
+
+Not sure we need to define this.  Not sure we should have separate Matrix, Vector, 
+and Scalar containters. I think these are the opaque data structures that implementers create.
+
+\scott{Does something belong here or is it all in the containers section?}
+
+\paragraph{Requirements}
+\begin{itemize} \itemsep0em
+\item \texttt{C} container type
+\item \texttt{ScalarT} element type
+\item \texttt{IndexT} indexing type (location of elements)
+\end{itemize}
+
+\paragraph{Types}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Name} & \textbf{Type} & \textbf{Notes}\\
+\hline
+\texttt{value\_type} & \texttt{ScalarT}  & Erasable?.\\ \hline
+\texttt{reference}  & \texttt{ScalarT\&} & Do we need this? \\ \hline
+\texttt{const\_reference}  & \texttt{const ScalarT\&} & Do we need this? \\ \hline
+\texttt{iterator}  & & \\ \hline
+\texttt{const\_iterator}  & & \\ \hline
+\texttt{different\_type}  & & \\ \hline
+\texttt{size\_type}  & &
+\end{tabularx}
+
+% ========================================================================
+\section{MatrixView}
+An object whose type fulfills the \textit{MatrixView} requirement is (loosely) a 
+reference to an opaque \textit{GraphBLAS Container} that has two dimensions and a 
+number of stored elements.  A \textit{GraphBLAS Container} is an object used to store
+other objects, \textit{GraphBLAS Scalars}, that takes care of the management of the
+memory used by these objects. \scott{Wording from C++ Container named requirements.}
+
+\scott{Should the MatrixView only define enough interface to perform any runtime API error checks?}
+
+\scott{Should MatrixView provide a reference to the internal container?}
+
+\paragraph{Types}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Name} & \textbf{Type} & \textbf{Notes}\\
+\hline
+\texttt{value\_type} & \texttt{ScalarT}  & The type of objects stored in the container.\\ \hline
+\texttt{index\_type} & \texttt{IndexT}   & Used to reference locations in the container \\ \hline
+\texttt{size\_type}  & ??                & Can hold the number of elements stored in the container.
+\end{tabularx}
+
+\paragraph{Methods and operators}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Expression} & \textbf{Return Type} & \textbf{Requirements}\\
+\hline
+\texttt{nrows()} & \texttt{index\_type} & The size of the first dimension of the matrix.\\ \hline
+\texttt{ncols()} & \texttt{index\_type} & The size of the second dimension of the matrix.\\ \hline
+\texttt{nvals()} & \texttt{size\_type}  & The number of elements stored in the matrix. (not sure this is required)\\ \hline
+constructors? & & \\
+\end{tabularx}
+
+% ========================================================================
+\section{ConstMatrixView}
+
+Is the same as a \textit{MatrixView} except that the opaque container within cannot be
+mutated by calls to GraphBLAS operations.
