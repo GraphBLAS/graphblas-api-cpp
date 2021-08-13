@@ -2,13 +2,24 @@
 \label{Chp:Classes}
 
 
+This section defines the classes that correspond the GraphBLAS objects.
+
 % ========================================================================
 \section{Operators}
 
 \scott{All callable objects must be supported, including <functional> and lambdas.}
 
 \scott{There are no separate "Types".  UnaryOp and BinaryOps are all callable objects.  Monoids and Semirings are class templates}
+
+Are the named requirements enough?
+
+Give a few examples of functions, functors and lambdas  that can be used where a unaryop, binaryop, monoid and semiring are needed.
+
+\subsection{Predefined operators}
+
 \scott{Is there a set of the predefined operators? If so, list them.}
+
+\subsection{\sf grb::NoAccumulate}
 
 % ========================================================================
 \section{Monoids}
@@ -16,8 +27,9 @@
 Do we define the concept of a Monoid here.  We don't "new" them, rather they
 are passed as templated arguments to the backend implementation.
 
-
 \scott{Likely only structs, with operator() + identity()? Do we support result\_type?}
+
+\subsection{Predefined monoids}
 
 
 % ========================================================================
@@ -30,29 +42,29 @@ are passed as templated arguments to the backend implementation.
 \scott{likely only structs with add90, mult(), and zero().  Do we support 
 first/second\_argument\_type and result\_type?}
 
+\subsection{Predefined semirings}
+
 % ========================================================================
 \section{Sequences}
 \label{Sec:Sequences}
-
-{\sf GrB\_ALL} (AllIndices class in GBTL) is an example of a compact sequence.
 
 There should be other sequences that replace "arrays of indices" that can also be substituted.
 
 This is also important for distributed implementations where enumerating all indices in a range can be too large.
 
-% ========================================================================
-\section{{\sf GrB\_NULL} for Mask and Accumulator}
-\label{Sec:NoMaskNoAccum}
+\subsection{Predefined sequences}
 
-Do we want a single {\sf GrB\_NULL} type that can be passed as the mask or accumulator 
-to indicate "no mask" and "no accumulate", respectively.  GBTL currently has two
-different empty classes N={\sf NoMask} and {\sf NoAccumulate}
+\subsection{\sf grb::AllIndices}
+
+{\sf grb::AllIndices} a.k.a {\sf GrB\_ALL} is an example of a compact sequence.
 
 % ========================================================================
-\section{\sf grb::vector}
+\section{Vectors: {\sf grb::vector} class}
 \label{Sec:Vectors}
 
-This section defines the minimum required public interface to the "API"  Vector class.  It satisfies \textit{VectorCollection}?
+This section defines the minimum required public interface to the "API"  Vector 
+class.  It satisfies \textit{VectorCollection}?
+
 \scott{Implementers free to add to the public API so long as the named requirement is still satisfied.}
 
 Definition:
@@ -98,7 +110,7 @@ class vector;
 \paragraph{Member functions}
 
 \begin{tabularx}{\textwidth}{l X}
-\textbf{Constructors}\\
+\textbf{Construct, assign, and move}\\
 \hline
 \texttt{vector()} & Construct empty vector of size $0$, \scott{Should we " = delete" this constructor?} \\ 
 \hline
@@ -139,9 +151,11 @@ class vector;
 \hline
 \texttt{size\_type capacity() const} & \scott{(capacity not supported by opacity?)}\\
 \hline
-\texttt{size\_type nvals() const} & Number of values stored in the vector\\
+\texttt{size\_type nvals() const} & Number of values stored in the vector (size()?)\\
 \hline
-\texttt{index\_type size() const} & Size (dimension) of vector\\
+\texttt{index\_type size() const} & Size of vector (dimension()?)\\
+\hline
+\texttt{index\_type resize(index\_type) new\_size)} & Size of vector (dimension()?)\\
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{l X}
@@ -168,16 +182,25 @@ class vector;
 \texttt{void clear()} &  \\
 \hline
 \texttt{void build(RAIndexIterator  i\_it,}  & container version?? \\
-\texttt{~~~~~~~~~~~RAValueIterator  v\_it,}  & not empty exception?? index out of bounds exception?? \\
+\texttt{~~~~~~~~~~~RAValueIterator  v\_it,}  & "not empty" exception?? index out of bounds exception?? \\
 \texttt{~~~~~~~~~~~size\_type       nval,}  & ?? \\
 \texttt{~~~~~~~~~~~BinaryOperator \&dup)}   & reference?? \\
 \hline
+\texttt{void build(vector<IndexType>  const \&indices,}  & const or move? bad sizes exception\\
+\texttt{~~~~~~~~~~~vector<ScalarType> const \&values,}  & "not empty" exception?? index out of bounds exception?? \\
+\texttt{~~~~~~~~~~~BinaryOperator \&dup)}   & reference?? \\
+\hline
+\texttt{void extractTuples()} & What is the C++ equivalent? \\
+\texttt{void wait()} & What is the C++ equivalent? \\
+\texttt{void error()} & What is the C++ equivalent? \\
 \end{tabularx}
 
 How should exceptions be documented?
 
+\scott{Do we support void Scalar type for matrices and vectors?}
+
 % ========================================================================
-\section{Matrices}
+\section{Matrices: {\sf grb::matrix} class}
 \label{Sec:Matrices}
 
 \scott{define index\_t, shape\_t, location\_t, or whatever.}
@@ -277,14 +300,17 @@ class matrix;
 \texttt{const\_iterator find(index\_t index) const} & Find element at a specific index\\
 \end{tabularx}
 
+\scott{Do we support void Scalar type for matrices and vectors?}
+
+
 % ========================================================================
 \section{Masks}
 \label{Sec:Masks}
 
-Do we support void Scalar type for matrices and vectors?
 
-% ========================================================================
-\section{Descriptors}
-\label{Sec:Descriptors}
 
-\scott{There will be no descriptors...so let it be written...so let it be done.}
+\subsection{\sf grb::NoMask}
+
+There is a predefined object that satisfies \textit{VectorMask} and \textit{MatrixMask}
+requirements that basically removes the use of a mask from the operation. It
+is mathematically equivalent to sending in a "full" mask.
