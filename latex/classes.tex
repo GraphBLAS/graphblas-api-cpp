@@ -125,11 +125,11 @@ class vector;
 \hline
 \texttt{vector(vector\&\& other)} & Move construct vector from \texttt{other}.\\
 \hline
-\texttt{vector\& operator=(vector\& other)} & Assignment operator from \texttt{other}. \scott{Check signature} \\
+\texttt{vector\& operator=(const vector\& other)} & Assignment operator from \texttt{other}. \scott{Check signature} \\
 \hline
 \texttt{vector\& operator=(vector\&\& other)} & Move assignment operator from \texttt{other} return state of \texttt{other} is implementation defined?. \scott{Check signature. is this noexcept?} \\
 \hline
-\texttt{~vector()} & Destructor. Releases all resource held by the container within this object including all implementation data structures related to this object. \scott{Not virtual} \\
+\texttt{\~{}vector()} & Destructor. Releases all resource held by the container within this object including all implementation data structures related to this object. \scott{Not virtual} \\
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{l X}
@@ -248,7 +248,7 @@ class matrix;
 \paragraph{Member Functions}
 
 \begin{tabularx}{\textwidth}{l X}
-\textbf{Constructors}\\
+\textbf{Constructors, assignment, move}\\
 \hline
 \texttt{matrix()} & Construct empty matrix of dimension $0 \times 0$\\
 \hline
@@ -263,6 +263,12 @@ class matrix;
 \texttt{matrix(const matrix\& other)} & Copy construct matrix from \texttt{other}.\\
 \hline
 \texttt{matrix(matrix\&\& other)} & Move construct matrix from \texttt{other}.\\
+\hline
+\texttt{matrix\& operator=(const matrix\& other)} & Copy assignment operator \texttt{other}.\\
+\hline
+\texttt{matrix\& operator=(matrix\&\& other)} & Move assignment operator \texttt{other}.\\
+\hline
+\texttt{\~{}matrix()} & Destructor. Releases all resource held by the container within this object including all implementation data structures related to this object. \scott{Not virtual} \\
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{l X}
@@ -282,7 +288,7 @@ class matrix;
 \hline
 \texttt{size\_type size() const} & Number of stored values\\
 \hline
-\texttt{index\_t shape() const} & Dimensions of matrix\\
+\texttt{index\_t shape() const} & Dimensions of matrix \scott{shape\_t}\\
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{l X}
