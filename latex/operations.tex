@@ -1,29 +1,14 @@
-
+% \mintinline{cpp}{code}
 %=============================================================================
 \chapter{GraphBLAS Operations}
 \label{Ch:Operations}
-
-%-----------------------------------------------------------------------------
-\section{{\sf grb::multiply}: Matrix-matrix multiply}
-
-\paragraph{\syntax}
-
-\begin{verbatim}
-    // consider an additional form
-    template<typename AMatrixType,
-             typename BMatrixType,
-             typename SemiringType,
-             typename MaskType=grb::NoMask>
-    auto multiply(AMatrixType const &A, BMatrixType const &B,
-                  SemiringType semiring_op, MaskType const &Mask=MaskType());  // const& ?
-\end{verbatim}
 
 %-----------------------------------------------------------------------------
 \section{{\sf grb::mxm}: Matrix-matrix multiply}
 
 \paragraph{\syntax}
 
-\begin{verbatim}
+\begin{minted}{c++}
     template<typename CMatrixType,
              typename MaskType,
              typename AccumulatorType,
@@ -32,45 +17,63 @@
              typename BMatrixType>
     void mxm(CMatrixType            &C,
              MaskType         const &Mask,
-             AccumulatorType  const &accum,
-             SemiringType            op,         // pass by value or ref? const?
+             AccumulatorType         accum,   // pass by value or const&?
+             SemiringType            op,      // pass by value or const&?
              AMatrixType      const &A,
              BMatrixType      const &B,
              OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
-\end{verbatim}
+
+    // ...or...
+    template<typename CMatrixType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename ReduceType,
+             typename MapType
+             typename AMatrixType,
+             typename BMatrixType>
+    void mxm(CMatrixType            &C,
+             MaskType         const &Mask,
+             AccumulatorType         accum,   // pass by value or const&?
+             ReduceType              reduce,  // pass by value or const&?
+             MapType                 map,     // pass by value or const&?
+             AMatrixType      const &A,
+             BMatrixType      const &B,
+             OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
+\end{minted}
 
 Multiplies two GraphBLAS matrices using the operators and identity defined by a GraphBLAS semiring. An optional accumulator and write mask can also be specified. The result is stored in third GraphBLAS matrix.
 
 \begin{enumerate}
 \item Any notes go here.
-\item The "additional" form creates a new output matrix to hold the result.  Accumulation is not supported.
 \end{enumerate}
 
 \paragraph{Parameters}
 
 \begin{itemize}[leftmargin=1.1in]
-    \item[{\sf C}]    ({\sf INOUT}) A GraphBLAS matrix. On input,
+    \item[{\sf C}]    ({\sf INOUT}) A GraphBLAS \emph{Matrix} type. On input,
     the matrix provides values that may be accumulated with the result of the
     matrix product.  On output, the matrix holds the results of the
     operation.
 
-    \item[{\sf Mask}] ({\sf IN}) An optional ``write'' mask (a GraphBLAS matrix) that controls which
+    \item[{\sf Mask}] ({\sf IN}) An optional ``write'' mask (a \emph{ConstMatrixView}) that controls which
     results from this operation are stored into the output matrix {\sf C}. The 
     mask dimensions must match those of the matrix {\sf C}. 
     \scott{
-    To complement/invert the logic of a mask, wrap the mask in a complement view by calling {\sf grb::complement(Mask)}.
-    To use the structure of this matrix only, wrap the mask in a structure view by calling {\sf grb::structure(Mask)}.
+    To complement/invert the logic of a mask, wrap the mask in a complement view by calling \code{grb::complement(Mask)}.
+    To use the structure of this matrix only, wrap the mask in a structure view by calling \code{grb::structure(Mask)}.
     These views can be compose to get the complement of the structure of a mask by nesting these calls:
-    {\sf grb::complement(grb::structure(Mask))} (Note that grb::structure(grb::complement(Mask)) is invalid and should not compile).
-    If it is not wrapped in the {\sf grb::structure} view, the domain 
-    of the {\sf Mask} matrix must be of type that can be compared to {\sf bool}.}
+    \code{grb::complement(grb::structure(Mask))} (Note that \code{grb::structure(grb::complement(Mask))} is invalid and should not compile).
+    If it is not wrapped in the \code{grb::structure} view, the domain 
+    of the {\sf Mask} matrix must be of type that can be compared to \code{bool}.}
     If the default
-    mask is desired (\ie, a mask that is all {\sf true} with the dimensions of {\sf C}), 
+    mask is desired (\ie, logically, a mask that is all {\sf true} with the dimensions of {\sf C}), 
     {\sf grb::no\_mask} should be passed in for this argument.
+    \scott{What should be passed?  \code{grb::no_mask} or \code{grb::NoMask()}}
 
     \item[{\sf accum}] ({\sf IN}) An optional binary operator used for accumulating
     entries into existing {\sf C} entries.  If assignment rather than accumulation is
-    desired, {\sf grb::no\_accum} should be specified.
+    desired, \code{grb::no_accum} should be specified. \scott{What should be passed?
+    \code{grb::no_accum} or \code{grb::NoAccumulate()}}
 
     \item[{\sf op}]   ({\sf IN}) The semiring used in the matrix-matrix
     multiply.
@@ -78,25 +81,30 @@ Multiplies two GraphBLAS matrices using the operators and identity defined by a 
 
     \item[{\sf A}]    ({\sf IN}) The GraphBLAS matrix holding the values
     for the left-hand matrix in the multiplication.
-    \scott{To used the transpose of a matrix, wrap this matrix in a transpose view by calling {\sf grb::transpose(A)}.}
+    \scott{To used the transpose of a matrix, wrap this matrix in a transpose view by calling \code{grb::transpose(A)}.}
 
     \item[{\sf B}]    ({\sf IN}) The GraphBLAS matrix holding the values for
     the right-hand matrix in the multiplication.
-    \scott{To used the transpose of a matrix, wrap this matrix in a transpose view by calling {\sf grb::transpose(B)}.}
+    \scott{To used the transpose of a matrix, wrap this matrix in a transpose view by calling \code{grb::transpose(B)}.}
 
-    \item[{\sf outp/replace\_flag}] ({\sf IN}) If a non-default mask (i.e. {\sf grb::no\_mask}) is specified,
-    this flag controls what happens to the unmasked elements of the output.  If the flag is {\sf true/grb::REPLACE}
-    then the unmasked elements are cleared.  If the flag is {\sf false/grb::MERGE}, the unmask elements are preserved in the final output. \\
+    \item[{\sf outp/replace\_flag}] ({\sf IN}) If a non-default mask (i.e. \code{grb::no_mask}) is specified,
+    this flag controls what happens to the unmasked elements of the output.  If the flag is \code{true/grb::REPLACE}
+    then the unmasked elements are cleared.  If the flag is \code{false/grb::MERGE}, the unmask elements are preserved in the final output. \\
 \end{itemize}
 
 \subparagraph{Type Requirements}
 
 \begin{itemize}[leftmargin=1.1in]
     \item {\sf CMatrixType} must meet the requirements of a \textit{MatrixView}.  What are the basic matrix requirements?
-    \item {\sf MaskType} must meet the requirements of a \emph{GraphBLASMatrix} (or is it \emph{GraphBLASMaskMatrix}: stored scalars must be convertible to bool) or \emph{GraphBLASMatrixComplementView} (convertible to bool) or \emph{GraphBLASStructureMatrixView} (range of index pairs denoting locations of the stored values) or  \emph{GraphBLASStructuralComplementMatrixView}..
-    \item {\sf AMatrixType} and {\sf BMatrixType} must meet the requirements of a const \textit{ConstMatrixView}.
+    \item {\sf MaskType} must meet the requirements of a \emph{ConstMatrix} or (or is it \emph{Mask}: stored scalars must be convertible to bool) or \emph{MaskMatrixView}.  ComplementMatrixView or StructureMatrixView or StructuralComplementMatrixView, convertible to bool.  Range of index pairs denoting locations of the stored values)
+    \item {\sf AMatrixType} and {\sf BMatrixType} must meet the requirements of a \emph{ConstMatrix} or \emph{ConstMatrixView}.
     \item {\sf AccumulatorType} must meet the requirements of a \emph{BinaryOperator}
     \item {\sf SemiringType} must meet the requirements of a \emph{GraphBLASSemiring}
+\end{itemize}
+
+If we decide to support breaking up the semiring into two parts without an identity then:
+
+\begin{itemize}[leftmargin=1.1in]
     \item {\sf ReduceType} must meet the requirements of a \emph{CommutativeAssociativeBinaryOperator}
     \item {\sf MapType} must meet the requirements of a \emph{BinaryOperator}
 \end{itemize}
@@ -114,7 +122,7 @@ Placeholder for named requirements:
     \item \emph{GraphBLASMatrixTransposeView}
     \end{itemize}
 \item \emph{BinaryOperator}
-\item \emph{GraphBLASSemiring}
+\item \emph{GraphBLASSemiring} contains
     \begin{itemize}
     \item \emph{CommutativeAssociativeBinaryOperator}
     \item \emph{BinaryOperator}
@@ -130,7 +138,7 @@ Defined in header \texttt{<operations.hpp>}  &  \textbf{Notes} \\
 
 This function returns no values.  All errors result in exceptions being thrown.
 
-\scott{There is a company that did not support exceptions and needed a return value semantic.}
+\scott{There is a company that did not support exceptions and needed a return value semantic.  Do we change our philosophy to support.}
 
 \paragraph{Exceptions}
 
@@ -158,6 +166,42 @@ Either way, output matrix {\sf C} is ready to be used in the next method of
 the sequence.
 
 \paragraph{Description}
+
+\scott{Does this specification need to the long duplicative mathematical descriptions
+that are found in the C API Specification or can we refer to that spec here?}
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+        grb::Matrix A<float>({5, 10});
+        grb::Matrix B<float>({5, 10});
+        grb::Matrix C<float>({5, 5});
+        grb::Matrix M<bool>({5, 5});
+        // ...
+        grb::mxm(C, M, grb::NoAccumulate(), 
+                 grb::PlusTimesSemiring<float>(), A, B,
+                 grb::MERGE);
+        // ...
+        // using all possible matrix views
+        grb::mxm(C, complement(structure(M)), grb::NoAccumulate(), 
+                 grb::PlusTimesSemiring<float>(), transpose(A), transpose(B),
+                 grb::REPLACE);
+\end{minted}
+
+%-----------------------------------------------------------------------------
+\section{{\sf grb::multiply}: Matrix-matrix multiply alternative form}
+
+\paragraph{\syntax}
+
+\begin{verbatim}
+    // consider an additional form
+    template<typename AMatrixType,
+             typename BMatrixType,
+             typename SemiringType,
+             typename MaskType=grb::NoMask>
+    auto multiply(AMatrixType const &A, BMatrixType const &B,
+                  SemiringType semiring_op, MaskType const &Mask=MaskType());  // const& ?
+\end{verbatim}
 
 %-----------------------------------------------------------------------------
 %-----------------------------------------------------------------------------

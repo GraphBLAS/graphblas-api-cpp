@@ -54,7 +54,7 @@ We say that an object is a monoid on type \texttt{T} if:
 \section{GraphBLAS Container? Matrix? Vector? Scalar?}
 
 Not sure we need to define this.  Not sure we should have separate Matrix, Vector, 
-and Scalar containters. I think these are the opaque data structures that implementers create.
+and Scalar containers. I think these are the opaque data structures that implementers create.
 
 \scott{Does something belong here or is it all in the containers section?}
 
@@ -78,6 +78,48 @@ and Scalar containters. I think these are the opaque data structures that implem
 \texttt{different\_type}  & & \\ \hline
 \texttt{size\_type}  & &
 \end{tabularx}
+
+% ========================================================================
+\section{VectorView}
+
+An object whose type fulfills the \textit{VectorView} requirement is (loosely) a 
+reference to an opaque \textit{GraphBLAS Container} that has one dimension and a 
+number of stored elements.  A \textit{GraphBLAS Container} is an object used to store
+other objects, \textit{GraphBLAS Scalars}, that takes care of the management of the
+memory used by these objects. \scott{Wording from C++ Container named requirements.}
+
+\scott{Should the VectorView only define enough interface to perform any runtime API error checks?}
+
+\scott{Should VectorView provide a reference to the internal container?  This is an implementation specific mechanism that does not need to be specified.}
+
+\paragraph{Types}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Name} & \textbf{Type} & \textbf{Notes}\\
+\hline
+\texttt{value\_type} & \texttt{ScalarT}  & The type of objects stored in the container.\\ \hline
+\texttt{index\_type} & \texttt{IndexT}   & Used to reference locations in the container \\ \hline
+\texttt{size\_type}  & ??                & Can hold the number of elements stored in the container.
+\end{tabularx}
+
+\paragraph{Methods and operators}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Expression} & \textbf{Return Type} & \textbf{Requirements}\\
+\hline
+\texttt{size()} & \texttt{index\_type}  & The size of the dimension of the vector.\\ \hline
+\texttt{nvals()} & \texttt{size\_type}  & The number of elements stored in the vector. \scott{this is not required}\\ \hline
+constructors? & & \\
+\end{tabularx}
+
+A \emph{Vector} object is a valid \emph{VectorView} object
+
+% ========================================================================
+\section{ConstVectorView}
+
+Is the same as a \textit{VectorView} except that the underlying opaque container within cannot be
+mutated by calls to GraphBLAS operations.  A \emph{Vector}, \emph{ConstVector} or 
+\emph{VectorView} object is a valid \emph{ConstVectorView} objects.
 
 % ========================================================================
 \section{MatrixView}
@@ -108,15 +150,18 @@ memory used by these objects. \scott{Wording from C++ Container named requiremen
 \hline
 \texttt{nrows()} & \texttt{index\_type} & The size of the first dimension of the matrix.\\ \hline
 \texttt{ncols()} & \texttt{index\_type} & The size of the second dimension of the matrix.\\ \hline
-\texttt{nvals()} & \texttt{size\_type}  & The number of elements stored in the matrix. (not sure this is required)\\ \hline
+\texttt{nvals()} & \texttt{size\_type}  & The number of elements stored in the matrix. \scott{this is not required}\\ \hline
 constructors? & & \\
 \end{tabularx}
+
+A \emph{Matrix} object is a valid \emph{MatrixView} object
 
 % ========================================================================
 \section{ConstMatrixView}
 
-Is the same as a \textit{MatrixView} except that the opaque container within cannot be
-mutated by calls to GraphBLAS operations.
+Is the same as a \textit{MatrixView} except that the underlying opaque container within cannot be
+mutated by calls to GraphBLAS operations.  A \emph{Matrix}, \emph{ConstMatrix} or 
+\emph{MatrixView} object is a valid \emph{ConstMatrixView} objects.
 
 % ========================================================================
 \section{Hints}
