@@ -21,9 +21,9 @@ ensuring that their types satisfy the corresponding named requirements.
 An object whose type fulfills the \textit{BinaryOperator} requirement is a C++
 \textit{Callable} that can be called with two arguments, returning a single
 value.  We call the type of the lefthand argument passed in to the binary operator
-\texttt{T} and the type of the righthand argument \texttt{U}.  A callable is a
-valid binary operator for types \texttt{T} and \texttt{U} if it is callable with
-arguments of those types, returning an object of type \texttt{V}.
+\code{T} and the type of the righthand argument \code{U}.  A callable is a
+valid binary operator for types \code{T} and \code{U} if it is callable with
+arguments of those types, returning an object of type \code{V}.
 
 \begin{tabularx}{\textwidth}{l l X}
 \textbf{Expression} & \textbf{Return Type} & \textbf{Requirements}\\
@@ -35,7 +35,7 @@ arguments of those types, returning an object of type \texttt{V}.
 \section{Monoids}
 An object whose type fulfills the \textit{Monoid} requirement is a callable that
 fulfills the \textit{BinaryOperator} requirement in addition to two other requirements.
-We say that an object is a monoid on type \texttt{T} if:
+We say that an object is a monoid on type \code{T} if:
 
 \begin{enumerate}
    \item The monoid is a valid \textit{BinaryOperator} on type \texttt{T} and has a return value of type \texttt{T}, \texttt{T} $\times$ \texttt{T} $\rightarrow$ \texttt{T}.
@@ -48,6 +48,33 @@ We say that an object is a monoid on type \texttt{T} if:
 \texttt{monoid(T(), T())} & \texttt{T} & \texttt{monoid} is callable \texttt{T} $\times$ \texttt{T} $\rightarrow$ \texttt{T}.\\
 \hline
 \texttt{monoid.identity<T>()} & \texttt{T} & \texttt{identity()} method callable with template parameter \texttt{T}.\\
+\end{tabularx}
+
+% ========================================================================
+\section{Matrix}
+
+\paragraph{Types}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Name} & \textbf{Notes}\\
+\hline
+\texttt{value\_type} & Type of value stored in matrix .\\ \hline
+\texttt{index\_type} & Type used to store indices.\\ \hline
+\texttt{size\_type}  & Unsigned integer type, usually \texttt{std::size\_t} \\ \hline
+\texttt{difference\_type}  & Signed integer type, usually \texttt{std::ptrdiff\_t} \\ \hline
+\texttt{reference} & Reference type\\ \hline
+\texttt{const\_reference}  & Const reference type\\ \hline
+\texttt{iterator}  & Iterator type\\ \hline
+\texttt{const\_iterator}  & Const iterator type\\ \hline
+\end{tabularx}
+
+\ben{I think we should basically add all the ``functionality'' methods of grb::matrix here.}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Expression} & \textbf{Return Type} & \textbf{Requirements}\\
+\hline
+\texttt{matrix.shape()} & \idxname & Has method \texttt{shape()}, returning shape of matrix.\\
+\texttt{matrix.size()} & \texttt{size\_type} & Has method \texttt{size()}, returning number of values.\\
 \end{tabularx}
 
 % ========================================================================
@@ -78,6 +105,63 @@ and Scalar containers. I think these are the opaque data structures that impleme
 \texttt{different\_type}  & & \\ \hline
 \texttt{size\_type}  & &
 \end{tabularx}
+
+% ========================================================================
+\section{MatrixView}
+An object whose type fulfills the \textit{MatrixView} requirement provides a
+non-const view of a GraphBLAS matrix.
+%reference to an opaque \textit{GraphBLAS Container} that has two dimensions and a 
+%number of stored elements.  A \textit{GraphBLAS Container} is an object used to store
+%other objects, \textit{GraphBLAS Scalars}, that takes care of the management of the
+%memory used by these objects. \scott{Wording from C++ Container named requirements.}
+
+\scott{Should the MatrixView only define enough interface to perform any runtime API error checks?}
+\ben{That's basically the idea, but I don't think we necessarily need to mandate that here?}
+
+\scott{Should MatrixView provide a reference to the internal container?}
+\ben{I don't think so. In full generality, there potentially might not be an underlying matrix to reference. We only want to specify the \textit{publicly visible} API here, and we don't necessarily need to give users the underlying matrix.}
+
+\paragraph{Types}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Type} & \textbf{Notes}\\
+\hline
+\texttt{value\_type} & The type of objects stored in the container.\\ \hline
+\texttt{index\_type} & Type used to index into the container \\ \hline
+\texttt{size\_type}  & Unsigned integer type (usually \texttt{std::size\_t}). \\ \hline
+(implementation defined) & & Implementations are free to include other requirements.
+\end{tabularx}
+
+\paragraph{Methods and operators}
+
+\begin{tabularx}{\textwidth}{l l X}
+\textbf{Expression} & \textbf{Return Type} & \textbf{Requirements}\\
+\hline
+\texttt{view.shape()} & \idxname & The shape of the matrix\\ \hline
+\texttt{view.size()} & \texttt{size\_type}& The number of elements stored in the matrix. \scott{this is not required}\\
+(implementation defined) & & Implementations are free to include other requirements.
+\end{tabularx}
+
+\ben{No constructors, since IMO the only valid way for a user to get a view should be e.g. \texttt{grb::transpose} fn.}
+
+A \emph{Matrix} object is a valid \emph{MatrixView} object
+
+% ========================================================================
+\section{ConstMatrixView}
+
+A \textit{ConstMatrixView} fulfills the same requirements as \textit{MatrixView}, but it may not be used in GraphBLAS operations where it would be modified.
+
+% ========================================================================
+
+\section{MatrixStructureView}
+A \textit{MatrixStructureView} fulfills the same requirements as \textit{MatrixView}.  However, it may be used as the agument to certain view-creating functions.
+
+% ========================================================================
+
+A \textit{ConstMatrixView} fulfills the same requirements as \textit{MatrixView}, but it may not be used in GraphBLAS operations where it would be modified.
+
+
+\emph{Matrix}, \emph{ConstMatrix}, and \emph{MatrixView} objects are all valid \emph{ConstMatrixView} objects.
 
 % ========================================================================
 \section{VectorView}
@@ -120,48 +204,6 @@ A \emph{Vector} object is a valid \emph{VectorView} object
 Is the same as a \textit{VectorView} except that the underlying opaque container within cannot be
 mutated by calls to GraphBLAS operations.  A \emph{Vector}, \emph{ConstVector} or 
 \emph{VectorView} object is a valid \emph{ConstVectorView} objects.
-
-% ========================================================================
-\section{MatrixView}
-An object whose type fulfills the \textit{MatrixView} requirement is (loosely) a 
-reference to an opaque \textit{GraphBLAS Container} that has two dimensions and a 
-number of stored elements.  A \textit{GraphBLAS Container} is an object used to store
-other objects, \textit{GraphBLAS Scalars}, that takes care of the management of the
-memory used by these objects. \scott{Wording from C++ Container named requirements.}
-
-\scott{Should the MatrixView only define enough interface to perform any runtime API error checks?}
-
-\scott{Should MatrixView provide a reference to the internal container?}
-
-\paragraph{Types}
-
-\begin{tabularx}{\textwidth}{l l X}
-\textbf{Name} & \textbf{Type} & \textbf{Notes}\\
-\hline
-\texttt{value\_type} & \texttt{ScalarT}  & The type of objects stored in the container.\\ \hline
-\texttt{index\_type} & \texttt{IndexT}   & Used to reference locations in the container \\ \hline
-\texttt{size\_type}  & ??                & Can hold the number of elements stored in the container.
-\end{tabularx}
-
-\paragraph{Methods and operators}
-
-\begin{tabularx}{\textwidth}{l l X}
-\textbf{Expression} & \textbf{Return Type} & \textbf{Requirements}\\
-\hline
-\texttt{nrows()} & \texttt{index\_type} & The size of the first dimension of the matrix.\\ \hline
-\texttt{ncols()} & \texttt{index\_type} & The size of the second dimension of the matrix.\\ \hline
-\texttt{nvals()} & \texttt{size\_type}  & The number of elements stored in the matrix. \scott{this is not required}\\ \hline
-constructors? & & \\
-\end{tabularx}
-
-A \emph{Matrix} object is a valid \emph{MatrixView} object
-
-% ========================================================================
-\section{ConstMatrixView}
-
-Is the same as a \textit{MatrixView} except that the underlying opaque container within cannot be
-mutated by calls to GraphBLAS operations.  A \emph{Matrix}, \emph{ConstMatrix} or 
-\emph{MatrixView} object is a valid \emph{ConstMatrixView} objects.
 
 % ========================================================================
 \section{Hints}

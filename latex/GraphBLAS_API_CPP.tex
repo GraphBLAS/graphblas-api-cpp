@@ -34,7 +34,8 @@
 \setcounter{tocdepth}{3}
 
 %SM:  Comment these to remove DRAFT watermark
-\usepackage[color={[gray]{0.93}}]{draftwatermark}
+% \usepackage[color={[gray]{0.93}}]{draftwatermark}
+\usepackage{draftwatermark}
 \SetWatermarkText{DRAFT}
 \SetWatermarkScale{0.9}
 
@@ -106,6 +107,8 @@ The GraphBLAS C++ API Specification
 \newcommand{\syntax}{{C++ Syntax}}
 
 \newcommand{\code}[1]{\mintinline{cpp}{#1}}
+
+\newcommand{\idxname}{\texttt{grb::index\_t}}
 
 \newcommand{\Dinn}{\mbox{$D_{in}$}}
 \newcommand{\Din}[1]{\mbox{$D_{in_{#1}}$}}
