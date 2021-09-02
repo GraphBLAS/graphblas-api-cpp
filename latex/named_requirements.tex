@@ -149,16 +149,17 @@ A \emph{Matrix} object is a valid \emph{MatrixView} object
 % ========================================================================
 \section{ConstMatrixView}
 
+% ========================================================================
 A \textit{ConstMatrixView} fulfills the same requirements as \textit{MatrixView}, but it may not be used in GraphBLAS operations where it would be modified.
 
+\section{Structure Views}
 % ========================================================================
-
 \section{MatrixStructureView}
 A \textit{MatrixStructureView} fulfills the same requirements as \textit{MatrixView}.  However, it may be used as the agument to certain view-creating functions.
 
 % ========================================================================
-
-A \textit{ConstMatrixView} fulfills the same requirements as \textit{MatrixView}, but it may not be used in GraphBLAS operations where it would be modified.
+\section{ConstMatrixStructureView}
+A \textit{ConstMatrixStructureView} fulfills the same requirements as \textit{ConstMatrixStructureView}, but it may not be used in GraphBLAS operations where it would be modified.
 
 
 \emph{Matrix}, \emph{ConstMatrix}, and \emph{MatrixView} objects are all valid \emph{ConstMatrixView} objects.
