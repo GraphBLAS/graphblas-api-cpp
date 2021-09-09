@@ -12,9 +12,10 @@ GraphBLAS containers (collections) to flag modifications of the collections
 during calls to GraphBLAS functions.
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf transpose}: Transpose view (input matrices only)}
+\subsection{{\sf transpose}: Transpose view}
 
-Only for matrices.  
+The {\sf transpose} functions returns a transpose view of a GraphBLAS matrix object.
+
 \scott{We do not need to specify the TransposeView class.  It is an
 unspecified implementation detail.}
 
@@ -22,7 +23,7 @@ unspecified implementation detail.}
 
 \begin{minted}{c++}
         template <typename MatrixType>
-        /*unspecified*/ transpose(MatrixType const &mat);
+        /*unspecified*/ transpose(const MatrixType &mat);
 \end{minted}
 
 \scott{The "unspecified" style is taken from std::bind documentation: \\
@@ -31,20 +32,17 @@ https://en.cppreference.com/w/cpp/utility/functional/bind.  This allows it to be
 \paragraph{Parameters}
 
 \begin{itemize}%[leftmargin=1.1in]
-    \item[{\sf mat}] ({\sf IN}) A \emph{ConstMatrix}. A GraphBLAS Matrix object.  Will not be modified.
+  \item[{\sf mat}] ({\sf IN}) A GraphBLAS matrix object.  Must satisfy the named requirement \textit{ConstMatrix}.  Will not be modified.
 \end{itemize}
 
 \paragraph{Return Value}
 
-This method returns an object satisfying \emph{ConstMatrixView}.  The specific type is
-implementation-dependent.
+This method returns a matrix view object.  The specific type of the return value is implementation-defined, but must satisfy the named requirement \emph{ConstMatrixView}.
 
 \paragraph{Description}
 
-This function is intended to be used at the call site of GraphBLAS operations that take, 
-as input, a GraphBLAS matrix that could be optionally transposed.  The function returns an
-object that satisfies the \emph{ConstMatrixView} concept meaning it can only be used as an
-{\sf IN} parameter that will not be modified.
+This function returns a matrix view object that can be used as an argument to certain GraphBLAS functions.
+The type of the return value fulfills the \emph{ConstMatrixView} named requirement.
 
 \paragraph{Example}
 
@@ -61,19 +59,26 @@ object that satisfies the \emph{ConstMatrixView} concept meaning it can only be 
 %-----------------------------------------------------------------------------
 \subsection{{\sf structure}: Structure view (Masks (ConstContainers) only)}
 
-Only for masks.  
+The {\sf structure} function returns a view object representing a structural
+view of a GraphBLAS matrix or vector.  The view object returned has the same
+pattern of stored values as the input matrix, but with the value \code{true}
+for each element instead of the original stored values.
+
+Only for masks.
+\ben{I feel there's no real reason to restrict this to only being used for masks.  There are a lot of use cases where having a mask might be useful.}
+
 \scott{We do not need to specify the StructureView class.  It is an
 unspecified implementation detail.}
 
 \paragraph{\syntax}
 
 \begin{minted}{c++}
-        template <typename MaskType>
-        /*unspecified*/ structure(MaskType const &mask);
+        template <typename ContainerType>
+        /*unspecified*/ structure(const ContainerType &object);
 \end{minted}
 
 \begin{itemize}%[leftmargin=1.1in]
-    \item[{\sf mask}] ({\sf IN}) A GraphBLAS \emph{Mask} object. It is 
+    \item[{\sf object}] ({\sf IN}) A GraphBLAS \emph{Mask} object. It is 
     overloaded to accept either a \emph{ConstMatrix} or \emph{ConstVector} 
     object.  The underlying object will not be modified.
 \end{itemize}
