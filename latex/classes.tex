@@ -257,21 +257,17 @@ class matrix;
 \begin{tabularx}{\textwidth}{l X}
 \textbf{Iterators}\\
 \hline
-\texttt{iterator begin()} & Non-const iterator to the beginning\\
+\codetlink{iterators}{begin()} & Non-const iterator to the beginning\\
 \hline
-\texttt{const\_iterator begin() const} & Const iterator to the beginning\\
-\hline
-\texttt{iterator end()} & Non-const iterator to the end\\
-\hline
-\texttt{const\_iterator end() const} & Const iterator to the end\\
+\codetlink{iterators}{end()} & Non-const iterator to the end\\
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{l X}
 \textbf{Capacity and Dimensions}\\
 \hline
-\texttt{size\_type size() const} & Number of stored values\\
+\codetlink{capacity}{size()} & Number of stored values\\
 \hline
-\texttt{index\_t shape() const} & Dimensions of matrix \scott{shape\_t}\\
+\codetlink{capacity}{shape()} & Dimensions of matrix \scott{shape\_t}\\
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{l X}
@@ -333,16 +329,49 @@ class matrix;
   matrix& operator=(matrix&& other);             (2)
 \end{minted}
 
-\ben{Should we add assign to a matrix of a different type? (I think yes, with default casting.)  What about a view? (I also say yes, but you may not want to support it.)}
-
-\ben{Should we add assign to a single element? (I think no, it's too ambiguous.)}
-
 %\hline
 %\texttt{matrix\& operator=(const matrix\& other)} & Copy assignment operator \texttt{other}.\\
 %\hline
 %\texttt{matrix\& operator=(matrix\&\& other)} & Move assignment operator \texttt{other}.\\
 %\hline
 
+\ben{Should we add assign to a matrix of a different type? (I think yes, with default casting.)  What about a view? (I also say yes, but you may not want to support it.)}
+
+\ben{Should we add assign to a single element? (I think no, it's too ambiguous.)}
+
+\subsection{Iterators}
+\hypertarget{iterators}{This section} defines methods involving iterators for \codet{grb::matrix}.
+
+\begin{minted}{c++}
+  iterator begin();                              (1)
+
+  const_iterator begin() const;                  (2)
+
+  iterator end();                                (3)
+
+  const_iterator end() const;                    (4)
+\end{minted}
+
+%\texttt{iterator begin()} & Non-const iterator to the beginning\\
+%\hline
+%\texttt{const\_iterator begin() const} & Const iterator to the beginning\\
+%\hline
+%\texttt{iterator end()} & Non-const iterator to the end\\
+%\hline
+%\texttt{const\_iterator end() const} & Const iterator to the end\\
+
+\subsection{Capacity and Dimensions}
+\hypertarget{capacity}{This section} defines methods involving capacity and dimensions for \codet{grb::matrix}.
+
+\begin{minted}{c++}
+  size_type size() const;                        (1)
+
+  index_t shape() const;                         (2)
+\end{minted}
+
+%\texttt{size\_type size() const} & Number of stored values\\
+%\hline
+%\texttt{index\_t shape() const} & Dimensions of matrix \scott{shape\_t}\\
 
 % ========================================================================
 \section{Masks}
