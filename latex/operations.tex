@@ -291,13 +291,13 @@ that are found in the C API Specification or can we refer to that spec here?}
     // grb::vector overload
     template<typename T, typename I, typename Hint, typename Allocator,
              typename MaskType,
-             typename AccumType,
+             typename AccumulatorType,
              typename BinaryOpType,
              typename UVectorType,
              typename VVectorType>
     void ewisemult(vector<T, I, Hint, Allocator>     &w,
                    MaskType                    const &mask,
-                   AccumType                   const &accum,
+                   AccumulatorType                          accum,
                    BinaryOpType                       op,
                    UVectorType                 const &u,
                    VVectorType                 const &v,
@@ -306,14 +306,14 @@ that are found in the C API Specification or can we refer to that spec here?}
     // grb::matrix overload
     template<typename T, typename I, typename Hint, typename Allocator,
              typename MaskType,
-             typename AccumType,
+             typename AccumulatorType,
              typename BinaryOpType,
              typename AMatrixType,
              typename BMatrixType>
     void ewisemult(matrix<T, I, Hint, Allocator>     &C,
                    MaskT                       const &Mask,
-                   AccumT                      const &accum,
-                   BinaryOpT                          op,
+                   AccumulatorT                             accum,
+                   BinaryOpType                          op,
                    AMatrixT                    const &A,
                    BMatrixT                    const &B,
                    OutputControlEnum                  outp = MERGE);  // default val?
@@ -329,13 +329,13 @@ that are found in the C API Specification or can we refer to that spec here?}
     // grb::vector overload
     template<typename T, typename I, typename Hint, typename Allocator,
              typename MaskType,
-             typename AccumType,
+             typename AccumulatorType,
              typename BinaryOpType,
              typename UVectorType,
              typename VVectorType>
     void ewiseadd(vector<T, I, Hint, Allocator>     &w,
                   MaskType                    const &mask,
-                  AccumType                   const &accum,
+                  AccumulatorType                          accum,
                   BinaryOpType                       op,
                   UVectorType                 const &u,
                   VVectorType                 const &v,
@@ -344,14 +344,14 @@ that are found in the C API Specification or can we refer to that spec here?}
     // grb::matrix overload
     template<typename T, typename I, typename Hint, typename Allocator,
              typename MaskType,
-             typename AccumType,
+             typename AccumulatorType,
              typename BinaryOpType,
              typename AMatrixType,
              typename BMatrixType>
     void ewiseadd(matrix<T, I, Hint, Allocator>     &C,
                   MaskT                       const &Mask,
-                  AccumT                      const &accum,
-                  BinaryOpT                          op,
+                  AccumulatorT                             accum,
+                  BinaryOpType                          op,
                   AMatrixT                    const &A,
                   BMatrixT                    const &B,
                   OutputControlEnum                  outp = MERGE);  // default val?
@@ -371,12 +371,12 @@ that are found in the C API Specification or can we refer to that spec here?}
     // standard grb::vector variant
     template<typename WVectorType,     // typename T, typename I, typename Hint, typename Allocator,
              typename MaskType,
-             typename AccumType,
+             typename AccumulatorType,
              typename UVectorType,
              typename SequenceType>
     void extract(WVectorType             &w,  // should we use vector<T, I, Hint, Allocator>?
                  MaskType          const &mask,
-                 AccumType         const &accum,
+                 AccumulatorType                accum,
                  UVectorType       const &u,
                  SequenceType      const &indices,
                  OutputControlEnum        outp = MERGE);  // default val?
@@ -391,13 +391,13 @@ that are found in the C API Specification or can we refer to that spec here?}
     // standard grb::matrix variant
     template<typename T, typename I, typename Hint, typename Allocator,
              typename MaskType,
-             typename AccumType,
+             typename AccumulatorType,
              typename AMatrixType,
              typename RowSequenceType,
              typename ColSequenceType>
     void extract(matrix<T, I, Hint, Allocator>  &C,
-                 MaskT                    const &mask,
-                 AccumT                   const &accum,
+                 MaskType                 const &mask,
+                 AccumulatorT                    accum,
                  AMatrixT                 const &A,
                  RowSequenceT             const &row_indices,
                  ColSequenceT             const &col_indices,
@@ -413,21 +413,26 @@ that are found in the C API Specification or can we refer to that spec here?}
     // standard grb::matrix variant
     template<typename T, typename I, typename Hint, typename Allocator,
              typename MaskType,
-             typename AccumType,
+             typename AccumulatorType,
              typename AMatrixType,
              typename RowSequenceType>
-    void extract(vector<T, I, Hint, Allocator>  &w,
-                 MaskT                    const &mask,
-                 AccumT                   const &accum,
-                 AMatrixT                 const &A,
-                 RowSequenceT             const &row_indices,
-                 index_t                         col_index,
-                 OutputControlEnum               outp = MERGE);  // default val?
+    void extract(vector<T, I, Hint, Allocator>     &w,
+                 MaskType                    const &mask,
+                 AccumulatorT                       accum,
+                 AMatrixT                    const &A,
+                 RowSequenceT                const &row_indices,
+                 typename AMatrixType::index_type   col_index,      // size_t?
+                 OutputControlEnum                  outp = MERGE);  // default val?
 \end{minted}
 
 
 %-----------------------------------------------------------------------------
 \section{{\sf assign}: }
+
+\scott{We need a sequence name requirement that is either an index array, 
+range of indices, and/or some other iterable that e.g. could be specified with
+[begin:stride:end)}
+
 
 %-----------------------------------------------------------------------------
 \subsection{{\sf assign}: standard vector variant}
@@ -436,18 +441,17 @@ that are found in the C API Specification or can we refer to that spec here?}
 
 \begin{minted}{c++}
     template<typename T, typename I, typename Hint, typename Allocator,
-             typename MaskT,
-             typename AccumT,
-             typename UVectorT,
-             typename SequenceT,
-             typename std::enable_if_t<is_vector_v<UVectorT>, int> = 0,
-             typename ...WTags>
-    void assign(vector<T, I, Hint, Allocator>      &w,
-                MaskT                    const  &mask,
-                AccumT                   const  &accum,
-                UVectorT                 const  &u,
-                SequenceT                const  &indices,
-                OutputControlEnum                outp = MERGE)
+             typename MaskType,
+             typename AccumulatorType,
+             typename UVectorType,
+             typename SequenceType,
+             typename std::enable_if_t<is_vector_v<UVectorType>, int> = 0> //???
+    void assign(vector<T, I, Hint, Allocator>   &w,
+                MaskType                 const  &mask,
+                AccumulatorType                  accum,
+                UVectorType              const  &u,
+                SequenceType             const  &indices,
+                OutputControlEnum                outp = MERGE);
 \end{minted}
 
 %-----------------------------------------------------------------------------
@@ -456,20 +460,20 @@ that are found in the C API Specification or can we refer to that spec here?}
 \paragraph{\syntax}
 
 \begin{minted}{c++}
-    template<typename CMatrixT, // it isn't enough to do T, I, Hint, Allocator
-             typename MaskT,
-             typename AccumT,
-             typename AMatrixT,
-             typename RowSequenceT,
-             typename ColSequenceT,
-             typename std::enable_if_t<is_matrix_v<AMatrixT>, int> = 0>
-    inline void assign(CMatrixT              &C,
-                       MaskT           const &Mask,
-                       AccumT          const &accum,
-                       AMatrixT        const &A,
-                       RowSequenceT    const &row_indices,
-                       ColSequenceT    const &col_indices,
-                       OutputControlEnum      outp = MERGE)
+    template<typename CMatrixType, // isn't enough to do T, I, Hint, Allocator
+             typename MaskType,
+             typename AccumulatorType,
+             typename AMatrixType,
+             typename RowSequenceType,
+             typename ColSequenceType,
+             typename std::enable_if_t<is_matrix_v<AMatrixType>, int> = 0>
+    void assign(CMatrixType              &C,
+                MaskType           const &Mask,
+                AccumulatorType           accum,
+                AMatrixType        const &A,
+                RowSequenceType    const &row_indices,
+                ColSequenceType    const &col_indices,
+                OutputControlEnum         outp = MERGE);
 \end{minted}
 
 
@@ -479,19 +483,18 @@ that are found in the C API Specification or can we refer to that spec here?}
 \paragraph{\syntax}
 
 \begin{minted}{c++}
-    template<typename CScalarT,
-             typename MaskT,
-             typename AccumT,
-             typename UVectorT,
-             typename SequenceT,
-             typename ...CTags>
-    inline void assign(Matrix<CScalarT, CTags...>  &C,
-                       MaskT                 const &mask,  // a vector
-                       AccumT                const &accum,
-                       UVectorT              const &u,
-                       SequenceT             const &row_indices,
-                       IndexType                    col_index,
-                       OutputControlEnum            outp = MERGE)
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumulatorType,
+             typename UVectorType,
+             typename SequenceType>
+    void assign(matrix<T, I, Hint, Allocator>  &C,
+                MaskType                 const &mask,  // a vector
+                AccumulatorType                 accum,
+                UVectorType              const &u,
+                SequenceType             const &row_indices,
+                I                               col_index,   // size_t?
+                OutputControlEnum               outp = MERGE)
 \end{minted}
 
 
@@ -501,19 +504,18 @@ that are found in the C API Specification or can we refer to that spec here?}
 \paragraph{\syntax}
 
 \begin{minted}{c++}
-    template<typename CScalarT,
-             typename MaskT,
-             typename AccumT,
-             typename UVectorT,
-             typename SequenceT,
-             typename ...CTags>
-    inline void assign(Matrix<CScalarT, CTags...>  &C,
-                       MaskT                 const &mask,  // a vector
-                       AccumT                const &accum,
-                       UVectorT              const &u,
-                       IndexType                    row_index,
-                       SequenceT             const &col_indices,
-                       OutputControlEnum            outp = MERGE)
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumulatorType,
+             typename UVectorType,
+             typename SequenceType>
+    void assign(matrix<T, I, Hint, Allocator>  &C,
+                MaskType                 const &mask,  // a vector
+                AccumulatorType                 accum,
+                UVectorType              const &u,
+                I                            row_index,  // size_t?
+                SequenceType             const &col_indices,
+                OutputControlEnum            outp = MERGE)
 \end{minted}
 
 
@@ -523,21 +525,21 @@ that are found in the C API Specification or can we refer to that spec here?}
 \paragraph{\syntax}
 
 \begin{minted}{c++}
-    template<typename WVectorT,
-             typename MaskT,
-             typename AccumT,
-             typename ValueT,
-             typename SequenceT,
+    template<typename WVectorType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename ValueType,
+             typename SequenceType,
              typename std::enable_if<
-                 std::is_convertible<ValueT,
-                                     typename WVectorT::ScalarType>::value,
+                 std::is_convertible<ValueType,
+                                     typename WVectorType::ScalarType>::value,
                  int>::type = 0>
-    inline void assign(WVectorT                     &w,
-                       MaskT                const   &mask,
-                       AccumT               const   &accum,
-                       ValueT                        val,
-                       SequenceT            const   &indices,
-                       OutputControlEnum             outp = MERGE)
+    void assign(WVectorType                     &w,
+                MaskType                const   &mask,
+                AccumulatorType                accum,
+                ValueType                        val,
+                SequenceType            const   &indices,
+                OutputControlEnum                outp = MERGE)
 \end{minted}
 
 
@@ -547,74 +549,244 @@ that are found in the C API Specification or can we refer to that spec here?}
 \paragraph{\syntax}
 
 \begin{minted}{c++}
-    template<typename CMatrixT,
-             typename MaskT,
-             typename AccumT,
-             typename ValueT,
-             typename RowSequenceT,
-             typename ColSequenceT,
+    template<typename CMatrixType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename ValueType,
+             typename RowSequenceType,
+             typename ColSequenceType,
              typename std::enable_if<
-                 std::is_convertible<ValueT,
-                                     typename CMatrixT::ScalarType>::value,
+                 std::is_convertible<ValueType,
+                                     typename CMatrixType::ScalarType>::value,
                  int>::type = 0>
-    inline void assign(CMatrixT             &C,
-                       MaskT          const &Mask,
-                       AccumT         const &accum,
-                       ValueT                val,
-                       RowSequenceT   const &row_indices,
-                       ColSequenceT   const &col_indices,
-                       OutputControlEnum     outp = MERGE)
+    void assign(CMatrixType             &C,
+                MaskType          const &Mask,
+                AccumulatorType          accum,
+                ValueType                val,
+                RowSequenceType   const &row_indices,
+                ColSequenceType   const &col_indices,
+                OutputControlEnum        outp = MERGE)
 \end{minted}
 
 
 
 %-----------------------------------------------------------------------------
 %-----------------------------------------------------------------------------
-\subsection{{\sf apply}: }
+\section{{\sf apply}}
+
+\scott{Separate binary op + constant variants not necessary.  What to do about apply(i)}
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf apply}: vector variants}
 
 \paragraph{\syntax}
 
 \begin{minted}{c++}
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumulatorType,
+             typename UnaryOpType,
+             typename UVectorType>
+    void apply(vector<T, I, Hint, Allocator>  &w,
+               MaskType                 const &mask,
+               AccumulatorType                 accum,
+               UnaryOpType                     op,
+               UVectorType              const &u,
+               OutputControlEnum               outp = MERGE);
 
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumulatorType,
+             typename IndexUnaryOpType,
+             typename UVectorType>
+    void applyi(vector<T, I, Hint, Allocator>  &w,
+                MaskType                 const &mask,
+                AccumulatorType                 accum,
+                IndexUnaryOpType                op,
+              //ValueType                const &thunk
+                UVectorType              const &u,
+                OutputControlEnum               outp = MERGE);
+
+\end{minted}
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf apply}: matrix variants}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumulatorType,
+             typename UnaryOpType,
+             typename AMatrixType>
+    void apply(matrix<T, I, Hint, Allocator>  &C,
+               MaskType                 const &Mask,
+               AccumulatorType                 accum,
+               UnaryOpType                     op,
+               AMatrixType              const &A,
+               OutputControlEnum               outp = MERGE);
+
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumulatorType,
+             typename IndexUnaryOpType,
+             typename AMatrixType>
+    void applyi(matrix<T, I, Hint, Allocator>  &C,
+                MaskType                 const &Mask,
+                AccumulatorType                 accum,
+                IndexUnaryOpType                op,
+              //ValueType                const &thunk
+                AMatrixType              const &A,
+                OutputControlEnum               outp = MERGE);
 \end{minted}
 
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf select}: }
+%-----------------------------------------------------------------------------
+\section{{\sf select}: }
+
+\scott{is there such thing as a graphblas scalar? Do we build the scalar into the operator or add it to the parameter list?}
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf select}: vector variant}
 
 \paragraph{\syntax}
 
 \begin{minted}{c++}
-
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumulatorType,
+             typename UnaryOpType,
+             typename UVectorType>
+    void select(vector<T, I, Hint, Allocator>  &w,
+                MaskType                 const &mask,
+                AccumulatorType                 accum,
+                IndexUnaryOpType                op,
+              //ValueType                const &thunk
+                UVectorType              const &u,
+                OutputControlEnum               outp = MERGE);
 \end{minted}
 
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf reduce}: }
+\subsection{{\sf select}: matrix variant}
 
 \paragraph{\syntax}
 
 \begin{minted}{c++}
-
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumulatorType,
+             typename UnaryOpType,
+             typename AMatrixType>
+    void select(matrix<T, I, Hint, Allocator>  &C,
+                MaskType                 const &Mask,
+                AccumulatorType                 accum,
+                IndexUnaryOpType                op,
+              //ValueType                const &thunk
+                AMatrixType              const &A,
+                OutputControlEnum               outp = MERGE);
 \end{minted}
 
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf transpose}: }
+%-----------------------------------------------------------------------------
+\section{{\sf reduce}}
+
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf reduce}: row reduce matrix-to-vector variant}
 
 \paragraph{\syntax}
 
 \begin{minted}{c++}
-
+    template<typename WVectorType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename BinaryOpType,  // monoid or binary op only
+             typename AMatrixType>
+    void reduce(WVectorType          &w,
+                MaskType       const &mask,
+                AccumulatorType       accum,
+                BinaryOpType          op,
+                AMatrixType    const &A,
+                OutputControlEnum     outp = MERGE);
 \end{minted}
 
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf kronecker}: }
+\subsection{{\sf reduce}: vector-to-scalar variant}
 
 \paragraph{\syntax}
 
 \begin{minted}{c++}
+    template<typename ValueType,
+             typename AccumulatorType,
+             typename MonoidType, // monoid only?
+             typename T, typename I, typename Hint, typename Allocator>
+    void reduce(ValueType                            &val,
+                AccumulatorType                       accum,
+                MonoidType                            op,
+                vector<T, I, Hint, Allocator>  const &u);
+\end{minted}
 
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf reduce}: matrix-to-scalar variant}
+
+\scott{C API spec says that we do not need to support transpose of input.}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename ValueType,
+             typename AccumulatorType,
+             typename MonoidType, // monoid only?
+             typename T, typename I, typename Hint, typename Allocator>
+    void reduce(ValueType                            &val,
+                AccumulatorType                       accum,
+                MonoidType                            op,
+                matrix<T, I, Hint, Allocator>  const &A);
+\end{minted}
+
+
+%-----------------------------------------------------------------------------
+\section{{\sf transpose}: }
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename CMatrixType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename AMatrixType>
+    void transpose(CMatrixType          &C,
+                   MaskType       const &Mask,
+                   AccumulatorType       accum,
+                   AMatrixType    const &A,
+                   OutputControlEnum     outp = MERGE);
+\end{minted}
+
+
+%-----------------------------------------------------------------------------
+\section{{\sf kronecker}: }
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename CMatrixType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename BinaryOpType,
+             typename AMatrixType,
+             typename BMatrixType>
+    void kronecker(CMatrixType          &C,
+                   MaskType       const &Mask,
+                   AccumulatorType       accum,
+                   BinaryOpType          op,
+                   AMatrixType    const &A,
+                   BMatrixType    const &B,
+                   OutputControlEnum     outp = MERGE);
 \end{minted}
 
