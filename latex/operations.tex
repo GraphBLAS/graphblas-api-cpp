@@ -4,7 +4,7 @@
 \label{Ch:Operations}
 
 %-----------------------------------------------------------------------------
-\section{{\sf grb::mxm}: Matrix-matrix multiply}
+\section{{\sf grb::mxm}: matrix-matrix multiply}
 
 \paragraph{\syntax}
 
@@ -204,38 +204,417 @@ that are found in the C API Specification or can we refer to that spec here?}
 \end{verbatim}
 
 %-----------------------------------------------------------------------------
-%-----------------------------------------------------------------------------
-\section{Older stuff}
+\section{{\sf mxv}: matrix-vector multiply}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    // overload using a semiring
+    template<typename WVectorType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename SemiringType,
+             typename AMatrixType,
+             typename BMatrixType>
+    void mxv(WVectorType            &w,
+             MaskType         const &mask,
+             AccumulatorType         accum,   // pass by value or const&?
+             SemiringType            op,      // pass by value or const&?
+             AMatrixType      const &A,
+             UVectorType      const &u,
+             OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
+
+    // ...or...overload using two binary operators
+    template<typename WVectorType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename ReduceType,
+             typename MapType,
+             typename AMatrixType,
+             typename UVectorType>
+    void mxv(WVectorType            &w,
+             MaskType         const &mask,
+             AccumulatorType         accum,   // pass by value or const&?
+             ReduceType              reduce,  // pass by value or const&?
+             MapType                 map,     // pass by value or const&?
+             AMatrixType      const &A,
+             UVectorType      const &u,
+             OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
+\end{minted}
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf mxv}: Matrix-vector multiply}
+\section{{\sf vxm}: vector-matrix multiply}
 
-\subsection{{\sf vxm}: Vector-matrix multiply}
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    // overload using a semiring
+    template<typename WVectorType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename SemiringType,
+             typename UVectorType,
+             typename AMatrixType>
+    void vxm(WVectorType            &w,
+             MaskType         const &mask,
+             AccumulatorType         accum,   // pass by value or const&?
+             SemiringType            op,      // pass by value or const&?
+             UVectorType      const &u,
+             AMatrixType      const &A,
+             OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
+
+    // ...or...overload using two binary operators
+    template<typename WVectorType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename ReduceType,
+             typename MapType,
+             typename UVectorType,
+             typename AMatrixType>
+    void vxm(WVectorType            &w,
+             MaskType         const &mask,
+             AccumulatorType         accum,   // pass by value or const&?
+             ReduceType              reduce,  // pass by value or const&?
+             MapType                 map,     // pass by value or const&?
+             UVectorType      const &u,
+             AMatrixType      const &A,
+             OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
+\end{minted}
 
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf ewisemult}: }
+\section{{\sf ewisemult}: element-wise multiplication, set intersection}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    // grb::vector overload
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumType,
+             typename BinaryOpType,
+             typename UVectorType,
+             typename VVectorType>
+    void ewisemult(vector<T, I, Hint, Allocator>     &w,
+                   MaskType                    const &mask,
+                   AccumType                   const &accum,
+                   BinaryOpType                       op,
+                   UVectorType                 const &u,
+                   VVectorType                 const &v,
+                   OutputControlEnum                  outp = MERGE);  // default val?
+
+    // grb::matrix overload
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumType,
+             typename BinaryOpType,
+             typename AMatrixType,
+             typename BMatrixType>
+    void ewisemult(matrix<T, I, Hint, Allocator>     &C,
+                   MaskT                       const &Mask,
+                   AccumT                      const &accum,
+                   BinaryOpT                          op,
+                   AMatrixT                    const &A,
+                   BMatrixT                    const &B,
+                   OutputControlEnum                  outp = MERGE);  // default val?
+\end{minted}
+
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf ewiseadd}: }
+\section{{\sf ewiseadd}: element-wise addition}
 
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    // grb::vector overload
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumType,
+             typename BinaryOpType,
+             typename UVectorType,
+             typename VVectorType>
+    void ewiseadd(vector<T, I, Hint, Allocator>     &w,
+                  MaskType                    const &mask,
+                  AccumType                   const &accum,
+                  BinaryOpType                       op,
+                  UVectorType                 const &u,
+                  VVectorType                 const &v,
+                  OutputControlEnum                  outp = MERGE);  // default val?
+
+    // grb::matrix overload
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumType,
+             typename BinaryOpType,
+             typename AMatrixType,
+             typename BMatrixType>
+    void ewiseadd(matrix<T, I, Hint, Allocator>     &C,
+                  MaskT                       const &Mask,
+                  AccumT                      const &accum,
+                  BinaryOpT                          op,
+                  AMatrixT                    const &A,
+                  BMatrixT                    const &B,
+                  OutputControlEnum                  outp = MERGE);  // default val?
+\end{minted}
+
+
+%-----------------------------------------------------------------------------
 %-----------------------------------------------------------------------------
 \subsection{{\sf extract}: }
 
 %-----------------------------------------------------------------------------
-\subsection{{\sf assign}: }
+\subsection{{\sf extract}: standard vector variant}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    // standard grb::vector variant
+    template<typename WVectorType,     // typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumType,
+             typename UVectorType,
+             typename SequenceType>
+    void extract(WVectorType             &w,  // should we use vector<T, I, Hint, Allocator>?
+                 MaskType          const &mask,
+                 AccumType         const &accum,
+                 UVectorType       const &u,
+                 SequenceType      const &indices,
+                 OutputControlEnum        outp = MERGE);  // default val?
+\end{minted}
 
 %-----------------------------------------------------------------------------
+\subsection{{\sf extract}: standard matrix variant}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    // standard grb::matrix variant
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumType,
+             typename AMatrixType,
+             typename RowSequenceType,
+             typename ColSequenceType>
+    void extract(matrix<T, I, Hint, Allocator>  &C,
+                 MaskT                    const &mask,
+                 AccumT                   const &accum,
+                 AMatrixT                 const &A,
+                 RowSequenceT             const &row_indices,
+                 ColSequenceT             const &col_indices,
+                 OutputControlEnum               outp = MERGE);  // default val?
+\end{minted}
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf extract}: column (row) variant}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    // standard grb::matrix variant
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskType,
+             typename AccumType,
+             typename AMatrixType,
+             typename RowSequenceType>
+    void extract(vector<T, I, Hint, Allocator>  &w,
+                 MaskT                    const &mask,
+                 AccumT                   const &accum,
+                 AMatrixT                 const &A,
+                 RowSequenceT             const &row_indices,
+                 index_t                         col_index,
+                 OutputControlEnum               outp = MERGE);  // default val?
+\end{minted}
+
+
+%-----------------------------------------------------------------------------
+\section{{\sf assign}: }
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf assign}: standard vector variant}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename T, typename I, typename Hint, typename Allocator,
+             typename MaskT,
+             typename AccumT,
+             typename UVectorT,
+             typename SequenceT,
+             typename std::enable_if_t<is_vector_v<UVectorT>, int> = 0,
+             typename ...WTags>
+    void assign(vector<T, I, Hint, Allocator>      &w,
+                MaskT                    const  &mask,
+                AccumT                   const  &accum,
+                UVectorT                 const  &u,
+                SequenceT                const  &indices,
+                OutputControlEnum                outp = MERGE)
+\end{minted}
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf assign}: standard matrix variant}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename CMatrixT, // it isn't enough to do T, I, Hint, Allocator
+             typename MaskT,
+             typename AccumT,
+             typename AMatrixT,
+             typename RowSequenceT,
+             typename ColSequenceT,
+             typename std::enable_if_t<is_matrix_v<AMatrixT>, int> = 0>
+    inline void assign(CMatrixT              &C,
+                       MaskT           const &Mask,
+                       AccumT          const &accum,
+                       AMatrixT        const &A,
+                       RowSequenceT    const &row_indices,
+                       ColSequenceT    const &col_indices,
+                       OutputControlEnum      outp = MERGE)
+\end{minted}
+
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf assign}: column variant}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename CScalarT,
+             typename MaskT,
+             typename AccumT,
+             typename UVectorT,
+             typename SequenceT,
+             typename ...CTags>
+    inline void assign(Matrix<CScalarT, CTags...>  &C,
+                       MaskT                 const &mask,  // a vector
+                       AccumT                const &accum,
+                       UVectorT              const &u,
+                       SequenceT             const &row_indices,
+                       IndexType                    col_index,
+                       OutputControlEnum            outp = MERGE)
+\end{minted}
+
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf assign}: row variant}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename CScalarT,
+             typename MaskT,
+             typename AccumT,
+             typename UVectorT,
+             typename SequenceT,
+             typename ...CTags>
+    inline void assign(Matrix<CScalarT, CTags...>  &C,
+                       MaskT                 const &mask,  // a vector
+                       AccumT                const &accum,
+                       UVectorT              const &u,
+                       IndexType                    row_index,
+                       SequenceT             const &col_indices,
+                       OutputControlEnum            outp = MERGE)
+\end{minted}
+
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf assign}: vector constant variant}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename WVectorT,
+             typename MaskT,
+             typename AccumT,
+             typename ValueT,
+             typename SequenceT,
+             typename std::enable_if<
+                 std::is_convertible<ValueT,
+                                     typename WVectorT::ScalarType>::value,
+                 int>::type = 0>
+    inline void assign(WVectorT                     &w,
+                       MaskT                const   &mask,
+                       AccumT               const   &accum,
+                       ValueT                        val,
+                       SequenceT            const   &indices,
+                       OutputControlEnum             outp = MERGE)
+\end{minted}
+
+
+%-----------------------------------------------------------------------------
+\subsection{{\sf assign}: matrix constant variant}
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+    template<typename CMatrixT,
+             typename MaskT,
+             typename AccumT,
+             typename ValueT,
+             typename RowSequenceT,
+             typename ColSequenceT,
+             typename std::enable_if<
+                 std::is_convertible<ValueT,
+                                     typename CMatrixT::ScalarType>::value,
+                 int>::type = 0>
+    inline void assign(CMatrixT             &C,
+                       MaskT          const &Mask,
+                       AccumT         const &accum,
+                       ValueT                val,
+                       RowSequenceT   const &row_indices,
+                       ColSequenceT   const &col_indices,
+                       OutputControlEnum     outp = MERGE)
+\end{minted}
+
+
+
+%-----------------------------------------------------------------------------
+%-----------------------------------------------------------------------------
 \subsection{{\sf apply}: }
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+
+\end{minted}
+
 
 %-----------------------------------------------------------------------------
 \subsection{{\sf select}: }
 
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 \subsection{{\sf reduce}: }
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+
+\end{minted}
+
 
 %-----------------------------------------------------------------------------
 \subsection{{\sf transpose}: }
 
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 \subsection{{\sf kronecker}: }
+
+\paragraph{\syntax}
+
+\begin{minted}{c++}
+
+\end{minted}
+
