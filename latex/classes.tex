@@ -257,32 +257,26 @@ class matrix;
 \begin{tabularx}{\textwidth}{l X}
 \textbf{Iterators}\\
 \hline
-\codetlink{iterators}{begin()} & Non-const iterator to the beginning\\
+\codetlink{iterators}{begin} & Non-const iterator to the beginning\\
 \hline
-\codetlink{iterators}{end()} & Non-const iterator to the end\\
+\codetlink{iterators}{end} & Non-const iterator to the end\\
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{l X}
 \textbf{Capacity and Dimensions}\\
 \hline
-\codetlink{capacity}{size()} & Number of stored values\\
+\codetlink{capacity}{size} & Number of stored values\\
 \hline
-\codetlink{capacity}{shape()} & Dimensions of matrix \scott{shape\_t}\\
+\codetlink{capacity}{shape} & Dimensions of matrix \scott{shape\_t}\\
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{l X}
 \textbf{Lookup}\\
-\texttt{reference at(index\_t index)} & Access specific element with bounds checking\\
+\codetlink{lookup}{at} & Access specific element with bounds checking\\
 \hline
-\texttt{const\_reference at(index\_t index) const} & Access specific element with bounds checking\\
+\codetlink{lookup}{operator[]} & Access or insert a specified element\\
 \hline
-\texttt{reference operator[](index\_t index)} & Access or insert a specified element\\
-\hline
-\texttt{const\_reference operator[](index\_t index) const} & Access a specified element\\
-\hline
-\texttt{iterator find(index\_t index)} & Find element at a specific index\\
-\hline
-\texttt{const\_iterator find(index\_t index) const} & Find element at a specific index\\
+\codetlink{lookup}{find} & Find element at a specific index\\
 \end{tabularx}
 
 \scott{Do we support void Scalar type for matrices and vectors?}
@@ -304,6 +298,20 @@ class matrix;
 
   ~matrix();                                     (6)
 \end{minted}
+
+The default constructor (1) constructs a matrix object with dimension $0 \times 0$ and no stored values.
+
+Constructor (2) constructs a matrix object of $\texttt{dim[0]} \times \texttt{dim[1]}$ with no stored values.
+
+Constructor (3) reads the matrix market file stored at the filepath in \codet{fname}, constructing a new matrix object filled with its contents.
+
+Constructor (4) constructs a new matrix object with the contents of \codet{other}.
+
+\ben{TODO: define what happens to the allocator on copy/move.}
+
+Constructor (5) constructs a new matrix object using move semantics.
+
+Destructor (6) destructs the matrix object, destructing all of the stored elements and deallocating the used storage.
 
 %\texttt{matrix()} & Construct empty matrix of dimension $0 \times 0$\\
 %\hline
@@ -372,6 +380,35 @@ class matrix;
 %\texttt{size\_type size() const} & Number of stored values\\
 %\hline
 %\texttt{index\_t shape() const} & Dimensions of matrix \scott{shape\_t}\\
+
+\subsection{Lookup}
+\hypertarget{lookup}{This section} defines methods involving lookup for \codet{grb::matrix}.
+
+\begin{minted}{c++}
+  reference at(grb::index_t index);                      (1)
+
+  const_reference at(grb::index_t index) const;          (2)
+
+  reference operator[](grb::index_t index);              (3)
+
+  const_reference operator[](grb::index_t index) const;  (3)
+
+  iterator find(grb::index_t index);                     (4)
+
+  const_iterator find(grb::index_t index) const;         (5)
+\end{minted}
+
+%\texttt{reference at(index\_t index)} & Access specific element with bounds checking\\
+%\hline
+%\texttt{const\_reference at(index\_t index) const} & Access specific element with bounds checking\\
+%\hline
+%\texttt{reference operator[](index\_t index)} & Access or insert a specified element\\
+%\hline
+%\texttt{const\_reference operator[](index\_t index) const} & Access a specified element\\
+%\hline
+%\texttt{iterator find(index\_t index)} & Find element at a specific index\\
+%\hline
+%\texttt{const\_iterator find(index\_t index) const} & Find element at a specific index\\
 
 % ========================================================================
 \section{Masks}
