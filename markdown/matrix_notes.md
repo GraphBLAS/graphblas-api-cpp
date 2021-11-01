@@ -22,11 +22,13 @@ Member Type | Definition
 ## Comparison
 Member Type | Value for `unordered_map` | Value for `grb::matrix` | Notes
 ---- | ---- | ---- | ----
-`key_type` | `std::pair<I, I>` | `grb::index<I>` | `grb::index<I>` behaves like `std::pair<I>`, but also supports `operator[]`, which is v. convenient
-`map_type` | `T` | `T` | The stored element
-`element_type` | `T` | `T` | What we call `map_type` in `grb::matrix`
+`key_type` | `std::pair<I, I>` | `grb::index<I>` | `grb::index<I>` behaves like `std::pair<I, I>`, but also supports `operator[]`, which is v. convenient
+`map_type` | `T` | `T` | Type of stored elements
+`?` | `T` | `T` | What we call `map_type` in `grb::matrix`
 `index_type` | `I` | `I` | Integral type used to store indices
-`value_type` | `std::pair<const std::pair<I, I>, T>` | `grb::matrix_entry<T, I>`
+`value_type` | `std::pair<const std::pair<I, I>, T>` | `grb::matrix_entry<T, I>` | `grb::matrix_entry<T, I>` behaves like `std::pair<const std::pair<I, I>, T>`, but adds some convenience functions
+`reference` | `std::pair<const std::pair<I, I>, T>&` | `grb::matrix_reference<T, I>` | `grb::matrix_reference<T, I>` behaves like `std::pair<const std::pair<I, I>, T>&` (allows obtaining a reference to value, copies of indices)
+`const_reference` | `const std::pair<const std::pair<I, I>, T>&` | `grb::matrix_reference<const T, I>` | `grb::matrix_reference<const T, I>` behaves like `const std::pair<const std::pair<I, I>, T>&` (allows obtaining a constant reference to value, copies of indices)
 
 ## Notes
 [1] Iterator type may vary based on backend storage type. Most will likely provide `std::random_access_iterator`.  Dense and COO are `std::random_access_iterator`, as are CSR and COO, with the exception that pointer addition and subtraction are bound by *O(m)* and *O(n)*, respectively, although they are likely to be *O(1)*.
