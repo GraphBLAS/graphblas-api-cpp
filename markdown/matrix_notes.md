@@ -10,14 +10,16 @@ class grb::matrix;
 ## Member Types
 Member Type | Definition
 ----- | -----
-`element_type` | `T`, the type of elements stored in the matrix
+`?` | `T`, the type of elements stored in the matrix
 `index_type`   | `I`, an integer type used to store matrix indices
-`value_type`   | `grb::matrix_element<T, I>`, a tuple-like type storing copies of the indices and a reference to the stored element
+`value_type`   | `grb::matrix_entry<T, I>`, a tuple-like type storing copies of the indices and the stored element
 `size_type`    | A large unsigned integer type, usually `std::size_t`
 `difference_type` | A large signed integer type, usually `std::ptrdiff_t`
 `allocator_type` | `Allocator`
 `iterator` | An object fulfilling the concept `std::forward_iterator<value_type>` [1]
 `const_iterator` | An object fulfilling the concept `std::forward_iterator<const value_type>` [1]
+`reference` | `grb::matrix_reference<T, I>`
+`const_reference` | `grb::matrix_reference<const T, I>`
 
 ## Comparison
 Member Type | Value for `unordered_map` | Value for `grb::matrix` | Notes
