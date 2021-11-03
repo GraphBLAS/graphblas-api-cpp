@@ -48,3 +48,24 @@ Member Type | Value for `unordered_map` | Value for `grb::matrix` | Notes
 template <typename T>
 struct grb::index;
 ```
+
+## Description
+`grb::index` is a pair-like class that stores row and column indices associated with a matrix element.
+
+`T` must fulfill the concept `std::integral`.
+
+## Template Parameters
+`T` - an integral type used to store indices.
+
+## Member Types
+Member Type | Definition
+----- | -----
+`index_type` | `T`, an integer type used to store matrix indices
+`first_type`   | `T`, an integer type used to store matrix indices
+`second_type`   | `T`, an integer type used to store matrix indices
+
+## Member Objects
+Member Name | Type
+----- | -----
+`first` | `T`
+`second` | `T`
