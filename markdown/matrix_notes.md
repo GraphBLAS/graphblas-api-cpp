@@ -3,6 +3,7 @@
 ```cpp
 template <typename T,
           typename I = std::size_t,
+          typename Hint = grb::sparse,
           typename Allocator = std::allocator<T>>
 class grb::matrix;
 ```
@@ -20,6 +21,7 @@ Member Type | Definition
 `const_iterator` | Fulfills `std::forward_iterator<const value_type>`, with `operator*` returning `const_reference` [1]
 `reference` | `grb::matrix_reference<T, I>`
 `const_reference` | `grb::matrix_reference<const T, I>`
+`hint_type` | `Hint`
 
 ## Methods
 Method | Description
@@ -28,6 +30,47 @@ Method | Description
 `begin` | Returns iterator to beginning of container
 `end` | Returns iterator to one past last element in container
 `insert` | Insert elements
+`insert_or_assign` | Inserts or assigns element
+
+## Method Declarations
+```cpp
+template <typename T,
+          typename I = std::size_t,
+          typename Hint = grb::sparse,
+          typename Allocator = std::allocator<T>>
+class grb::matrix {
+
+  matrix(grb::index<I> shape);
+  template <grb::ranges::const_matrix_range R>
+  matrix(R other);
+  
+  matrix();
+  ~matrix();
+  matrix(const csr_matrix&);
+  matrix(csr_matrix&&);
+  matrix& operator=(const csr_matrix&);
+  matrix& operator=(csr_matrix&&);
+
+  size_type size() const noexcept;
+  grb::index<I> shape() const noexcept;
+
+  iterator begin() noexcept;
+  iterator end() noexcept;
+  const_iterator begin() const noexcept;
+  const_iterator end() const noexcept;
+  
+  template <typename InputIt>
+  void insert(InputIt first, InputIt last);
+  
+  std::pair<iterator, bool> insert(value_type&& value);
+  
+  template <typename M>
+  std::pair<iterator, bool> insert_or_assign(key_type k, M&& obj);
+  
+  iterator find(key_type key) noexcept;
+  const_iterator find(key_type key) const noexcept;
+};
+```
 
 ## Comparison
 Member Type | Value for `unordered_map` | Value for `grb::matrix` | Notes
