@@ -115,7 +115,7 @@ Member Name | Type
 
 # Survey of Sparse Matrix Formats
 Name | Abbr. | Description | Row Iter. | Col. Iter.
------ | ----- | -----
+----- | ----- | ----- | -----
 Compressed sparse row | CSR | Classis format | X | 
 Compressed sparse column | CSC | Classic format | | X
 Diagonal | DIA | Store dense diagonals | |
