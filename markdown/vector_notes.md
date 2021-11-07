@@ -11,8 +11,8 @@ class grb::vector;
 ## Member Types
 Member Type | Definition
 ----- | -----
-`?` | `T`, the type of elements stored in the matrix
-`index_type`   | `I`, an integer type used to store matrix indices
+`?` | `T`, the type of elements stored in the vector
+`index_type`   | `I`, an integer type used to store vector indices
 `value_type`   | `grb::vector_entry<T, I>`, a tuple-like type storing copies of the index and the stored element
 `size_type`    | A large unsigned integer type, usually `std::size_t`
 `difference_type` | A large signed integer type, usually `std::ptrdiff_t`
