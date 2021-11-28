@@ -27,16 +27,23 @@ Member Type | Definition
 `const_iterator` | A const iterator fulfilling `std::forward_iterator`
 `reference` | `grb::matrix_reference<T, I>`
 `const_reference` | `grb::matrix_reference<const T, I>`
+`scalar_reference` | Reference to `scalar_type`
+`const_scalar_reference` | Const reference to `scalar_type`
 `hint_type` | `Hint`
 
 ## Methods
 Method | Description
 ----- | -----
 `(constructor)` | Constructs matrix
+`size` | Number of stored elements in matrix
+`max_size` | Returns the maximum possible number of elements
+`empty` | Return whether the matrix is empty
 `begin`<br />`cbegin` | Returns iterator to beginning of container
 `end`<br />`cend` | Returns iterator to one past last element in container
 `insert` | Insert elements
-`insert_or_assign` | Inserts or assigns elemens
+`insert_or_assign` | Inserts or assigns elements
+`find` | Finds an element
+`operator[]` | Access or insert element
 
 ### `grb::matrix::matrix`
 
@@ -83,58 +90,56 @@ Iterator to the first element
 #### Complexity
 Constant
 
-## Method Declarations
+### `grb::matrix::size`
 ```cpp
-template <typename T,
-          typename I = std::size_t,
-          typename Hint = grb::sparse,
-          typename Allocator = std::allocator<T>>
-class grb::matrix {
-
-  matrix(grb::index<I> shape);
-  template <grb::ranges::const_matrix_range R>
-  matrix(R other);
-  
-  matrix();
-  ~matrix();
-  matrix(const csr_matrix&);
-  matrix(csr_matrix&&);
-  matrix& operator=(const csr_matrix&);
-  matrix& operator=(csr_matrix&&);
-
-  size_type size() const noexcept;
-  grb::index<I> shape() const noexcept;
-
-  iterator begin() noexcept;
-  iterator end() noexcept;
-  const_iterator begin() const noexcept;
-  const_iterator end() const noexcept;
-  
-  template <typename InputIt>
-  void insert(InputIt first, InputIt last);
-  
-  std::pair<iterator, bool> insert(value_type&& value);
-  
-  template <typename M>
-  std::pair<iterator, bool> insert_or_assign(key_type k, M&& obj);
-  
-  iterator find(key_type key) noexcept;
-  const_iterator find(key_type key) const noexcept;
-};
+size_type size() noexcept;
 ```
 
-## Comparison
-Member Type | Value for `unordered_map` | Value for `grb::matrix` | Notes
----- | ---- | ---- | ----
-`key_type` | `std::pair<I, I>` | `grb::index<I>` | `grb::index<I>` behaves like `std::pair<I, I>`, but also supports `operator[]`, which is v. convenient
-`map_type` | `T` | `T` | Type of stored elements
-`?` | `T` | `T` | What we call `map_type` in `grb::matrix`
-`index_type` | `I` | `I` | Integral type used to store indices
-`value_type` | `std::pair<const std::pair<I, I>, T>` | `grb::matrix_entry<T, I>` | `grb::matrix_entry<T, I>` behaves like `std::pair<const std::pair<I, I>, T>`, but adds some convenience functions
-`reference` | `std::pair<const std::pair<I, I>, T>&` | `grb::matrix_reference<T, I>` | `grb::matrix_reference<T, I>` behaves like `std::pair<const std::pair<I, I>, T>&` (allows obtaining a reference to value, copies of indices)
-`const_reference` | `const std::pair<const std::pair<I, I>, T>&` | `grb::matrix_reference<const T, I>` | `grb::matrix_reference<const T, I>` behaves like `const std::pair<const std::pair<I, I>, T>&` (allows obtaining a constant reference to value, copies of indices)
+Returns the number of elements stored in the matrix.
+
+#### Parameters
+(none)
+
+#### Return value
+Number of stored elements.
+
+#### Complexity
+Constant
+
+### `grb::matrix::max_size`
+```cpp
+size_type max_size() noexcept;
+```
+
+Returns the maximum possible number of elements that could be stored in the matrix due to platform or implementation limitations.
+
+#### Parameters
+(none)
+
+#### Return value
+Maximum possible number of elements.
+
+#### Complexity
+Constant
+
+### `grb::matrix::empty`
+```cpp
+bool empty() noexcept;
+```
+
+Returns whether the matrix is empty, that is where `size() == 0`.
+
+#### Parameters
+(none)
+
+#### Return value
+Whether the matrix is empty.
+
+#### Complexity
+Constant
 
 # Notes on grb::index
+These should all go in a different file
 ```cpp
 template <typename T>
 struct grb::index;
