@@ -72,24 +72,6 @@ Constructs new `grb::matrix` data structure.
 (1), (2), and (3) may all throw `std::bad_alloc`.  (3) may also throw the exception `grb::matrix_io::file_error`
 in the case that there is an error opening the file at path `file_path` or reading the file.
 
-### `grb::matrix::begin` and `grb::matrix::cbegin`
-```cpp
-iterator begin() noexcept;
-const_iterator begin() const noexcept;
-const_iterator cbegin() const noexcept;
-```
-
-Returns an iterator to the first element of the matrix data structure.  If the matrix is empty, returns an element that compares as equal to `end()`.
-
-#### Parameters
-(none)
-
-#### Return value
-Iterator to the first element
-
-#### Complexity
-Constant
-
 ### `grb::matrix::size`
 ```cpp
 size_type size() noexcept;
@@ -137,6 +119,65 @@ Whether the matrix is empty.
 
 #### Complexity
 Constant
+
+### `grb::matrix::begin` and `grb::matrix::cbegin`
+```cpp
+iterator begin() noexcept;
+const_iterator begin() const noexcept;
+const_iterator cbegin() const noexcept;
+```
+
+Returns an iterator to the first element of the matrix data structure.  If the matrix is empty, returns an element that compares as equal to `end()`.
+
+#### Parameters
+(none)
+
+#### Return value
+Iterator to the first element
+
+#### Complexity
+Constant
+
+### `grb::matrix::end` and `grb::matrix::cend`
+```cpp
+iterator end() noexcept;
+const_iterator end() const noexcept;
+const_iterator cend() const noexcept;
+```
+
+Returns an iterator to one past the last element of the matrix data structure.  This element is used only to signify the end of the container, and accessing it has undefined behavior.
+
+#### Parameters
+(none)
+
+#### Return value
+Iterator to one past the last element.
+
+#### Complexity
+Constant
+
+### `grb::matrix::insert`
+```cpp
+template <typename InputIt>
+void insert(InputIt first, InputIt last);                    (1)
+std::pair<iterator, bool> insert(const value_type& value);   (2)
+std::pair<iterator, bool> insert(value_type&& value);        (3)
+```
+
+Inserts an element or number of elements into the matrix, if the matrix doesn't already contain a stored element at the corresponding index.
+
+(1) Inserts elements in the range `[first, last)`.  If multiple elements in `[first, last)` have the same indices, it is undefined which element is inserted.<br />
+(2) and (3) Insert the element `value`, if an element does not already exist at its index.
+
+#### Parameters
+(none)
+
+#### Return value
+(1) None<br />
+(2) and (3) return a `std::pair` containing an `iterator` and a `bool` value.  The `bool` value indicates whether or not the insertion was successful.  If the insertion was successful, the first value contains an iterator to the newly inserted element.  If it was unsuccessful, it contains an iterator to the element that prevented insertion.
+
+#### Complexity
+Implementation defined
 
 # Notes on grb::index
 These should all go in a different file
