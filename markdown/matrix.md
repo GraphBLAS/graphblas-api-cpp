@@ -197,6 +197,43 @@ An iterator pointing to the matrix element at the corresponding index, or `end()
 #### Complexity
 Implementation defined
 
+### `grb::matrix::operator[]`
+```cpp
+scalar_reference operator[](grb::index<I> index);
+const_scalar_reference operator[](grb::index<I> index) const;
+```
+
+Returns a reference to the scalar value stored at location (`index[0]`, `index[1]`) in the matrix.  If no value is stored at the location, inserts a default constructed value at the location and returns a reference to it.
+
+#### Parameters
+`index` - Location of the matrix element
+
+#### Return value
+A reference to the scalar value at location (`index[0]`, `[index[1]`).
+
+#### Complexity
+Implementation defined
+
+### `grb::matrix::at`
+```cpp
+scalar_reference at(grb::index<I> index);
+const_scalar_reference at(grb::index<I> index) const;
+```
+
+Returns a reference to the scalar value stored at location (`index[0]`, `index[1]`) in the matrix.  If no value is stored at the location, throws the exception `grb::out_of_range`.
+
+#### Parameters
+`index` - Location of the matrix element
+
+#### Return value
+A reference to the scalar value at location (`index[0]`, `[index[1]`).
+
+#### Complexity
+Implementation defined
+
+#### Exceptions
+If no element exists at location (`index[0]`, `index[1]`), throws the exception `grb::out_of_range`.
+
 # Notes on grb::index
 These should all go in a different file
 ```cpp
