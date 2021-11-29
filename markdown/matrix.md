@@ -233,31 +233,3 @@ Implementation defined
 
 #### Exceptions
 If no element exists at location (`index[0]`, `index[1]`), throws the exception `grb::out_of_range`.
-
-# Notes on grb::index
-These should all go in a different file
-```cpp
-template <typename T>
-struct grb::index;
-```
-
-## Description
-`grb::index` is a pair-like class that stores row and column indices associated with a matrix element.
-
-`T` must fulfill the concept `std::integral`.
-
-## Template Parameters
-`T` - an integral type used to store indices.
-
-## Member Types
-Member Type | Definition
------ | -----
-`index_type` | `T`, an integer type used to store matrix indices
-`first_type`   | `T`, an integer type used to store matrix indices
-`second_type`   | `T`, an integer type used to store matrix indices
-
-## Member Objects
-Member Name | Type
------ | -----
-`first` | `T`
-`second` | `T`
