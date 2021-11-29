@@ -166,15 +166,33 @@ std::pair<iterator, bool> insert(value_type&& value);        (3)
 
 Inserts an element or number of elements into the matrix, if the matrix doesn't already contain a stored element at the corresponding index.
 
-(1) Inserts elements in the range `[first, last)`.  If multiple elements in `[first, last)` have the same indices, it is undefined which element is inserted.<br />
-(2) and (3) Insert the element `value`, if an element does not already exist at its index.
+(1) Insert elements in the range `[first, last)` if an element does not already exist in the matrix at the corresponding index.  If multiple elements in `[first, last)` have the same indices, it is undefined which element is inserted.<br />
+(2) and (3) Insert the element `value` if an element does not already exist at the corresponding index in the matrix.
 
 #### Parameters
-(none)
+`first`, `last` - Range of elements to insert<br />
+`value` - element to insert
 
 #### Return value
 (1) None<br />
 (2) and (3) return a `std::pair` containing an `iterator` and a `bool` value.  The `bool` value indicates whether or not the insertion was successful.  If the insertion was successful, the first value contains an iterator to the newly inserted element.  If it was unsuccessful, it contains an iterator to the element that prevented insertion.
+
+#### Complexity
+Implementation defined
+
+### `grb::matrix::find`
+```cpp
+iterator find(grb::index<I> index);
+const_iterator find(grb::index<I> index) const;
+```
+
+Finds the element at location (`index[0]`, `index[1]`) in the matrix, returning an iterator to the element.  If no element is present at the location, returns `end()`.
+
+#### Parameters
+`index` - Location of the matrix element to find
+
+#### Return value
+An iterator pointing to the matrix element at the corresponding index, or `end()` if there is no element at the location.
 
 #### Complexity
 Implementation defined
