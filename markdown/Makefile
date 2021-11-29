@@ -11,8 +11,10 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
 	       intro.md \
 	       --toc \
 	       --toc-depth=2 \
+	       -Vsecnumdepth=2 \
 	       matrix.md \
-	       index.md
+	       index.md \
+	       concepts.md
 
 clean:
 	rm -fv *.pdf *.html
