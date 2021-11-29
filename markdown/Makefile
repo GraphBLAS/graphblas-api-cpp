@@ -1,12 +1,19 @@
+TEX_SOURCES += $(wildcard *.tex)
+MD_SOURCES += $(wildcard *.md)
 
-
-all:
+graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
 	pandoc -s \
-         -H preamble.tex \
-		     -V geometry:margin=1in \
-	       -o matrix.pdf \
-				 matrix.md \
-				 index.md \
+	       --toc \
+	       -B title.tex \
+	       -H preamble.tex \
+	       -V geometry:margin=1in \
+	       -o graphblas.pdf \
+	       intro.md \
+	       --toc \
+	       --toc-depth=2 \
+	       matrix.md \
+	       index.md
 
 clean:
-	rm -fv *.pdf
+	rm -fv *.pdf *.html
+
