@@ -13,6 +13,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
 	       --toc-depth=2 \
 	       -Vsecnumdepth=2 \
 	       matrix.md \
+	       vector.md \
 	       index.md \
 	       concepts.md
 

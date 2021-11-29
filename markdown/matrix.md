@@ -9,9 +9,12 @@ class grb::matrix;
 ```
 
 ## Template Parameters
-`T` - type of scalar values stored in the matrix<br />
-`I` - type, satisfying `std::integral`, used to store indices in the matrix<br />
-`Hint` - one or a composition of compile-time hints that may be used to affect the backend storage type<br />
+`T` - type of scalar values stored in the matrix
+
+`I` - type, satisfying `std::integral`, used to store indices in the matrix
+
+`Hint` - one or a composition of compile-time hints that may be used to affect the backend storage type
+
 `Allocator` - allocator type used to allocate memory for the matrix
 
 ## Member Types
@@ -38,8 +41,9 @@ Method | Description
 `size` | Number of stored elements in matrix
 `max_size` | Returns the maximum possible number of elements
 `empty` | Return whether the matrix is empty
-`begin`<br />`cbegin` | Returns iterator to beginning of container
-`end`<br />`cend` | Returns iterator to one past last element in container
+`shape` | Return the dimensions of the matrix
+`begin` <br />`cbegin` | Returns iterator to beginning of container
+`end` <br />`cend` | Returns iterator to one past last element in container
 `insert` | Insert elements
 `insert_or_assign` | Inserts or assigns elements
 `find` | Finds an element
@@ -60,7 +64,8 @@ Constructs new `grb::matrix` data structure.
 3) Constructs a matrix with the dimensions and contents of the Matrix Market file at file path `file_path`.
 
 ### Parameters
-`shape` - shape of the matrix to be constructed<br />
+`shape` - shape of the matrix to be constructed
+
 `file_path` - string containing the file path of the file to be loaded.
 
 ### Complexity
@@ -120,6 +125,22 @@ Whether the matrix is empty.
 ### Complexity
 Constant
 
+## `grb::matrix::shape`
+```cpp
+grb::index<I> shape() const noexcept;
+```
+
+Returns the dimensions of the matrix.
+
+### Parameters
+(none)
+
+### Return value
+Dimensions of the matrix.
+
+### Complexity
+Constant
+
 ## `grb::matrix::begin` and `grb::matrix::cbegin`
 ```cpp
 iterator begin() noexcept;
@@ -166,15 +187,18 @@ std::pair<iterator, bool> insert(value_type&& value);        (3)
 
 Inserts an element or number of elements into the matrix, if the matrix doesn't already contain a stored element at the corresponding index.
 
-(1) Insert elements in the range `[first, last)` if an element does not already exist in the matrix at the corresponding index.  If multiple elements in `[first, last)` have the same indices, it is undefined which element is inserted.<br />
+(1) Insert elements in the range `[first, last)` if an element does not already exist in the matrix at the corresponding index.  If multiple elements in `[first, last)` have the same indices, it is undefined which element is inserted.
+
 (2) and (3) Insert the element `value` if an element does not already exist at the corresponding index in the matrix.
 
 ### Parameters
-`first`, `last` - Range of elements to insert<br />
+`first`, `last` - Range of elements to insert
+
 `value` - element to insert
 
 ### Return value
-(1) None<br />
+(1) None
+
 (2) and (3) return a `std::pair` containing an `iterator` and a `bool` value.  The `bool` value indicates whether or not the insertion was successful.  If the insertion was successful, the first value contains an iterator to the newly inserted element.  If it was unsuccessful, it contains an iterator to the element that prevented insertion.
 
 ### Complexity
