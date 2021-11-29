@@ -45,7 +45,7 @@ Method | Description
 `find` | Finds an element
 `operator[]` | Access or insert element
 
-### `grb::matrix::matrix`
+## `grb::matrix::matrix`
 
 ```cpp
 matrix();                               (1)
@@ -59,68 +59,68 @@ Constructs new `grb::matrix` data structure.
 2) Constructs an empty matrix of dimension `shape[0] x shape[1]`.
 3) Constructs a matrix with the dimensions and contents of the Matrix Market file at file path `file_path`.
 
-#### Parameters
+### Parameters
 `shape` - shape of the matrix to be constructed<br />
 `file_path` - string containing the file path of the file to be loaded.
 
-#### Complexity
+### Complexity
 1) Constant
 2) Implementation defined
 3) Implementation defined
 
-#### Exceptions
+### Exceptions
 (1), (2), and (3) may all throw `std::bad_alloc`.  (3) may also throw the exception `grb::matrix_io::file_error`
 in the case that there is an error opening the file at path `file_path` or reading the file.
 
-### `grb::matrix::size`
+## `grb::matrix::size`
 ```cpp
 size_type size() noexcept;
 ```
 
 Returns the number of elements stored in the matrix.
 
-#### Parameters
+### Parameters
 (none)
 
-#### Return value
+### Return value
 Number of stored elements.
 
-#### Complexity
+### Complexity
 Constant
 
-### `grb::matrix::max_size`
+## `grb::matrix::max_size`
 ```cpp
 size_type max_size() noexcept;
 ```
 
 Returns the maximum possible number of elements that could be stored in the matrix due to platform or implementation limitations.
 
-#### Parameters
+### Parameters
 (none)
 
-#### Return value
+### Return value
 Maximum possible number of elements.
 
-#### Complexity
+### Complexity
 Constant
 
-### `grb::matrix::empty`
+## `grb::matrix::empty`
 ```cpp
 bool empty() noexcept;
 ```
 
 Returns whether the matrix is empty, that is where `size() == 0`.
 
-#### Parameters
+### Parameters
 (none)
 
-#### Return value
+### Return value
 Whether the matrix is empty.
 
-#### Complexity
+### Complexity
 Constant
 
-### `grb::matrix::begin` and `grb::matrix::cbegin`
+## `grb::matrix::begin` and `grb::matrix::cbegin`
 ```cpp
 iterator begin() noexcept;
 const_iterator begin() const noexcept;
@@ -129,16 +129,16 @@ const_iterator cbegin() const noexcept;
 
 Returns an iterator to the first element of the matrix data structure.  If the matrix is empty, returns an element that compares as equal to `end()`.
 
-#### Parameters
+### Parameters
 (none)
 
-#### Return value
+### Return value
 Iterator to the first element
 
-#### Complexity
+### Complexity
 Constant
 
-### `grb::matrix::end` and `grb::matrix::cend`
+## `grb::matrix::end` and `grb::matrix::cend`
 ```cpp
 iterator end() noexcept;
 const_iterator end() const noexcept;
@@ -147,16 +147,16 @@ const_iterator cend() const noexcept;
 
 Returns an iterator to one past the last element of the matrix data structure.  This element is used only to signify the end of the container, and accessing it has undefined behavior.
 
-#### Parameters
+### Parameters
 (none)
 
-#### Return value
+### Return value
 Iterator to one past the last element.
 
-#### Complexity
+### Complexity
 Constant
 
-### `grb::matrix::insert`
+## `grb::matrix::insert`
 ```cpp
 template <typename InputIt>
 void insert(InputIt first, InputIt last);                    (1)
@@ -169,18 +169,18 @@ Inserts an element or number of elements into the matrix, if the matrix doesn't 
 (1) Insert elements in the range `[first, last)` if an element does not already exist in the matrix at the corresponding index.  If multiple elements in `[first, last)` have the same indices, it is undefined which element is inserted.<br />
 (2) and (3) Insert the element `value` if an element does not already exist at the corresponding index in the matrix.
 
-#### Parameters
+### Parameters
 `first`, `last` - Range of elements to insert<br />
 `value` - element to insert
 
-#### Return value
+### Return value
 (1) None<br />
 (2) and (3) return a `std::pair` containing an `iterator` and a `bool` value.  The `bool` value indicates whether or not the insertion was successful.  If the insertion was successful, the first value contains an iterator to the newly inserted element.  If it was unsuccessful, it contains an iterator to the element that prevented insertion.
 
-#### Complexity
+### Complexity
 Implementation defined
 
-### `grb::matrix::find`
+## `grb::matrix::find`
 ```cpp
 iterator find(grb::index<I> index);
 const_iterator find(grb::index<I> index) const;
@@ -188,16 +188,16 @@ const_iterator find(grb::index<I> index) const;
 
 Finds the element at location (`index[0]`, `index[1]`) in the matrix, returning an iterator to the element.  If no element is present at the location, returns `end()`.
 
-#### Parameters
+### Parameters
 `index` - Location of the matrix element to find
 
-#### Return value
+### Return value
 An iterator pointing to the matrix element at the corresponding index, or `end()` if there is no element at the location.
 
-#### Complexity
+### Complexity
 Implementation defined
 
-### `grb::matrix::operator[]`
+## `grb::matrix::operator[]`
 ```cpp
 scalar_reference operator[](grb::index<I> index);
 const_scalar_reference operator[](grb::index<I> index) const;
@@ -205,16 +205,16 @@ const_scalar_reference operator[](grb::index<I> index) const;
 
 Returns a reference to the scalar value stored at location (`index[0]`, `index[1]`) in the matrix.  If no value is stored at the location, inserts a default constructed value at the location and returns a reference to it.
 
-#### Parameters
+### Parameters
 `index` - Location of the matrix element
 
-#### Return value
+### Return value
 A reference to the scalar value at location (`index[0]`, `[index[1]`).
 
-#### Complexity
+### Complexity
 Implementation defined
 
-### `grb::matrix::at`
+## `grb::matrix::at`
 ```cpp
 scalar_reference at(grb::index<I> index);
 const_scalar_reference at(grb::index<I> index) const;
@@ -222,14 +222,14 @@ const_scalar_reference at(grb::index<I> index) const;
 
 Returns a reference to the scalar value stored at location (`index[0]`, `index[1]`) in the matrix.  If no value is stored at the location, throws the exception `grb::out_of_range`.
 
-#### Parameters
+### Parameters
 `index` - Location of the matrix element
 
-#### Return value
+### Return value
 A reference to the scalar value at location (`index[0]`, `[index[1]`).
 
-#### Complexity
+### Complexity
 Implementation defined
 
-#### Exceptions
+### Exceptions
 If no element exists at location (`index[0]`, `index[1]`), throws the exception `grb::out_of_range`.
