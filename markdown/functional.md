@@ -1,3 +1,6 @@
+# Binary Operators and Monoids
+This section discusses binary operators and monoids.
+
 ## `grb::plus`
 
 ```cpp
