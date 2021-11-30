@@ -171,6 +171,24 @@ Iterator to one past the last element.
 ### Complexity
 Constant
 
+## `grb::vector::reshape`
+```cpp
+void reshape(index_type shape);
+```
+
+Reshape the vector.  That is, modify the vector dimension such that vector is now of dimension `shape`.
+If any nonzeros lie outside of the new vector shape, they are removed from the vector.
+
+### Parameters
+`shape` - New vector shape
+
+### Return value
+None
+
+### Complexity
+Implementation defined
+
+
 ## `grb::vector::insert`
 ```cpp
 template <typename InputIt>
