@@ -55,7 +55,7 @@ May throw exceptions if the underlying `operator+()` operation throws exceptions
 template <>
 class plus<void, void, void>;
 ```
-Version of `grb::plus` with argument and return types deduced.
+Version of `grb::plus` with both arguments and return types deduced.
 
 #### grb::plus::operator()
 
@@ -72,7 +72,7 @@ template <typename T = void, typename U = T>
 class plus<T, U, void>;
 ```
 
-Version of `grb::plus` with return type deduced.
+Version of `grb::plus` with explicit types for the arguments, but return type deduced.
 
 #### grb::plus::operator()
 
