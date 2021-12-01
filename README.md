@@ -25,6 +25,5 @@ while minutes for meetings of the GraphBLAS C++ API subcommittee can be found in
 
 ## Libraries
 
+* [rgri](https://github.com/BenBrock/rgri) is being developed as a reference implementation alongside the API.
 * [GBTL](https://github.com/cmu-sei/gbtl) has heavily influenced the development of the C++ API, and is also being updated alongside the development of the API.
-* [rgri](https://github.com/BenBrock/rgri) is also being developed as an additional reference implementation of the API.
-
