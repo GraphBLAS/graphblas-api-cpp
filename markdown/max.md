@@ -68,7 +68,7 @@ Version of `grb::max` with both arguments and return types deduced.
 ```cpp
 template <typename T, typename U>
 constexpr auto max(const T& lhs, const U& rhs)
-  -> decltype(std::numeric_limits<U>::max() < std::numeric_limits<T>::max()
+  -> decltype(std::numeric_limits<T>::max() < std::numeric_limits<U>::max()
                 ? std::declval<U>()
                 : std::declval<T>());
 ```
@@ -86,7 +86,7 @@ Version of `grb::max` with explicit types for the arguments, but return type ded
 
 ```cpp
 constexpr auto max(const T& lhs, const U& rhs)
-  -> decltype(std::numeric_limits<U>::max() < std::numeric_limits<T>::max()
+  -> decltype(std::numeric_limits<T>::max() < std::numeric_limits<U>::max()
                 ? std::declval<U>()
                 : std::declval<T>());
 ```
