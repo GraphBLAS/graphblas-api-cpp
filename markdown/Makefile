@@ -17,6 +17,12 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
 	       vector.md \
 	       index.md \
 	       functional.md \
+	       plus.md \
+	       multiplies.md \
+	       minus.md \
+	       divides.md \
+	       max.md \
+	       min.md \
 	       concepts.md
 
 clean:
