@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-### Three Types Specified
+#### Three Types Specified
 If a user specifies all three template parameters when using a binary operator, both of the input argument types
 as well as the return value type of the function are explicitly specified.
 
