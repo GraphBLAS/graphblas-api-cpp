@@ -44,9 +44,11 @@ Method | Description
 `shape` | Return the dimensions of the matrix
 `begin` <br />`cbegin` | Returns iterator to beginning of container
 `end` <br />`cend` | Returns iterator to one past last element in container
+`reshape` | Modify dimensions of the matrix
 `insert` | Insert elements
 `insert_or_assign` | Inserts or assigns elements
 `find` | Finds an element
+`at` | Access element
 `operator[]` | Access or insert element
 
 ## `grb::matrix::matrix`
@@ -176,6 +178,23 @@ Iterator to one past the last element.
 
 ### Complexity
 Constant
+
+## `grb::matrix::reshape`
+```cpp
+void reshape(grb::index<I> shape);
+```
+
+Reshape the matrix.  That is, modify the matrix dimensions such that matrix shape is now `shape[0]` x `shape[1]`.
+If any nonzeros lie outside of the new matrix shape, they are removed from the matrix
+
+### Parameters
+`shape` - New matrix shape
+
+### Return value
+None
+
+### Complexity
+Implementation defined
 
 ## `grb::matrix::insert`
 ```cpp
