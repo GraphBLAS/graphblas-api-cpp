@@ -2,11 +2,12 @@
 
 ```cpp
 template <typename T = void, typename U = T, typename V = void>
-class min;
+struct min;
 ```
 
-`grb::min` is a binary operator that returns the smaller of two arguments
+`grb::min` is a binary operator that returns the smaller of two arguments.
 using `operator<` for comparison.
+When both input arguments have integral types, `std::cmp_less` is used for comparison.  When one or both arguments have non-integral types, `operator<` is used for comparison.
 It forms a monoid on arithmetic types.
 
 ### Specializations
@@ -51,7 +52,7 @@ May throw exceptions if the underlying `operator<()` operation throws exceptions
 #### Monoid Traits
 
 `grb::min` forms a monoid for any arithmetic type `T` with the identity value
-`std::numeric_limits<T>::min()`.
+`std::max(std::numeric_limits<T>::max(), std::numeric_limits<T>::infinity())`
 The only exception is the partial specialization `grb::min<T, U, void>` when
 `T` and `U` are not the same type.
 
@@ -59,25 +60,35 @@ The only exception is the partial specialization `grb::min<T, U, void>` when
 #### `grb::min<void, void, void>`
 ```cpp
 template <>
-class min<void, void, void>;
+struct min<void, void, void>;
 ```
 Version of `grb::min` with both arguments and return types deduced.
 
 #### grb::min::operator()
 
 ```cpp
+template <std::integral T, std::integral U>
+constexpr auto operator()(const T& a, const U& b) const
+  -> std::conditional_t<
+       std::cmp_less(std::numeric_limits<U>::lowest(),
+                     std::numeric_limits<T>::lowest()),
+       U, T
+     >;
+
 template <typename T, typename U>
-constexpr auto min(const T& lhs, const U& rhs)
-  -> decltype(std::numeric_limits<U>::min() < std::numeric_limits<T>::min()
-                ? std::declval<U>()
-                : std::declval<T>());
+constexpr auto operator()(const T& a, const U& b) const
+  -> std::conditional_t<
+       std::numeric_limits<U>::lowest() < std::numeric_limits<T>::lowest(),
+       U, T
+     >
+requires(!(std::is_integral_v<T> && std::is_integral_v<U>));
 ```
 
 #### `grb::min<T, U, void>`
 
 ```cpp
 template <typename T = void, typename U = T>
-class min<T, U, void>;
+struct min<T, U, void>;
 ```
 
 Version of `grb::min` with explicit types for the arguments, but return type deduced.
@@ -85,8 +96,17 @@ Version of `grb::min` with explicit types for the arguments, but return type ded
 #### grb::min::operator()
 
 ```cpp
-constexpr auto min(const T& lhs, const U& rhs)
-  -> decltype(std::numeric_limits<U>::min() < std::numeric_limits<T>::min()
-                ? std::declval<U>()
-                : std::declval<T>());
+constexpr auto operator()(const T& a, const U& b) const
+  -> std::conditional_t<
+       std::cmp_less(std::numeric_limits<U>::lowest(),
+                     std::numeric_limits<T>::lowest()),
+       U, T
+     >;
+
+constexpr auto operator()(const T& a, const U& b) const
+  -> std::conditional_t<
+       std::numeric_limits<U>::lowest() < std::numeric_limits<T>::lowest(),
+       U, T
+     >
+requires(!(std::is_integral_v<T> && std::is_integral_v<U>));
 ```
