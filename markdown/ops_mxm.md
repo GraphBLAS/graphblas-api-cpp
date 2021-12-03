@@ -19,7 +19,9 @@ Multiplies two GraphBLAS matrices using the operators and identity defined by a 
              BMatrixType      const &B,
              OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
 ```
+
 -----
+
 ```cpp
     // ...or...
     template<typename CMatrixType,
@@ -38,7 +40,9 @@ Multiplies two GraphBLAS matrices using the operators and identity defined by a 
              BMatrixType      const &B,
              OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
 ```
+
 -----
+
 ```cpp
     // ...or...from RGRI...
     template<typename AMatrixType,
@@ -53,6 +57,7 @@ Multiplies two GraphBLAS matrices using the operators and identity defined by a 
                   MaskType&&        Mask   = grb::full_mask(), // or grb::no_mask()
                   OutputControlEnum outp   = MERGE);           // bool replace = false);
 ```
+
 -----
 
 ## Notes

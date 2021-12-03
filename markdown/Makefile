@@ -23,7 +23,8 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
 	       divides.md \
 	       max.md \
 	       min.md \
-	       concepts.md
+	       concepts.md \
+	       ops_mxm.md
 
 clean:
 	rm -fv *.pdf *.html
