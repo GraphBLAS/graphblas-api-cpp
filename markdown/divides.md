@@ -2,7 +2,7 @@
 
 ```cpp
 template <typename T = void, typename U = T, typename V = void>
-class divides;
+struct divides;
 ```
 
 `grb::divides` is a binary operator that divides two values.
@@ -54,7 +54,7 @@ May throw exceptions if the underlying `operator/()` operation throws exceptions
 #### `grb::divides<void, void, void>`
 ```cpp
 template <>
-class divides<void, void, void>;
+struct divides<void, void, void>;
 ```
 Version of `grb::divides` with both arguments and return types deduced.
 
@@ -70,7 +70,7 @@ constexpr auto operator()(T&& lhs, U&& rhs) const
 
 ```cpp
 template <typename T = void, typename U = T>
-class divides<T, U, void>;
+struct divides<T, U, void>;
 ```
 
 Version of `grb::divides` with explicit types for the arguments, but return type deduced.

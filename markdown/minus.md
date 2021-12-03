@@ -2,7 +2,7 @@
 
 ```cpp
 template <typename T = void, typename U = T, typename V = void>
-class minus;
+struct minus;
 ```
 
 `grb::minus` is a binary operator that subtracts two values.
@@ -54,7 +54,7 @@ May throw exceptions if the underlying `operator-()` operation throws exceptions
 #### `grb::minus<void, void, void>`
 ```cpp
 template <>
-class minus<void, void, void>;
+struct minus<void, void, void>;
 ```
 Version of `grb::minus` with both arguments and return types deduced.
 
@@ -70,7 +70,7 @@ constexpr auto operator()(T&& lhs, U&& rhs) const
 
 ```cpp
 template <typename T = void, typename U = T>
-class minus<T, U, void>;
+struct minus<T, U, void>;
 ```
 
 Version of `grb::minus` with explicit types for the arguments, but return type deduced.

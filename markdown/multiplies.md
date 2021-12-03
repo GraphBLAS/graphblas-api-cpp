@@ -2,7 +2,7 @@
 
 ```cpp
 template <typename T = void, typename U = T, typename V = void>
-class multiplies;
+struct multiplies;
 ```
 
 `grb::multiplies` is a binary operator.  It forms a monoid on arithmetic types.
@@ -56,7 +56,7 @@ The only exception is the partial specialization `grb::multiplies<T, U, void>` w
 ##### `grb::multiplies<void, void, void>`
 ```cpp
 template <>
-class multiplies<void, void, void>;
+struct multiplies<void, void, void>;
 ```
 Version of `grb::multiplies` with both arguments and return types deduced.
 
@@ -72,7 +72,7 @@ constexpr auto operator()(T&& lhs, U&& rhs) const
 
 ```cpp
 template <typename T = void, typename U = T>
-class multiplies<T, U, void>;
+struct multiplies<T, U, void>;
 ```
 
 Version of `grb::multiplies` with explicit types for the arguments, but return type deduced.

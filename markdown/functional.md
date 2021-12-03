@@ -20,7 +20,7 @@ All binary operators have the following default template parameters:
 
 ```cpp
 template <typename T = void, typename U = T, typename V = void>
-class op;
+struct op;
 ```
 
 This means the user can use a binary operator with zero, one, two, or three template parameters explicitly specified.

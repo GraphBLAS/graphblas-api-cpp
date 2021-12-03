@@ -2,7 +2,7 @@
 
 ```cpp
 template <typename T = void, typename U = T, typename V = void>
-class plus;
+struct plus;
 ```
 
 `grb::plus` is a binary operator.  It forms a monoid on arithmetic types.
@@ -56,7 +56,7 @@ The only exception is the partial specialization `grb::plus<T, U, void>` when
 #### `grb::plus<void, void, void>`
 ```cpp
 template <>
-class plus<void, void, void>;
+struct plus<void, void, void>;
 ```
 Version of `grb::plus` with both arguments and return types deduced.
 
@@ -72,7 +72,7 @@ constexpr auto operator()(T&& lhs, U&& rhs) const
 
 ```cpp
 template <typename T = void, typename U = T>
-class plus<T, U, void>;
+struct plus<T, U, void>;
 ```
 
 Version of `grb::plus` with explicit types for the arguments, but return type deduced.
