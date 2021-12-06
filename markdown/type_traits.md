@@ -64,3 +64,19 @@ static constexpr T grb::monoid_traits<Fn, T>::identity() noexcept {
 ```
 
 ### Specializations
+
+```cpp
+template <std::arithmetic T>
+struct grb::monoid_traits<std::plus<T>, T>;
+
+template <std::arithmetic T>
+struct grb::monoid_traits<std::plus<void>, T>;
+```
+
+```cpp
+template <std::arithmetic T>
+struct grb::monoid_traits<std::multiplies<T>, T>;
+
+template <std::arithmetic T>
+struct grb::monoid_traits<std::multiplies<void>, T>;
+```
