@@ -26,7 +26,7 @@ Method | Description
 ----- | -----
 `operator()` | returns the product of the two arguments
 
-#### grb::multiplies::operator()
+#### `grb::multiplies::operator()`
 
 ```cpp
 constexpr V operator()( const T& lhs, const U& rhs ) const;
@@ -60,7 +60,7 @@ struct multiplies<void, void, void>;
 ```
 Version of `grb::multiplies` with both arguments and return types deduced.
 
-##### grb::multiplies::operator()
+##### `grb::multiplies::operator()`
 
 ```cpp
 template <typename T, typename U>
@@ -77,7 +77,7 @@ struct multiplies<T, U, void>;
 
 Version of `grb::multiplies` with explicit types for the arguments, but return type deduced.
 
-##### grb::multiplies::operator()
+##### `grb::multiplies::operator()`
 
 ```cpp
 constexpr auto operator()(const T& lhs, const U& rhs) const

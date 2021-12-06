@@ -29,7 +29,7 @@ Method | Description
 ----- | -----
 `operator()` | returns the smaller of two arguments
 
-#### grb::min::operator()
+#### `grb::min::operator()`
 
 ```cpp
 constexpr V operator()( const T& lhs, const U& rhs ) const;
@@ -64,7 +64,7 @@ struct min<void, void, void>;
 ```
 Version of `grb::min` with both arguments and return types deduced.
 
-#### grb::min::operator()
+#### `grb::min::operator()`
 
 ```cpp
 template <std::integral T, std::integral U>
@@ -93,7 +93,7 @@ struct min<T, U, void>;
 
 Version of `grb::min` with explicit types for the arguments, but return type deduced.
 
-#### grb::min::operator()
+#### `grb::min::operator()`
 
 ```cpp
 constexpr auto operator()(const T& a, const U& b) const

@@ -26,8 +26,7 @@ Method | Description
 ----- | -----
 `operator()` | returns the sum of the two arguments
 
-#### grb::plus::operator()
-
+#### `grb::plus::operator()` 
 ```cpp
 constexpr V operator()( const T& lhs, const U& rhs ) const;
 ```
@@ -60,7 +59,7 @@ struct plus<void, void, void>;
 ```
 Version of `grb::plus` with both arguments and return types deduced.
 
-#### grb::plus::operator()
+#### `grb::plus::operator()`
 
 ```cpp
 template <typename T, typename U>
@@ -77,7 +76,7 @@ struct plus<T, U, void>;
 
 Version of `grb::plus` with explicit types for the arguments, but return type deduced.
 
-#### grb::plus::operator()
+#### `grb::plus::operator()`
 
 ```cpp
 constexpr auto operator()(const T& lhs, const U& rhs) const

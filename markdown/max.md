@@ -28,7 +28,7 @@ Method | Description
 ----- | -----
 `operator()` | returns the larger of two arguments
 
-#### grb::max::operator()
+#### `grb::max::operator()`
 
 ```cpp
 constexpr V operator()( const T& lhs, const U& rhs ) const;
@@ -63,7 +63,7 @@ struct max<void, void, void>;
 ```
 Version of `grb::max` with both arguments and return types deduced.
 
-#### grb::max::operator()
+#### `grb::max::operator()`
 
 ```cpp
 template <std::integral T, std::integral U>
@@ -92,7 +92,7 @@ struct max<T, U, void>;
 
 Version of `grb::max` with explicit types for the arguments, but return type deduced.
 
-#### grb::max::operator()
+#### `grb::max::operator()`
 
 ```cpp
 constexpr auto operator()(const T& a, const U& b) const

@@ -26,7 +26,7 @@ Method | Description
 ----- | -----
 `operator()` | returns the difference of the two arguments
 
-#### grb::minus::operator()
+#### `grb::minus::operator()`
 
 ```cpp
 constexpr V operator()( const T& lhs, const U& rhs ) const;
@@ -58,7 +58,7 @@ struct minus<void, void, void>;
 ```
 Version of `grb::minus` with both arguments and return types deduced.
 
-#### grb::minus::operator()
+#### `grb::minus::operator()`
 
 ```cpp
 template <typename T, typename U>
@@ -75,7 +75,7 @@ struct minus<T, U, void>;
 
 Version of `grb::minus` with explicit types for the arguments, but return type deduced.
 
-#### grb::minus::operator()
+#### `grb::minus::operator()`
 
 ```cpp
 constexpr auto operator()(const T& lhs, const U& rhs) const

@@ -24,6 +24,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
 	       max.md \
 	       min.md \
 	       concepts.md \
+	       type_traits.md \
 	       ops_mxm.md
 
 clean:
