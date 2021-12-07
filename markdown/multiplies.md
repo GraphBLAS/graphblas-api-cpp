@@ -48,9 +48,8 @@ May throw exceptions if the underlying `operator*()` operation throws exceptions
 
 #### Monoid Traits
 
-`grb::multiplies` forms a monoid for arithmetic types with the identity value `1`.
-The only exception is the partial specialization `grb::multiplies<T, U, void>` when
-`T` and `U` are not the same type.
+`grb::multiplies` forms a monoid on any arithmetic type `A` with the identity value `1`,
+as long as `T`, `U`, and `V` are equal to void or `A`.
 
 #### Specialization Details
 ##### `grb::multiplies<void, void, void>`

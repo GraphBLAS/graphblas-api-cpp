@@ -50,10 +50,9 @@ May throw exceptions if the underlying `operator<()` operation throws exceptions
 
 #### Monoid Traits
 
-`grb::max` forms a monoid for any arithmetic type `T` with the identity value
-`std::min(std::numeric_limits<T>::lowest(), -std::numeric_limits<T>::infinity())`.
-The only exception is the partial specialization `grb::max<T, U, void>` when
-`T` and `U` are not the same type.
+`grb::max` forms a monoid on any arithmetic type `A` with the identity value
+`std::min(std::numeric_limits<A>::lowest(), -std::numeric_limits<A>::infinity())`,
+as long as `T`, `U`, and `V` are equal to void or `A`.
 
 ### Specialization Details
 #### `grb::max<void, void, void>`
