@@ -26,7 +26,7 @@ Method | Description
 ----- | -----
 `operator()` | returns the difference of the two arguments
 
-#### grb::divides::operator()
+#### `grb::divides::operator()`
 
 ```cpp
 constexpr V operator()( const T& lhs, const U& rhs ) const;
@@ -58,7 +58,7 @@ struct divides<void, void, void>;
 ```
 Version of `grb::divides` with both arguments and return types deduced.
 
-#### grb::divides::operator()
+#### `grb::divides::operator()`
 
 ```cpp
 template <typename T, typename U>

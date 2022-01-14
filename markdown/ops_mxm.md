@@ -23,6 +23,25 @@ Multiplies two GraphBLAS matrices using the operators and identity defined by a 
 -----
 
 ```cpp
+    // Using concepts
+    template<matrix_c            C_matrix_t,
+             mask_matrix_view_c  mask_t,
+             binary_op_c         accum_op_t,
+             semiring_op_c       semiring_op_t,
+             const_matrix_view_c A_matrix_t,
+             const_matrix_view_c B_matrix_t>
+    void mxm(CMatrixType            &C,
+             mask_t           const &Mask,
+             accum_op_t              accum,   // pass by value or const& or &&?
+             semiring_op_t           op,      // pass by value or const& or &&?
+             A_matrix_t       const &A,
+             B_matrix_t       const &B,
+             OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
+```
+
+-----
+
+```cpp
     // ...or...
     template<typename CMatrixType,
              typename MaskType,
@@ -38,6 +57,25 @@ Multiplies two GraphBLAS matrices using the operators and identity defined by a 
              MapType                 map,     // pass by value or const& or &&?
              AMatrixType      const &A,
              BMatrixType      const &B,
+             OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
+```
+
+```cpp
+    // ...or, using concepts, ...
+    template<matrix_c             C_matrix_t,
+             mask_matrix_view_c   mask_t,
+             binary_op_c          accum_op_t,
+             commutative_monoid_c reduce_op_t,
+             binary_op_c          map_op_t,
+             const_matrix_view_c  A_matrix_t,
+             const_matrix_view_c  B_matrix_t>
+    void mxm(C_matrix_t             &C,
+             mask_t           const &Mask,
+             accum_op_t              accum,   // pass by value or const& or &&?
+             reduce_op_t             reduce,  // pass by value or const& or &&?
+             map_op_t                map,     // pass by value or const& or &&?
+             A_matrix_t       const &A,
+             B_matrix_t       const &B,
              OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
 ```
 
@@ -81,13 +119,14 @@ Parameter | In/Out | Definition
 
 Method | Description
 ----- | -----
-`CMatrixType` | Must meet the requirements of `MatrixView`(?)
-`AMatrixType`, `BMatrixType` | Must meet the requirements of `ConstMatrixView`
-`MaskType` | Must meet the requirements of `ConstMaskView` (or just `MaskView` if they are all const) [Note: the elements of the mask view must be convertible to bool.]
-`AccumulatorType` | Must meet the requirements of `BinaryOperator` (is this a thing?)
-`Semiring` | Must meet the requirements of `SemiringOperator` (is this a thing?)
-`ReduceType` or `ReduceFn` | Must meet the requirements `CommutativeMonoid` (or must `Monoid` or `GraphBLASMonoid`?)
-`MapType` or `MapFn` or `CombineFn` | Must meet the requirements of `BinaryOperator` (is this a thing?)
+`CMatrixType`/`C_matrix_t` | Must meet the requirements of `MatrixView`/`matrix_c` (?)
+`AMatrixType`/`A_matrix_t`, `BMatrixType`/`B_matrix_t` | Must meet the requirements of `ConstMatrixView`/`const_matrix_view_c`
+`MaskType`/`mask_t` | Must meet the requirements of `ConstMaskView`/`const_mask_matrix_view_c` (or just `MaskView`/`mask_matrix_view_c` if they are all const) [Note: the elements of the mask view must be convertible to bool.]
+`AccumulatorType`/`accum_op_t` | Must meet the requirements of `BinaryOperator`/`binary_op_c` 
+`Semiring`/`semiring_op_t` | Must meet the requirements of `SemiringOperator`/`semiring_op_c` (is this a thing?)
+`ReduceType` or `ReduceFn`/`reduce_op_t` | Must meet the requirements `CommutativeMonoid`/`commutative_monoid_c` (or must `Monoid`/`monoid_c` or `GraphBLASMonoid`/`graphblas_monoid_c`?)
+`MapType` or `MapFn` or `CombineFn` / `map_op_t` | Must meet the requirements of `BinaryOperator`/`binary_op_c` (is this a thing?)
+
 
 ## Return value
 

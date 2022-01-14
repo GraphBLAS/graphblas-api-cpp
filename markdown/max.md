@@ -28,7 +28,7 @@ Method | Description
 ----- | -----
 `operator()` | returns the larger of two arguments
 
-#### grb::max::operator()
+#### `grb::max::operator()`
 
 ```cpp
 constexpr V operator()( const T& lhs, const U& rhs ) const;
@@ -50,10 +50,9 @@ May throw exceptions if the underlying `operator<()` operation throws exceptions
 
 #### Monoid Traits
 
-`grb::max` forms a monoid for any arithmetic type `T` with the identity value
-`std::min(std::numeric_limits<T>::lowest(), -std::numeric_limits<T>::infinity())`.
-The only exception is the partial specialization `grb::max<T, U, void>` when
-`T` and `U` are not the same type.
+`grb::max` forms a monoid on any arithmetic type `A` with the identity value
+`std::min(std::numeric_limits<A>::lowest(), -std::numeric_limits<A>::infinity())`,
+as long as `T`, `U`, and `V` are equal to void or `A`.
 
 ### Specialization Details
 #### `grb::max<void, void, void>`
@@ -63,7 +62,7 @@ struct max<void, void, void>;
 ```
 Version of `grb::max` with both arguments and return types deduced.
 
-#### grb::max::operator()
+#### `grb::max::operator()`
 
 ```cpp
 template <std::integral T, std::integral U>
@@ -92,7 +91,7 @@ struct max<T, U, void>;
 
 Version of `grb::max` with explicit types for the arguments, but return type deduced.
 
-#### grb::max::operator()
+#### `grb::max::operator()`
 
 ```cpp
 constexpr auto operator()(const T& a, const U& b) const
