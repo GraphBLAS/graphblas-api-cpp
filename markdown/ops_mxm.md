@@ -2,9 +2,49 @@
 
 Multiplies two GraphBLAS matrices using the operators and identity defined by a GraphBLAS semiring. An optional accumulator and write mask can also be specified. The result is stored in third GraphBLAS matrix.
 
+```cpp
+    // Using typenames with in conjunction with named requirements (instead of concepts)
+    template<typename CMatrixType,
+             typename MaskType,
+             typename AccumulatorType,
+             typename ReduceType,
+             typename MapType
+             typename AMatrixType,
+             typename BMatrixType>
+    void mxm(CMatrixType            &C,
+             MaskType         const &Mask,
+             AccumulatorType         accum,    // pass by value or const& or &&?
+             ReduceType              reducer,  // pass by value or const& or &&?
+             MapType                 mapper,   // pass by value or const& or &&?
+             AMatrixType      const &A,
+             BMatrixType      const &B,
+             OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
+```
 
 ```cpp
-    // TODO: replace all typenames with concept names
+    // ...or, using concepts, ...
+    template<matrix_c             C_matrix_t,
+             mask_matrix_view_c   mask_t,
+             binary_op_c          accum_op_t,
+             commutative_monoid_c reduce_op_t,
+             binary_op_c          map_op_t,
+             const_matrix_view_c  A_matrix_t,
+             const_matrix_view_c  B_matrix_t>
+    void mxm(C_matrix_t             &C,
+             mask_t           const &Mask,
+             accum_op_t              accum,    // pass by value or const& or &&?
+             reduce_op_t             reducer,  // pass by value or const& or &&?
+             map_op_t                mapper,   // pass by value or const& or &&?
+             A_matrix_t       const &A,
+             B_matrix_t       const &B,
+             OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
+```
+
+-----
+<del>
+
+```cpp
+    // ...or...
     template<typename CMatrixType,
              typename MaskType,
              typename AccumulatorType,
@@ -30,50 +70,10 @@ Multiplies two GraphBLAS matrices using the operators and identity defined by a 
              semiring_op_c       semiring_op_t,
              const_matrix_view_c A_matrix_t,
              const_matrix_view_c B_matrix_t>
-    void mxm(CMatrixType            &C,
-             mask_t           const &Mask,
-             accum_op_t              accum,   // pass by value or const& or &&?
-             semiring_op_t           op,      // pass by value or const& or &&?
-             A_matrix_t       const &A,
-             B_matrix_t       const &B,
-             OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
-```
-
------
-
-```cpp
-    // ...or...
-    template<typename CMatrixType,
-             typename MaskType,
-             typename AccumulatorType,
-             typename ReduceType,
-             typename MapType
-             typename AMatrixType,
-             typename BMatrixType>
-    void mxm(CMatrixType            &C,
-             MaskType         const &Mask,
-             AccumulatorType         accum,   // pass by value or const& or &&?
-             ReduceType              reduce,  // pass by value or const& or &&?
-             MapType                 map,     // pass by value or const& or &&?
-             AMatrixType      const &A,
-             BMatrixType      const &B,
-             OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
-```
-
-```cpp
-    // ...or, using concepts, ...
-    template<matrix_c             C_matrix_t,
-             mask_matrix_view_c   mask_t,
-             binary_op_c          accum_op_t,
-             commutative_monoid_c reduce_op_t,
-             binary_op_c          map_op_t,
-             const_matrix_view_c  A_matrix_t,
-             const_matrix_view_c  B_matrix_t>
     void mxm(C_matrix_t             &C,
              mask_t           const &Mask,
              accum_op_t              accum,   // pass by value or const& or &&?
-             reduce_op_t             reduce,  // pass by value or const& or &&?
-             map_op_t                map,     // pass by value or const& or &&?
+             semiring_op_t           op,      // pass by value or const& or &&?
              A_matrix_t       const &A,
              B_matrix_t       const &B,
              OutputControlEnum       outp = MERGE);  // or bool replace_flag = false);
@@ -95,7 +95,7 @@ Multiplies two GraphBLAS matrices using the operators and identity defined by a 
                   MaskType&&        Mask   = grb::full_mask(), // or grb::no_mask()
                   OutputControlEnum outp   = MERGE);           // bool replace = false);
 ```
-
+</del>
 -----
 
 ## Notes
