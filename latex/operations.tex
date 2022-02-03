@@ -183,9 +183,25 @@ that are found in the C API Specification or can we refer to that spec here?}
                  grb::MERGE);
         // ...
         // using all possible matrix views
-        grb::mxm(C, complement(structure(M)), grb::NoAccumulate(), 
-                 grb::PlusTimesSemiring<float>(), transpose(A), transpose(B),
+        grb::mxm(C, grb::complement(grb::structure(M)), grb::NoAccumulate(), 
+                 grb::PlusTimesSemiring<float>(), grb::transpose(A), grb::transpose(B),
                  grb::REPLACE);
+
+        // the alternate map-reduce form
+        // using all possible matrix views
+        grb::mxm(C, grb::complement(grb::structure(M)), grb::NoAccumulate(), 
+                 grb::Plus<float>(), grb::Times<float>(),
+                 grb::transpose(A), grb::transpose(B),
+                 grb::REPLACE);
+
+        // the alternate map-reduce form using lambdas
+        // using all possible matrix views
+        grb::mxm(C, grb::complement(grb::structure(M)), grb::NoAccumulate(), 
+                 [&](auto const &c1, auto const &c2) { return c1 + c2; }, // reducer
+                 [&](auto const &a,  auto const &b)  { return a * b; },   // mapper
+                 grb::transpose(A), grb::transpose(B),
+                 grb::REPLACE);
+                
 \end{minted}
 
 %-----------------------------------------------------------------------------
@@ -202,6 +218,13 @@ that are found in the C API Specification or can we refer to that spec here?}
     auto multiply(AMatrixType const &A, BMatrixType const &B,
                   SemiringType semiring_op, MaskType const &Mask=MaskType());  // const& ?
 \end{verbatim}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
 
 %-----------------------------------------------------------------------------
 \section{{\sf mxv}: matrix-vector multiply}
@@ -240,6 +263,13 @@ that are found in the C API Specification or can we refer to that spec here?}
              AMatrixType      const &A,
              UVectorType      const &u,
              OutputControlEnum       outp = MERGE);  //or bool replace_flag = false);
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 %-----------------------------------------------------------------------------
@@ -282,6 +312,13 @@ that are found in the C API Specification or can we refer to that spec here?}
 \end{minted}
 
 
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 \section{{\sf ewisemult}: element-wise multiplication, set intersection}
 
@@ -317,6 +354,13 @@ that are found in the C API Specification or can we refer to that spec here?}
                    AMatrixT                    const &A,
                    BMatrixT                    const &B,
                    OutputControlEnum                  outp = MERGE);  // default val?
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 
@@ -358,6 +402,13 @@ that are found in the C API Specification or can we refer to that spec here?}
 \end{minted}
 
 
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 %-----------------------------------------------------------------------------
 \subsection{{\sf extract}: }
@@ -382,6 +433,13 @@ that are found in the C API Specification or can we refer to that spec here?}
                  OutputControlEnum        outp = MERGE);  // default val?
 \end{minted}
 
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
+
 %-----------------------------------------------------------------------------
 \subsection{{\sf extract}: standard matrix variant}
 
@@ -402,6 +460,13 @@ that are found in the C API Specification or can we refer to that spec here?}
                  RowSequenceT             const &row_indices,
                  ColSequenceT             const &col_indices,
                  OutputControlEnum               outp = MERGE);  // default val?
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 %-----------------------------------------------------------------------------
@@ -426,12 +491,26 @@ that are found in the C API Specification or can we refer to that spec here?}
 \end{minted}
 
 
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 \section{{\sf assign}: }
 
 \scott{We need a sequence name requirement that is either an index array, 
 range of indices, and/or some other iterable that e.g. could be specified with
 [begin:stride:end)}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
 
 
 %-----------------------------------------------------------------------------
@@ -452,6 +531,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
                 UVectorType              const  &u,
                 SequenceType             const  &indices,
                 OutputControlEnum                outp = MERGE);
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 %-----------------------------------------------------------------------------
@@ -477,6 +563,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
 \end{minted}
 
 
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 \subsection{{\sf assign}: column variant}
 
@@ -498,6 +591,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
 \end{minted}
 
 
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 \subsection{{\sf assign}: row variant}
 
@@ -516,6 +616,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
                 I                            row_index,  // size_t?
                 SequenceType             const &col_indices,
                 OutputControlEnum            outp = MERGE)
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 
@@ -543,6 +650,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
 \end{minted}
 
 
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 \subsection{{\sf assign}: matrix constant variant}
 
@@ -566,6 +680,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
                 RowSequenceType   const &row_indices,
                 ColSequenceType   const &col_indices,
                 OutputControlEnum        outp = MERGE)
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 
@@ -599,14 +720,47 @@ range of indices, and/or some other iterable that e.g. could be specified with
              typename AccumulatorType,
              typename IndexUnaryOpType,
              typename UVectorType>
-    void applyi(vector<T, I, Hint, Allocator>  &w,
-                MaskType                 const &mask,
-                AccumulatorType                 accum,
-                IndexUnaryOpType                op,
-              //ValueType                const &thunk
-                UVectorType              const &u,
-                OutputControlEnum               outp = MERGE);
+    void apply(vector<T, I, Hint, Allocator>  &w,
+               MaskType                 const &mask,
+               AccumulatorType                 accum,
+               IndexUnaryOpType                op,
+               ValueType                const &s
+               UVectorType              const &u,
+               OutputControlEnum               outp = MERGE);
+\end{minted}
 
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+        // take the absolute value of all stored elements using predefined unary op
+        grb::apply(u, grb::NoMask(), grb::NoAccumulate(),
+                   grb::abs<float>(),
+                   s);
+
+        // using a lamba to multiply each stored value by a random number
+        std::default_random_engine             generator;
+        std::uniform_real_distribution<double> distribution;
+        grb::apply(p, grb::NoMask(), grb::NoAccumulate(),
+                   [&](bool tval)      //set_random,
+                   {
+                       return static_cast<RealT>(
+                           tval*distribution(generator) + 0.0001);
+                   },
+                   t);
+
+        // Adapting a binary operator to multiply all elements of m by scalar damping_factor
+        grb::apply(m, grb::NoMask(), grb::NoAccumulate(),
+                   std::bind(grb::times<RealT>(),
+                             std::placeholders::_1,
+                             damping_factor),
+                   m);
+                   
+        // Using an index unary operator to replace all elements with their row index
+        grb::apply(ri, grb::NoMask(), grb::NoAccumulate(),
+                   grb::row_index<m::value_type>(),   // TODO predefined signature 
+                   0UL,
+                   m);
 \end{minted}
 
 %-----------------------------------------------------------------------------
@@ -632,13 +786,48 @@ range of indices, and/or some other iterable that e.g. could be specified with
              typename AccumulatorType,
              typename IndexUnaryOpType,
              typename AMatrixType>
-    void applyi(matrix<T, I, Hint, Allocator>  &C,
-                MaskType                 const &Mask,
-                AccumulatorType                 accum,
-                IndexUnaryOpType                op,
-              //ValueType                const &thunk
-                AMatrixType              const &A,
-                OutputControlEnum               outp = MERGE);
+    void apply(matrix<T, I, Hint, Allocator>  &C,
+               MaskType                 const &Mask,
+               AccumulatorType                 accum,
+               IndexUnaryOpType                op,
+               ValueType                const &s
+               AMatrixType              const &A,
+               OutputControlEnum               outp = MERGE);
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+        // take the absolute value of all stored elements using predefined unary op
+        grb::apply(U, grb::NoMask(), grb::NoAccumulate(),
+                   grb::abs<float>(),
+                   S);
+
+        // using a lamba to multiply each stored value by a random number
+        std::default_random_engine             generator;
+        std::uniform_real_distribution<double> distribution;
+        grb::apply(P, grb::NoMask(), grb::NoAccumulate(),
+                   [&](bool tval)      //set_random,
+                   {
+                       return static_cast<RealT>(
+                           tval*distribution(generator) + 0.0001);
+                   },
+                   T);
+
+        // Adapting a binary operator to multiply all elements of m by scalar damping_factor
+        grb::apply(M, grb::NoMask(), grb::NoAccumulate(),
+                   std::bind(grb::times<RealT>(),
+                             std::placeholders::_1,
+                             damping_factor),
+                   M);
+                   
+        // Using an index unary operator to replace all elements with their row index
+        grb::apply(Ri, grb::NoMask(), grb::NoAccumulate(),
+                   grb::row_index<m::value_type>(),   // TODO predefined signature 
+                   0UL,
+                   M);
+
 \end{minted}
 
 
@@ -663,9 +852,16 @@ range of indices, and/or some other iterable that e.g. could be specified with
                 MaskType                 const &mask,
                 AccumulatorType                 accum,
                 IndexUnaryOpType                op,
-              //ValueType                const &thunk
+                ValueType                const &s
                 UVectorType              const &u,
                 OutputControlEnum               outp = MERGE);
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 
@@ -687,6 +883,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
               //ValueType                const &thunk
                 AMatrixType              const &A,
                 OutputControlEnum               outp = MERGE);
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 
@@ -715,6 +918,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
 \end{minted}
 
 
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 \subsection{{\sf reduce}: vector-to-scalar variant}
 
@@ -729,6 +939,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
                 AccumulatorType                       accum,
                 MonoidType                            op,
                 vector<T, I, Hint, Allocator>  const &u);
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 
@@ -751,6 +968,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
 \end{minted}
 
 
+\paragraph{Example}
+
+\begin{minted}{c++}
+
+\end{minted}
+
+
 %-----------------------------------------------------------------------------
 \section{{\sf transpose}: }
 
@@ -766,6 +990,13 @@ range of indices, and/or some other iterable that e.g. could be specified with
                    AccumulatorType       accum,
                    AMatrixType    const &A,
                    OutputControlEnum     outp = MERGE);
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
 
@@ -788,5 +1019,12 @@ range of indices, and/or some other iterable that e.g. could be specified with
                    AMatrixType    const &A,
                    BMatrixType    const &B,
                    OutputControlEnum     outp = MERGE);
+\end{minted}
+
+
+\paragraph{Example}
+
+\begin{minted}{c++}
+
 \end{minted}
 
