@@ -22,4 +22,6 @@ Discuss Jose Moreira's categorization of "sparse BLAS" and "semiring BLAS"
 
 - Scott presented slides on matrix multiply, comparing lambda syntax with and without semirings.  Using a semiring requires adding a `make_semiring` clause in `mxm`, versus having multiple arguments.
 
+- Scott suggests requiring the semiring just adds bulkiness to the call, which is inelegant.
+
 ![](assets/2022-05-10-120147_1256x859_scrot.png)
