@@ -15,6 +15,8 @@ Discuss Jose Moreira's categorization of "sparse BLAS" and "semiring BLAS"
 - Jose asserted that `ewiseAdd` and `ewiseMult` should not accept monoids or binary ops, as they lose their semantic meaning without a semiring.
 - Instead, `ewiseUnion` and `ewiseIntersection` could accept binary ops, as well-defined set operations.
 
+![](2022-05-10-120718_878x495_scrot.png)
+
 - Tim asserted that keeping an implied zero is a "longstanding practice in sparse linear algebra" that greatly simplifies things.
 - The only reason `ewiseAdd` and `ewiseMult` make sense is because they correspond to that implied zero.
 
