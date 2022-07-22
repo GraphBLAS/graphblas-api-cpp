@@ -1,4 +1,4 @@
-# GraphBLAS Languages Committee Meeting (on C++ API) - May 10, 2022
+# GraphBLAS Languages Committee Meeting (on C++ API) - May 24, 2022
 
 ## Attendees
 - [X] Ben Brock
