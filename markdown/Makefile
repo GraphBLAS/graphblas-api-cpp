@@ -37,6 +37,8 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES)
 				 min.md \
 				 concepts.md \
 				 type_traits.md \
+				 algorithms.md \
+				 multiply.md \
 				 ops_mxm.md
 
 graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
@@ -63,6 +65,8 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
 	       min.md \
 	       concepts.md \
 	       type_traits.md \
+	       algorithms.md \
+	       multiply.md \
 	       ops_mxm.md
 
 clean:

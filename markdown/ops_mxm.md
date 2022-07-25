@@ -1,5 +1,7 @@
 # Matrix-matrix multiplication: `mxm`
 
+_TODO: this should probably be brought under "operations" as a header, to align with the way I'm writing multiply. Basically all the headings would need to go down one level. I'll take a look at this after I've worked out more of multiply._
+
 Multiplies two GraphBLAS matrices using the operators and identity defined by a GraphBLAS semiring. An optional accumulator and write mask can also be specified. The result is stored in third GraphBLAS matrix.
 
 ```cpp

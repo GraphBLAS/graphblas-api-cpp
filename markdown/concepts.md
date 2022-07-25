@@ -64,7 +64,6 @@ concept MatrixRange = std::ranges::sized_range<M> &&
   };
 ```
 ## Mutable Matrix Range
-
 Some matrices and matrix-like objects are *mutable*, meaning that their stored values may be modified.  Examples of mutable matrix ranges include instantiations of `grb::matrix` and certain matrix views that allow adding new values and modifying old values, such as `grb::transpose`.  We say that a type `M` is a mutable matrix range for the scalar value `T` if the following semantic requirements are met.
 
 ### Semantic Requirements
@@ -84,6 +83,20 @@ concept MutableMatrixRange = MatrixRange<M> &&
     matrix.insert({{grb::matrix_index_type_t<M>{}, grb::matrix_index_type_t<M>{}},
                    value}) -> std::ranges::iterator_t<M>;
   }
+```
+## Mask Matrix Range
+Some operations require masks, which can be used to avoid computing and storing certain parts of the output.  We say that a type `M` is a mask matrix range if the following semantic requirements are met.
+
+### Semantic Requirements
+1) `M` is a matrix range.
+2) The scalar value type of `M` is convertible to `bool`.
+
+#### C++20 Concept
+
+```cpp
+template <typename T>
+concept MaskMatrixRange = MatrixRange<M> &&
+                          std::is_convertible_v<grb::matrix_scalar_type_t<M>, bool>;
 ```
 
 
