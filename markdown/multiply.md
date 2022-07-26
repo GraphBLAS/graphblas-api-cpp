@@ -64,3 +64,19 @@ when converted to `bool`.
 Each element of the output is produced by combing the elements in corresponding indices of a row of `a`
 and column of `b` and using `reduce` to perform a reduction to a single values, as defined in the
 [GraphBLAS Math Specification](https://github.com/GraphBLAS/graphblas-api-math).
+
+### Complexity
+TODO: do we make any promises about complexity?
+Something along the lines of $n^3$.
+
+### Exceptions
+The exception `grb::invalid_argument` may be thrown if any of the following conditions occur:
+
+- The dimensions of the matrices being multiplied are incompatible, that is `a.shape()[1] != b.shape()[0]`.
+- The dimensions of the mask are smaller than the dimensions of the output, that is `mask.shape()[0] < a.shape()[0] || mask.shape()[1] < b.shape()[1]`
+
+If the algorithm fails to allocate memory, `std::bad_alloc` is thrown.
+
+### Notes
+
+### Example
