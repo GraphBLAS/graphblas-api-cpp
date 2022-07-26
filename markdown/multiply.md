@@ -8,25 +8,27 @@ template <typename A,
           typename Mask = grb::full_mask<>
 >
 auto multiply(A&& a,
-	          B&& b,
-	          Reduce&& reduce = Reduce{},
-	          Combine&& combine = Combine{},
-	          Mask&& mask = Mask{});
+              B&& b,
+              Reduce&& reduce = Reduce{},
+              Combine&& combine = Combine{},
+              Mask&& mask = Mask{});
 ```
 
 ```cpp
 template <MatrixRange A,
           MatrixRange B,
-          BinaryOperator<grb::scalar_product_type_t<A, B>> Reduce,
           BinaryOperator<grb::matrix_value_type_t<A>, grb::matrix_value_type_t<B>> Combine,
+          BinaryOperator<grb::scalar_product_type_t<A, B, Combine>,
+                         grb::scalar_product_type_t<A, B, Combine>,
+                         grb::scalar_product_type_t<A, B, Combine>> Reduce,
           MaskMatrixRange Mask = grb::full_mask<>
 >
 multiply_result_t<A, B, Combine>
 multiply(A&& a,
-	     B&& b,
-	     Reduce&& reduce = Reduce{},
-	     Combine&& combine = Combine{},
-	     Mask&& mask = Mask{});
+         B&& b,
+         Reduce&& reduce = Reduce{},
+         Combine&& combine = Combine{},
+         Mask&& mask = Mask{});
 ```
 
 The behavior is non-deterministic if `reduce` is not associative or not commutative.
@@ -47,7 +49,7 @@ The behavior is non-deterministic if `reduce` is not associative or not commutat
 
 - `B` must meet the requirements of `MatrixRange`
 
-- `Reduce` must meet the requirements of `BinaryOperator<grb::scalar_product_type_t<A, B, Combine>>`
+- `Reduce` must meet the requirements of `BinaryOperator<grb::scalar_product_type_t<A, B, Combine>, grb::scalar_product_type_t<A, B, Combine>, grb::scalar_product_type_t<A, B, Combine>>`
 
 - `Combine` must meet the requirements of `BinaryOperator<grb::matrix_value_type_t<A>, grb::matrix_value_type_t<B>>`
 
