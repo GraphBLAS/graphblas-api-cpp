@@ -5,6 +5,57 @@ _TODO: this should probably be brought under "operations" as a header, to align 
 Multiplies two GraphBLAS matrices using the operators and identity defined by a GraphBLAS semiring. An optional accumulator and write mask can also be specified. The result is stored in third GraphBLAS matrix.
 
 ```cpp
+    // Attempt at using the concepts
+    // First some dependencies (these go somewhere else)
+    template <typename T, typename U>
+    U no_accumulate(T&& t, U&& u) {    // move definition somewhere else
+        return u;
+    }
+
+    template <typename Matrix>
+    using matrix_scalar_type_t = typename std::remove_cvref_t<Matrix>::scalar_type;
+
+    template <typename BinaryFn, typename AMat, typename BMat = AMat>
+    using grb::binop_result_type_t = decltype(
+        std::declval<BinaryFn>()(grb::matrix_scalar_type_t<AMat>,
+                                 grb::matrix_scalar_type_t<BMat>));
+
+    // Binary Operator overload
+    template<MatrixRange                                                 A,
+             MatrixRange                                                 B,
+             BinaryOperator<grb::matrix_scalar_type_t<A>,
+                            grb::matrix_scalar_type_t<B>>                Combine,
+             BinaryOperator<grb::binop_result_type_t<Combine, A, B>,
+                            grb::binop_result_type_t<Combine, A, B>,
+                            grb::binop_result_type_t<Combine, A, B>>     Reduce,
+             BinaryOperator<grb::matrix_scalar_type_t<C>,
+                            grb::binop_result_type<
+                               Reduce,
+                               grb::binop_result_type_t<Combine, A, B>,
+                               grb::binop_result_type_t<Combine, A, B>>,
+                            grb::matrix_value_type_t<C>>                 Accumulate = grb::no_accumulate,
+             MutableMatrixRange<
+                 grb::binop_result_type_t<
+                     Accumulate,
+                     grb::matrix_scalar_type_t<C>,
+                     grb::binop_result_type<
+                         Reduce,
+                         grb::binop_result_type_t<Combine, A, B>,
+                         grb::binop_result_type_t<Combine, A, B>>>       C,
+             MaskMatrixRange                                             Mask = grb::no_mask>   // or grb::full_mask
+    void mxm(C             &c,  // use &&?
+             A            &&a,
+             B            &&b,
+             Reduce       &&reduce,
+             Combine      &&combine,
+             Accumulate   &&accum   = Accumulator(),
+             Mask         &&m       = Mask(),
+             bool           replace = false);      // or use an enumerated type?
+
+```
+
+
+```cpp
     // Binary Operator overload
     template<MatrixView       CMatrixType,
              BinaryOp         ReduceType,
