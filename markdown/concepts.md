@@ -62,7 +62,18 @@ concept Monoid = BinaryOperator<Fn, T, T, T> &&
                  requires { {grb::monoid_traits<Fn, T>::identity()} -> std::same_as<T>; };
 ```
 
-## Tuple-Like Types
+## Tuple-Like Type
+Tuple-like types are types that, similar to instantiations of `std::tuple` or `std::pair`, store multiple values.  The number of values stored in the tuple-like type, as well as the type of each value, are known at compile time.  We say that a type `T` is tuple-like if it fulfills the following semantic requirements.
+
+### Semantic Requirements
+1) The tuple `T` has a size accessible using template `std::tuple_size`.
+2) The type of each stored value in the tuple `T` is accessible using `std::tuple_element`.
+3) Each stored value in `T` is accessible using either the method `get()` or `std::get()`.
+
+#### C++20 Concept
+```cpp
+// TODO
+```
 
 ## Matrix Range
 A matrix in GraphBLAS consists of a range of values distributed over a two-dimensional domain. In addition to [`grb::matrix`](#grb::matrix), which directly stores a collection of values, there are other types, such as views, that fulfill the same interface.  We say that a type `M` is a matrix range if the following semantic requirements are met.
