@@ -13,10 +13,35 @@ and returns a value convertible to type `V`.
 
 #### C++20 Concept
 ```cpp
-template <typename Fn, typename T, typename U, typename V>
+template <typename Fn, typename T, typename U = T, typename V = grb::any>
 concept BinaryOperator = requires(Fn fn, T t, U u) {
                            {fn(t, u)} -> std::convertible_to<V>;
                          };
+```
+
+### Remarks
+The last two arguments are defaulted unless explicit template parameters are provided.  The second
+parameter to the concept, `U`, which is the right-hand side input to the binary operator, defaults to
+`T`.  The final parameter, `V`, which represents the output of the binary operator, defaults to
+`grb::any`, meaning that the return value may have any type.
+
+### Example
+
+```cpp
+// Constrain `Fn` to require a binary operator that accepts two integers
+// as arguments and returns a value of any type.
+template <BinaryOperator<int> Fn>
+auto apply(Fn&& fn, int a, int b) {
+  return fn(a, b);
+}
+
+// The following code will result in an error, since the function passed
+// does not fulfill the BinaryOperator<int> requirement, as it cannot accept
+// integers.
+void test() {
+  auto fn = [](std::string a, std::string b) { return a.size() + b.size(); };
+  apply(fn, 12, 13);
+}
 ```
 
 ## Monoid
@@ -36,6 +61,8 @@ template <typename Fn, typename T>
 concept Monoid = BinaryOperator<Fn, T, T, T> &&
                  requires { {grb::monoid_traits<Fn, T>::identity()} -> std::same_as<T>; };
 ```
+
+## Tuple-Like Types
 
 ## Matrix Range
 A matrix in GraphBLAS consists of a range of values distributed over a two-dimensional domain. In addition to [`grb::matrix`](#grb::matrix), which directly stores a collection of values, there are other types, such as views, that fulfill the same interface.  We say that a type `M` is a matrix range if the following semantic requirements are met.

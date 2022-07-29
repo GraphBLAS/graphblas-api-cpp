@@ -3,7 +3,7 @@ MD_SOURCES += $(wildcard *.md)
 
 all: graphblas.pdf graphblas.html
 
-graphblas.html: $(TEX_SOURCES) $(MD_SOURCES)
+graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	#pandoc -s matrix.md -o matrix.html
 	#pandoc -s vector.md -o vector.html
 	#pandoc -s index.md -o index.html
@@ -41,7 +41,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES)
 				 multiply.md \
 				 ops_mxm.md
 
-graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
+graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	pandoc -s \
 	       --toc \
 	       --top-level-division=chapter \
@@ -56,6 +56,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES)
 	       matrix.md \
 	       vector.md \
 	       index.md \
+	       views.md \
 	       functional.md \
 	       plus.md \
 	       multiplies.md \
