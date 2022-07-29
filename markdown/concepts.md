@@ -63,16 +63,45 @@ concept Monoid = BinaryOperator<Fn, T, T, T> &&
 ```
 
 ## Tuple-Like Type
-Tuple-like types are types that, similar to instantiations of `std::tuple` or `std::pair`, store multiple values.  The number of values stored in the tuple-like type, as well as the type of each value, are known at compile time.  We say that a type `T` is tuple-like if it fulfills the following semantic requirements.
+Tuple-like types are types that, similar to instantiations of `std::tuple` or `std::pair`, store multiple values.  The number of values stored in the tuple-like type, as well as the type of each value, are known at compile time.  We say that a type `T` is tuple-like for the parameter pack of types `Types` if it fulfills the following semantic requirements.
 
 ### Semantic Requirements
-1) The tuple `T` has a size accessible using template `std::tuple_size`.
-2) The type of each stored value in the tuple `T` is accessible using `std::tuple_element`.
-3) Each stored value in `T` is accessible using either the method `get()` or `std::get()`.
+1) The tuple `T` has a size accessible using template `std::tuple_size` whose type is equal to `std::size_t` and whose value is equal to `sizeof...(Types)`.
+2) The type of each stored value in the tuple `T` is accessible using `std::tuple_element`, with the N'th stored value equal to the N'th type in `Types`.
+3) Each stored value in `T` is accessible using either the method `get()` or `std::get()`, with the type of the return value for the N'th element convertible to the N'th element of `Types`.
 
 #### C++20 Concept
+_TODO: This works fine, but is perhaps a bit sketchy._
 ```cpp
-// TODO
+template <typename T, std::size_t I, typename U = grb::any>
+concept TupleElementGettable =
+  (requires(T t) { {t. template get<I>()} -> std::convertible_to<std::tuple_element_t<I, T>>; } &&
+   requires(T t) { {t. template get<I>()} -> std::convertible_to<U>; }) ||
+  (requires(T t) { {std::get<I>()} -> std::convertible_to<std::tuple_element_t<I, T>>; } &&
+   requires(T t) { {std::get<I>()} -> std::convertible_to<U>; });
+
+template <typename T, typename... Args>
+concept TupleLike =
+  requires {
+    typename std::tuple_size<T>::type;
+    requires std::same_as<std::remove_cvref_t<decltype(std::tuple_size_v<T>)>, std::size_t>;
+  } &&
+  sizeof...(Args) == std::tuple_size_v<T> &&
+  []<std::size_t... I>(std::index_sequence<I...>) {
+    return (TupleElementGettable<T, I, Args> && ...);
+  }(std::make_index_sequence<std::tuple_size_v<T>>());
+```
+
+### Example
+
+```cpp
+// The Concept `TupleLike<int, int, float>` constraints `T`
+// to be a tuple-like type storing int, int, float.
+template<TupleLike<int, int, float> T>
+void print_tuple(T&& tuple) {
+  auto&& [i, j, v] = tuple;
+  printf("%d, %d, %f\n", i, j, v);
+}
 ```
 
 ## Matrix Range
