@@ -11,7 +11,7 @@ and returns a value convertible to type `V`.
 1) Callable of type `Fn` can be invoked with two arguments of type `T` and `U`.
 2) The return value is convertible to type `V`.
 
-#### C++20 Concept
+#### Concept
 ```cpp
 template <typename Fn, typename T, typename U = T, typename V = grb::any>
 concept BinaryOperator = requires(Fn fn, T t, U u) {
@@ -55,7 +55,7 @@ following semantic requirements are met.
 3) The operation has an identity element for type `T`, accessible using `grb::monoid_traits<Fn, T>::identity()`.
 
 
-#### C++20 Concept
+#### Concept
 ```cpp
 template <typename Fn, typename T>
 concept Monoid = BinaryOperator<Fn, T, T, T> &&
@@ -70,15 +70,15 @@ Tuple-like types are types that, similar to instantiations of `std::tuple` or `s
 2) The type of each stored value in the tuple `T` is accessible using `std::tuple_element`, with the N'th stored value equal to the N'th type in `Types`.
 3) Each stored value in `T` is accessible using either the method `get()` or `std::get()`, with the type of the return value for the N'th element convertible to the N'th element of `Types`.
 
-#### C++20 Concept
+#### Concept
 _TODO: This works fine, but is perhaps a bit sketchy._
 ```cpp
 template <typename T, std::size_t I, typename U = grb::any>
 concept TupleElementGettable =
   (requires(T t) { {t. template get<I>()} -> std::convertible_to<std::tuple_element_t<I, T>>; } &&
    requires(T t) { {t. template get<I>()} -> std::convertible_to<U>; }) ||
-  (requires(T t) { {std::get<I>()} -> std::convertible_to<std::tuple_element_t<I, T>>; } &&
-   requires(T t) { {std::get<I>()} -> std::convertible_to<U>; });
+  (requires(T t) { {std::get<I>(t)} -> std::convertible_to<std::tuple_element_t<I, T>>; } &&
+   requires(T t) { {std::get<I>(t)} -> std::convertible_to<U>; });
 
 template <typename T, typename... Args>
 concept TupleLike =
@@ -104,6 +104,26 @@ void print_tuple(T&& tuple) {
 }
 ```
 
+## Matrix Entry
+Matrix entries represent entries in a GraphBLAS matrix, which include both a tuple-like index storing the row and column index of the stored scalar value, as well as the scalar value itself.  We say that a type `Entry` is a valid matrix entry for the scalar type `T` and index type `I` if the following semantic requirements are met.
+
+### Semantic Requirements
+1) `Entry` is a tuple-like type with a size of 2.
+2) The first element stored in the tuple-like type `Entry` is a tuple-like type fulfilling `TupleLike<I, I>`, storing the row and column index of the matrix entry.
+3) The second element stored in the tuple-like type `Entry` holds the matrix entry's scalar value, and is convertible to `T`.
+
+#### Concept
+_TODO: review this concept._
+
+```cpp
+template <typename Entry, typename T, typename I>
+concept MatrixEntry = TupleLike<Entry, grb::any, grb::any> &&
+                      (requires(Entry entry) { {t. template get<0>()} -> TupleLike<I, I>; } ||
+                       requires(Entry entry) { {std::get<0>(t)} -> TupleLike<I, I>; }) &&
+                      (requires(Entry entry) { {t. template get<1>()} -> std::convertible_to<T>; } ||
+                       requires(Entry entry) { {std::get<1>()} -> std::convertible_to<T>; });
+```
+
 ## Matrix Range
 A matrix in GraphBLAS consists of a range of values distributed over a two-dimensional domain. In addition to [`grb::matrix`](#grb::matrix), which directly stores a collection of values, there are other types, such as views, that fulfill the same interface.  We say that a type `M` is a matrix range if the following semantic requirements are met.
 
@@ -114,7 +134,7 @@ A matrix in GraphBLAS consists of a range of values distributed over a two-dimen
 4) `M` is a range with a value type that represents a matrix tuple, containing both the index and scalar value for each stored value.
 5) `M` has a method `find()` that takes an index tuple and returns an iterator.
 
-#### C++20 Concept
+#### Concept
 
 _TODO: this is a bit sketchy, and needs to have some of the components fleshed out._
 ```cpp
@@ -138,7 +158,7 @@ Some matrices and matrix-like objects are *mutable*, meaning that their stored v
 2) `M` is an output range for type `T`.
 3) `M` has a method `insert()` that takes a matrix entry tuple and attempts to insert the element into the matrix, returning an iterator to the new element on success and returning an iterator to the end on failure.
 
-#### C++20 Concept
+#### Concept
 
 _TODO: this is also a bit sketchy, and furthermore depends on the matrix range concept above._
 
@@ -158,7 +178,7 @@ Some operations require masks, which can be used to avoid computing and storing 
 1) `M` is a matrix range.
 2) The scalar value type of `M` is convertible to `bool`.
 
-#### C++20 Concept
+#### Concept
 
 ```cpp
 template <typename T>
