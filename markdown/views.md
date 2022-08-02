@@ -16,6 +16,7 @@ grb::transpose_view<M> transpose(M&& matrix);
 - `M` must meet the requirements of `MatrixRange`
 
 ### Return Value
+_TODO: Discuss issues with allowing transpose view in output_
 Returns a matrix view that is equal to the transpose of `matrix`, satisfying `MatrixRange`.
 If `M` meets the requirements of `MutableMatrixRange`, then the return value will also meet the
 requirements of `MutableMatrixRange`.
