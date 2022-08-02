@@ -35,6 +35,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 divides.md \
 				 max.md \
 				 min.md \
+				 utilities.md \
 				 concepts.md \
 				 type_traits.md \
 				 algorithms.md \
@@ -64,6 +65,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       divides.md \
 	       max.md \
 	       min.md \
+	       utilities.md \
 	       concepts.md \
 	       type_traits.md \
 	       algorithms.md \

@@ -68,18 +68,15 @@ Tuple-like types are types that, similar to instantiations of `std::tuple` or `s
 ### Semantic Requirements
 1) The tuple `T` has a size accessible using template `std::tuple_size` whose type is equal to `std::size_t` and whose value is equal to `sizeof...(Types)`.
 2) The type of each stored value in the tuple `T` is accessible using `std::tuple_element`, with the N'th stored value equal to the N'th type in `Types`.
-3) Each stored value in `T` is accessible using either the method `get()` or `std::get()`, with the type of the return value for the N'th element convertible to the N'th element of `Types`.
+3) Each stored value in `T` is accessible using the customization point object `grb::get`, which will invoke either the method `get()` if it is present in the tuple type `T` or `std::get()`.  The type of the return value for the N'th element must be convertible to the N'th element of `Types`.
 
 #### Concept
 _TODO: This works fine, but is perhaps a bit sketchy._
 ```cpp
 template <typename T, std::size_t I, typename U = grb::any>
-concept TupleElementGettable =
-  (requires(T t) { {t. template get<I>()} -> std::convertible_to<std::tuple_element_t<I, T>>; } &&
-   requires(T t) { {t. template get<I>()} -> std::convertible_to<U>; }) ||
-  (requires(T t) { {std::get<I>(t)} -> std::convertible_to<std::tuple_element_t<I, T>>; } &&
-   requires(T t) { {std::get<I>(t)} -> std::convertible_to<U>; });
-
+concept TupleElementGettable = requires(T tuple) {
+                                 { {grb::get<I>()} -> std::convertible_to<U>; }
+                               };
 template <typename T, typename... Args>
 concept TupleLike =
   requires {
@@ -118,10 +115,24 @@ _TODO: review this concept._
 ```cpp
 template <typename Entry, typename T, typename I>
 concept MatrixEntry = TupleLike<Entry, grb::any, grb::any> &&
-                      (requires(Entry entry) { {t. template get<0>()} -> TupleLike<I, I>; } ||
-                       requires(Entry entry) { {std::get<0>(t)} -> TupleLike<I, I>; }) &&
-                      (requires(Entry entry) { {t. template get<1>()} -> std::convertible_to<T>; } ||
-                       requires(Entry entry) { {std::get<1>()} -> std::convertible_to<T>; });
+                      requires(Entry entry) { {grb::get<0>(entry)} -> TupleLike<I, I>; } &&
+                      requires(Entry entry) { {grb::get<1>(entry)} -> std::convertible_to<T>; };
+```
+
+## Mutable Matrix Entry
+A mutable matrix entry is an entry in a matrix that fulfills all the requirements of matrix entry, but whose 
+stored scalar value can be mutated by assigning to a value of type `U`.  We say that a matrix entry `Entry` is a mutable matrix entry for scalar type `T`, index type `I`, and output type `U`, if it fulfills all the requirements of matrix entry as well as the following semantic requirements.
+
+### Semantic Requirements
+1) The second element of the tuple `Entry`, representing the scalar value, is indirectly writable to elements of type `U`.
+
+#### Concept
+_TODO: review this concept._
+
+```cpp
+template <typename Entry, typename T, typename I, typename U>>
+concept MutableMatrixEntry = MatrixEntry<Entry, T, I> &&
+                             std::indirectly_writable<std::get<1>(entry), U>;
 ```
 
 ## Matrix Range
@@ -141,13 +152,13 @@ _TODO: this is a bit sketchy, and needs to have some of the components fleshed o
 template <typename M>
 concept MatrixRange = std::ranges::sized_range<M> &&
   requires(M matrix) {
-    typename grb::matrix_scalar_type_t<M>;
-    typename grb::matrix_index_type_t<M>;
+    grb::matrix_scalar_type_t<M>;
+    grb::matrix_index_type_t<M>;
     {matrix.shape()} -> Tuplelike<grb::matrix_index_type_t<M>,
                                   grb::matrix_index_type_t<M>>;
-    {std::declval<typename std::ranges::range_value_t<std::remove_cvref_t<M>>>()}
-      -> MatrixValueType<grb::matrix_scalar_type_t<M>,
-                         grb::matrix_index_type_t<M>>;
+    {std::declval<std::ranges::range_value_t<std::remove_cvref_t<M>>>()}
+      -> MatrixEntry<grb::matrix_scalar_type_t<M>,
+                     grb::matrix_index_type_t<M>>;
   };
 ```
 ## Mutable Matrix Range
@@ -155,7 +166,7 @@ Some matrices and matrix-like objects are *mutable*, meaning that their stored v
 
 ### Semantic Requirements
 1) `M` is a matrix range.
-2) `M` is an output range for type `T`.
+2) The value type of `M` fulfills the requirements of `MutableMatrixEntry<T, I>`.
 3) `M` has a method `insert()` that takes a matrix entry tuple and attempts to insert the element into the matrix, returning an iterator to the new element on success and returning an iterator to the end on failure.
 
 #### Concept
@@ -165,7 +176,10 @@ _TODO: this is also a bit sketchy, and furthermore depends on the matrix range c
 ```cpp
 template <typename M, typename T>
 concept MutableMatrixRange = MatrixRange<M> &&
-                             std::ranges::output_range<M, T> &&
+                             MutableMatrixEntry<std::ranges::range_value_t<M>
+                                                grb::matrix_scalar_type_t<M>,
+                                                grb::matrix_index_type_t<M>,
+                                                T> &&
   requires(M matrix, T value) {
     matrix.insert({{grb::matrix_index_type_t<M>{}, grb::matrix_index_type_t<M>{}},
                    value}) -> std::ranges::iterator_t<M>;
