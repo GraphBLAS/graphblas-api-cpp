@@ -87,18 +87,56 @@ int main(int argc, char** argv) {
 ## grb::structure
 ```cpp
 template <MatrixRange M>
-grb::structure_view<M> structure(M&& matrix);
+grb::structure_view<M> structure(M&& matrix);                 (1) 
+
+template <VectorRange V>
+grb::structure_view<V> structure(V&& vector);                 (2)
 ```
 
 ### Parameters
 
-`matrix` - a 
+`matrix` - a GraphBLAS matrix or matrix view
+
+`vector` - a GraphBLAS vector or vector view
+
+#### Type Requirements
+
+- `matrix` must meet the requirements of `MatrixRange`
+
+- `vector` must meet the requirements of `VectorRange`
+
+### Return Value
+
+(1) Returns a view of the matrix 
+
+#### Possible Implementation
+
+```cpp
+template <typename Entry>
+inline constexpr bool always_true(Entry&&) { return true; }
+
+template <typename O>
+using structure_view = grb::transform_view<O, decltype(always_true)>;
+
+template <MatrixRange M>
+grb::structure_view<M> structure(M&& matrix) {
+  return grb::transform(std::forward<M>(matrix), always_true);
+}
+
+template <VectorRange V>
+grb::structure_view<V> structure(V&& vector) {
+  return grb::transform(std::forward<V>(vector), always_true);
+}
+```
 
 ## grb::complement
 
 ```cpp
 template <MaskMatrixRange M>
-grb::complement_view<M> complement(M&& mask);
+grb::complement_view<M> complement(M&& mask);                 (1)
+
+template <MaskVectorRange V>
+grb::complement_view<V> complement(V&& mask);                 (2)
 ```
 
 ### Parameters
@@ -109,9 +147,16 @@ grb::complement_view<M> complement(M&& mask);
 
 - `M` must meet the requirements of `MaskMatrixRange`
 
+- `V` must meet the requirements of `MaskVectorRange`
+
 ### Return Value
 
-Returns a matrix view satisfying the requirements `MaskMatrixRange`.
+_TODO: Scott, Jose, is this the behavior we want?_
+Returns the complement view of a matrix or vector mask.  At every index in `mask` with no stored value or with a scalar value equal to `false` when converted to `bool`, the returned view has a stored value with the scalar value `true`.  At every stored value in `mask` with a scalar value equal to `true` when converted to `bool`, the return view has no stored value.
+
+(1) Returns a matrix view satisfying the requirements `MaskMatrixRange`.
+
+(2) Returns a vector view satisfying the requirements `MaskVectorRange`.
 
 
 
