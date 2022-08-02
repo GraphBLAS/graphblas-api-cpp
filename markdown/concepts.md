@@ -11,12 +11,37 @@ and returns a value convertible to type `V`.
 1) Callable of type `Fn` can be invoked with two arguments of type `T` and `U`.
 2) The return value is convertible to type `V`.
 
-#### C++20 Concept
+#### Concept
 ```cpp
-template <typename Fn, typename T, typename U, typename V>
+template <typename Fn, typename T, typename U = T, typename V = grb::any>
 concept BinaryOperator = requires(Fn fn, T t, U u) {
                            {fn(t, u)} -> std::convertible_to<V>;
                          };
+```
+
+### Remarks
+The last two arguments are defaulted unless explicit template parameters are provided.  The second
+parameter to the concept, `U`, which is the right-hand side input to the binary operator, defaults to
+`T`.  The final parameter, `V`, which represents the output of the binary operator, defaults to
+`grb::any`, meaning that the return value may have any type.
+
+### Example
+
+```cpp
+// Constrain `Fn` to require a binary operator that accepts two integers
+// as arguments and returns a value of any type.
+template <BinaryOperator<int> Fn>
+auto apply(Fn&& fn, int a, int b) {
+  return fn(a, b);
+}
+
+// The following code will result in an error, since the function passed
+// does not fulfill the BinaryOperator<int> requirement, as it cannot accept
+// integers.
+void test() {
+  auto fn = [](std::string a, std::string b) { return a.size() + b.size(); };
+  apply(fn, 12, 13);
+}
 ```
 
 ## Monoid
@@ -30,11 +55,84 @@ following semantic requirements are met.
 3) The operation has an identity element for type `T`, accessible using `grb::monoid_traits<Fn, T>::identity()`.
 
 
-#### C++20 Concept
+#### Concept
 ```cpp
 template <typename Fn, typename T>
 concept Monoid = BinaryOperator<Fn, T, T, T> &&
                  requires { {grb::monoid_traits<Fn, T>::identity()} -> std::same_as<T>; };
+```
+
+## Tuple-Like Type
+Tuple-like types are types that, similar to instantiations of `std::tuple` or `std::pair`, store multiple values.  The number of values stored in the tuple-like type, as well as the type of each value, are known at compile time.  We say that a type `T` is tuple-like for the parameter pack of types `Types` if it fulfills the following semantic requirements.
+
+### Semantic Requirements
+1) The tuple `T` has a size accessible using template `std::tuple_size` whose type is equal to `std::size_t` and whose value is equal to `sizeof...(Types)`.
+2) The type of each stored value in the tuple `T` is accessible using `std::tuple_element`, with the N'th stored value equal to the N'th type in `Types`.
+3) Each stored value in `T` is accessible using the customization point object `grb::get`, which will invoke either the method `get()` if it is present in the tuple type `T` or `std::get()`.  The type of the return value for the N'th element must be convertible to the N'th element of `Types`.
+
+#### Concept
+_TODO: This works fine, but is perhaps a bit sketchy._
+```cpp
+template <typename T, std::size_t I, typename U = grb::any>
+concept TupleElementGettable = requires(T tuple) {
+                                 { {grb::get<I>()} -> std::convertible_to<U>; }
+                               };
+template <typename T, typename... Args>
+concept TupleLike =
+  requires {
+    typename std::tuple_size<T>::type;
+    requires std::same_as<std::remove_cvref_t<decltype(std::tuple_size_v<T>)>, std::size_t>;
+  } &&
+  sizeof...(Args) == std::tuple_size_v<T> &&
+  []<std::size_t... I>(std::index_sequence<I...>) {
+    return (TupleElementGettable<T, I, Args> && ...);
+  }(std::make_index_sequence<std::tuple_size_v<T>>());
+```
+
+### Example
+
+```cpp
+// The Concept `TupleLike<int, int, float>` constraints `T`
+// to be a tuple-like type storing int, int, float.
+template<TupleLike<int, int, float> T>
+void print_tuple(T&& tuple) {
+  auto&& [i, j, v] = tuple;
+  printf("%d, %d, %f\n", i, j, v);
+}
+```
+
+## Matrix Entry
+Matrix entries represent entries in a GraphBLAS matrix, which include both a tuple-like index storing the row and column index of the stored scalar value, as well as the scalar value itself.  We say that a type `Entry` is a valid matrix entry for the scalar type `T` and index type `I` if the following semantic requirements are met.
+
+### Semantic Requirements
+1) `Entry` is a tuple-like type with a size of 2.
+2) The first element stored in the tuple-like type `Entry` is a tuple-like type fulfilling `TupleLike<I, I>`, storing the row and column index of the matrix entry.
+3) The second element stored in the tuple-like type `Entry` holds the matrix entry's scalar value, and is convertible to `T`.
+
+#### Concept
+_TODO: review this concept._
+
+```cpp
+template <typename Entry, typename T, typename I>
+concept MatrixEntry = TupleLike<Entry, grb::any, grb::any> &&
+                      requires(Entry entry) { {grb::get<0>(entry)} -> TupleLike<I, I>; } &&
+                      requires(Entry entry) { {grb::get<1>(entry)} -> std::convertible_to<T>; };
+```
+
+## Mutable Matrix Entry
+A mutable matrix entry is an entry in a matrix that fulfills all the requirements of matrix entry, but whose 
+stored scalar value can be mutated by assigning to a value of type `U`.  We say that a matrix entry `Entry` is a mutable matrix entry for scalar type `T`, index type `I`, and output type `U`, if it fulfills all the requirements of matrix entry as well as the following semantic requirements.
+
+### Semantic Requirements
+1) The second element of the tuple `Entry`, representing the scalar value, is indirectly writable to elements of type `U`.
+
+#### Concept
+_TODO: review this concept._
+
+```cpp
+template <typename Entry, typename T, typename I, typename U>>
+concept MutableMatrixEntry = MatrixEntry<Entry, T, I> &&
+                             std::indirectly_writable<std::get<1>(entry), U>;
 ```
 
 ## Matrix Range
@@ -47,20 +145,20 @@ A matrix in GraphBLAS consists of a range of values distributed over a two-dimen
 4) `M` is a range with a value type that represents a matrix tuple, containing both the index and scalar value for each stored value.
 5) `M` has a method `find()` that takes an index tuple and returns an iterator.
 
-#### C++20 Concept
+#### Concept
 
 _TODO: this is a bit sketchy, and needs to have some of the components fleshed out._
 ```cpp
 template <typename M>
 concept MatrixRange = std::ranges::sized_range<M> &&
   requires(M matrix) {
-    typename grb::matrix_scalar_type_t<M>;
-    typename grb::matrix_index_type_t<M>;
+    grb::matrix_scalar_type_t<M>;
+    grb::matrix_index_type_t<M>;
     {matrix.shape()} -> Tuplelike<grb::matrix_index_type_t<M>,
                                   grb::matrix_index_type_t<M>>;
-    {std::declval<typename std::ranges::range_value_t<std::remove_cvref_t<M>>>()}
-      -> MatrixValueType<grb::matrix_scalar_type_t<M>,
-                         grb::matrix_index_type_t<M>>;
+    {std::declval<std::ranges::range_value_t<std::remove_cvref_t<M>>>()}
+      -> MatrixEntry<grb::matrix_scalar_type_t<M>,
+                     grb::matrix_index_type_t<M>>;
   };
 ```
 ## Mutable Matrix Range
@@ -68,17 +166,20 @@ Some matrices and matrix-like objects are *mutable*, meaning that their stored v
 
 ### Semantic Requirements
 1) `M` is a matrix range.
-2) `M` is an output range for type `T`.
+2) The value type of `M` fulfills the requirements of `MutableMatrixEntry<T, I>`.
 3) `M` has a method `insert()` that takes a matrix entry tuple and attempts to insert the element into the matrix, returning an iterator to the new element on success and returning an iterator to the end on failure.
 
-#### C++20 Concept
+#### Concept
 
 _TODO: this is also a bit sketchy, and furthermore depends on the matrix range concept above._
 
 ```cpp
 template <typename M, typename T>
 concept MutableMatrixRange = MatrixRange<M> &&
-                             std::ranges::output_range<M, T> &&
+                             MutableMatrixEntry<std::ranges::range_value_t<M>
+                                                grb::matrix_scalar_type_t<M>,
+                                                grb::matrix_index_type_t<M>,
+                                                T> &&
   requires(M matrix, T value) {
     matrix.insert({{grb::matrix_index_type_t<M>{}, grb::matrix_index_type_t<M>{}},
                    value}) -> std::ranges::iterator_t<M>;
@@ -91,7 +192,7 @@ Some operations require masks, which can be used to avoid computing and storing 
 1) `M` is a matrix range.
 2) The scalar value type of `M` is convertible to `bool`.
 
-#### C++20 Concept
+#### Concept
 
 ```cpp
 template <typename T>
