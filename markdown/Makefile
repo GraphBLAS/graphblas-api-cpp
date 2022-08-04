@@ -41,6 +41,8 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 type_traits.md \
 				 algorithms.md \
 				 multiply.md \
+				 ewise_union.md \
+				 ewise_intersection.md \
 				 ops_mxm.md
 
 graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
@@ -72,6 +74,8 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       type_traits.md \
 	       algorithms.md \
 	       multiply.md \
+	       ewise_union.md \
+	       ewise_intersection.md \
 	       ops_mxm.md
 
 clean:

@@ -130,6 +130,36 @@ grb::structure_view<V> structure(V&& vector) {
 }
 ```
 
+## grb::filter
+
+```cpp
+template <MatrixRange M, typename Fn>
+grb::filter_view<M> filter(M&& matrix, Fn&& fn);              (1)
+
+template <VectorRange V, typename Fn>
+grb::filter_view<V> filter(V&& vector, Fn&& fn);              (2)
+```
+
+### Parameters
+
+`matrix` - a GraphBLAS matrix
+
+`vector` - a GraphBLAS vector
+
+`fn` - a function determining which elements should be filtered out
+
+#### Type Requirements
+
+- `M` must meet the requirements of `MaskMatrixRange`
+
+- `V` must meet the requirements of `MaskVectorRange`
+
+- `fn` must accept an argument of type `std::ranges::value_type_t<M>` (1) or `std::ranges::value_type_t<V>` (2) and return a value of type `bool`.
+
+### Return Value
+
+Returns a filtered view of the matrix `matrix` or vector `vector`.  The return value fulfills the requirements of `MatrixRange` (1) or `VectorRange` (2) .  The return value has the same shape as the input object, but without elements for which `fn(e)` evaluates to false.
+
 ## grb::complement
 
 ```cpp
