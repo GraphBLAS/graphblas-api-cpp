@@ -141,8 +141,8 @@ A matrix in GraphBLAS consists of a range of values distributed over a two-dimen
 ### Semantic Requirements
 1) `M` has a scalar type of the stored values, accessible with `grb::matrix_scalar_type_t<M>`
 2) `M` has an index type used to reference the indices of the stored values, accessible with `grb::matrix_index_type_t<M>`.
-3) `M` has a shape, which is a tuple-like object of size two, holding the number of rows and the number of columns, accessible by invoking the method `shape()` on an object of type `M`.
-4) `M` is a range with a value type that represents a matrix tuple, containing both the index and scalar value for each stored value.
+3) `M` is a range with a value type that represents a matrix tuple, containing both the index and scalar value for each stored value.
+4) `M` has a shape, which is a tuple-like object of size two, holding the number of rows and the number of columns, accessible by invoking the method `shape()` on an object of type `M`.
 5) `M` has a method `find()` that takes an index tuple and returns an iterator.
 
 #### Concept
@@ -154,11 +154,12 @@ concept MatrixRange = std::ranges::sized_range<M> &&
   requires(M matrix) {
     grb::matrix_scalar_type_t<M>;
     grb::matrix_index_type_t<M>;
-    {matrix.shape()} -> Tuplelike<grb::matrix_index_type_t<M>,
-                                  grb::matrix_index_type_t<M>>;
     {std::declval<std::ranges::range_value_t<std::remove_cvref_t<M>>>()}
       -> MatrixEntry<grb::matrix_scalar_type_t<M>,
                      grb::matrix_index_type_t<M>>;
+    {grb::shape(matrix)} -> Tuplelike<grb::matrix_index_type_t<M>,
+                                  grb::matrix_index_type_t<M>>;
+    {grb::find(matrix)} -> std::convertible_to<std::ranges::iterator_t<M>>;
   };
 ```
 ## Mutable Matrix Range
@@ -181,8 +182,9 @@ concept MutableMatrixRange = MatrixRange<M> &&
                                                 grb::matrix_index_type_t<M>,
                                                 T> &&
   requires(M matrix, T value) {
-    matrix.insert({{grb::matrix_index_type_t<M>{}, grb::matrix_index_type_t<M>{}},
-                   value}) -> std::ranges::iterator_t<M>;
+    {grb::insert(matrix, {{grb::matrix_index_type_t<M>{}, grb::matrix_index_type_t<M>{}},
+                          value}) -> std::ranges::iterator_t<M>;
+    }
   }
 ```
 ## Mask Matrix Range

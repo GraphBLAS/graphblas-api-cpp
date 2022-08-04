@@ -87,6 +87,8 @@ requires /* see below */
 constexpr auto find(R&& r, T&& t);
 ```
 
+Return an iterator to the stored value in the GraphBLAS matrix or vector `r` at index location `t`.
+
 A call to `grb::find` is expression-equivalent to:
 
 1) `r.find(t)` if that expression is valid.
@@ -94,6 +96,27 @@ A call to `grb::find` is expression-equivalent to:
 2) Otherwise, any calls to `std::find(r, t)`, if that expression is valid.
 
 In all other cases, a call to `grb::find` is ill-formed.
+
+## `grb::insert`
+
+```cpp
+template <typename T>
+inline constexpr /* unspecified */ insert = /* unspecified */;
+```
+
+#### Call Signature
+```cpp
+template <typename R, typename T>
+requires /* see below */
+constexpr auto insert(R&& r, T&& t);
+```
+
+Attempt to insert the value `t` into the GraphBLAS matrix or vector `r`.
+
+A call to `grb::insert` is expression-equivalent to:
+
+1) `r.insert(t)` if that expression is valid.
+2) Otherwise, any calls to `insert(r, t)` found through argument-dependent lookup.
 
 ## `grb::matrix_scalar_type_t`
 _TODO: should re-write to simply use `matrix_traits` template struct._
