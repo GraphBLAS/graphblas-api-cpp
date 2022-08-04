@@ -21,6 +21,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 --toc \
 				 --top-level-division=chapter \
 				 -o graphblas.html \
+				 metadata.md \
 				 intro.md \
 				 --toc \
 				 --toc-depth=2 \
@@ -50,6 +51,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       -B title.tex \
 	       -V geometry:margin=1in \
 	       -o graphblas.pdf \
+	       metadata.md \
 	       intro.md \
 	       --toc \
 	       --toc-depth=2 \
