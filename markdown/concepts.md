@@ -75,18 +75,18 @@ _TODO: This works fine, but is perhaps a bit sketchy._
 ```cpp
 template <typename T, std::size_t I, typename U = grb::any>
 concept TupleElementGettable = requires(T tuple) {
-                                 { {grb::get<I>()} -> std::convertible_to<U>; }
+                                 {grb::get<I>(tuple)} -> std::convertible_to<U>;
                                };
 template <typename T, typename... Args>
 concept TupleLike =
   requires {
-    typename std::tuple_size<T>::type;
-    requires std::same_as<std::remove_cvref_t<decltype(std::tuple_size_v<T>)>, std::size_t>;
+    typename std::tuple_size<std::remove_cvref_t<T>>::type;
+    requires std::same_as<std::remove_cvref_t<decltype(std::tuple_size_v<std::remove_cvref_t<T>>)>, std::size_t>;
   } &&
-  sizeof...(Args) == std::tuple_size_v<T> &&
+  sizeof...(Args) == std::tuple_size_v<std::remove_cvref_t<T>> &&
   []<std::size_t... I>(std::index_sequence<I...>) {
     return (TupleElementGettable<T, I, Args> && ...);
-  }(std::make_index_sequence<std::tuple_size_v<T>>());
+  }(std::make_index_sequence<std::tuple_size_v<std::remove_cvref_t<T>>>());
 ```
 
 ### Example
@@ -130,9 +130,9 @@ stored scalar value can be mutated by assigning to a value of type `U`.  We say 
 _TODO: review this concept._
 
 ```cpp
-template <typename Entry, typename T, typename I, typename U>>
+template <typename Entry, typename T, typename I, typename U>
 concept MutableMatrixEntry = MatrixEntry<Entry, T, I> &&
-                             std::indirectly_writable<std::get<1>(entry), U>;
+                             std::indirectly_writable<decltype(std::get<1>(std::declval<Entry>())), U>;
 ```
 
 ## Matrix Range
@@ -152,8 +152,8 @@ _TODO: this is a bit sketchy, and needs to have some of the components fleshed o
 template <typename M>
 concept MatrixRange = std::ranges::sized_range<M> &&
   requires(M matrix) {
-    grb::matrix_scalar_type_t<M>;
-    grb::matrix_index_type_t<M>;
+    typename grb::matrix_scalar_type_t<M>;
+    typename grb::matrix_index_type_t<M>;
     {std::declval<std::ranges::range_value_t<std::remove_cvref_t<M>>>()}
       -> MatrixEntry<grb::matrix_scalar_type_t<M>,
                      grb::matrix_index_type_t<M>>;

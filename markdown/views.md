@@ -113,8 +113,7 @@ grb::structure_view<V> structure(V&& vector);                 (2)
 #### Possible Implementation
 
 ```cpp
-template <typename Entry>
-inline constexpr bool always_true(Entry&&) { return true; }
+inline constexpr bool always_true = [](auto&&) { return true; };
 
 template <typename O>
 using structure_view = grb::transform_view<O, decltype(always_true)>;
