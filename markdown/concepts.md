@@ -7,7 +7,7 @@ Binary operators may be callable with a variety of different types, or only with
 We say a binary operator is valid for a particular operation `T x U -> V` if it is callable with arguments of type `T` and `U`
 and returns a value convertible to type `V`.
 
-### Semantic Requirements
+### Requirements
 1) Callable of type `Fn` can be invoked with two arguments of type `T` and `U`.
 2) The return value is convertible to type `V`.
 
@@ -47,9 +47,9 @@ void test() {
 ## Monoid
 *GraphBLAS monoids* are commutative monoids. Throughout this specification, they are referred to simply as monoids.  They are binary operators that have
 special properties when applied to elements of some type `T`.  We say that a function object `Fn` forms on a monoid on type `T` if the
-following semantic requirements are met.
+following requirements are met.
 
-### Semantic Requirements
+### Requirements
 1) Callable of type `Fn` fulfills the concept `BinaryOperator<T, T, T>` for some type `T`.
 2) The operation is associative and commutative for type `T`.
 3) The operation has an identity element for type `T`, accessible using `grb::monoid_traits<Fn, T>::identity()`.
@@ -63,9 +63,9 @@ concept Monoid = BinaryOperator<Fn, T, T, T> &&
 ```
 
 ## Tuple-Like Type
-Tuple-like types are types that, similar to instantiations of `std::tuple` or `std::pair`, store multiple values.  The number of values stored in the tuple-like type, as well as the type of each value, are known at compile time.  We say that a type `T` is tuple-like for the parameter pack of types `Types` if it fulfills the following semantic requirements.
+Tuple-like types are types that, similar to instantiations of `std::tuple` or `std::pair`, store multiple values.  The number of values stored in the tuple-like type, as well as the type of each value, are known at compile time.  We say that a type `T` is tuple-like for the parameter pack of types `Types` if it fulfills the following requirements.
 
-### Semantic Requirements
+### Requirements
 1) The tuple `T` has a size accessible using template `std::tuple_size` whose type is equal to `std::size_t` and whose value is equal to `sizeof...(Types)`.
 2) The type of each stored value in the tuple `T` is accessible using `std::tuple_element`, with the N'th stored value equal to the N'th type in `Types`.
 3) Each stored value in `T` is accessible using the customization point object `grb::get`, which will invoke either the method `get()` if it is present in the tuple type `T` or `std::get()`.  The type of the return value for the N'th element must be convertible to the N'th element of `Types`.
@@ -102,9 +102,9 @@ void print_tuple(T&& tuple) {
 ```
 
 ## Matrix Entry
-Matrix entries represent entries in a GraphBLAS matrix, which include both a tuple-like index storing the row and column index of the stored scalar value, as well as the scalar value itself.  We say that a type `Entry` is a valid matrix entry for the scalar type `T` and index type `I` if the following semantic requirements are met.
+Matrix entries represent entries in a GraphBLAS matrix, which include both a tuple-like index storing the row and column index of the stored scalar value, as well as the scalar value itself.  We say that a type `Entry` is a valid matrix entry for the scalar type `T` and index type `I` if the following requirements are met.
 
-### Semantic Requirements
+### Requirements
 1) `Entry` is a tuple-like type with a size of 2.
 2) The first element stored in the tuple-like type `Entry` is a tuple-like type fulfilling `TupleLike<I, I>`, storing the row and column index of the matrix entry.
 3) The second element stored in the tuple-like type `Entry` holds the matrix entry's scalar value, and is convertible to `T`.
@@ -121,9 +121,9 @@ concept MatrixEntry = TupleLike<Entry, grb::any, grb::any> &&
 
 ## Mutable Matrix Entry
 A mutable matrix entry is an entry in a matrix that fulfills all the requirements of matrix entry, but whose 
-stored scalar value can be mutated by assigning to a value of type `U`.  We say that a matrix entry `Entry` is a mutable matrix entry for scalar type `T`, index type `I`, and output type `U`, if it fulfills all the requirements of matrix entry as well as the following semantic requirements.
+stored scalar value can be mutated by assigning to a value of type `U`.  We say that a matrix entry `Entry` is a mutable matrix entry for scalar type `T`, index type `I`, and output type `U`, if it fulfills all the requirements of matrix entry as well as the following requirements.
 
-### Semantic Requirements
+### Requirements
 1) The second element of the tuple `Entry`, representing the scalar value, is indirectly writable to elements of type `U`.
 
 #### Concept
@@ -136,9 +136,9 @@ concept MutableMatrixEntry = MatrixEntry<Entry, T, I> &&
 ```
 
 ## Matrix Range
-A matrix in GraphBLAS consists of a range of values distributed over a two-dimensional domain. In addition to [`grb::matrix`](#grb::matrix), which directly stores a collection of values, there are other types, such as views, that fulfill the same interface.  We say that a type `M` is a matrix range if the following semantic requirements are met.
+A matrix in GraphBLAS consists of a range of values distributed over a two-dimensional domain. In addition to [`grb::matrix`](#grb::matrix), which directly stores a collection of values, there are other types, such as views, that fulfill the same interface.  We say that a type `M` is a matrix range if the following requirements are met.
 
-### Semantic Requirements
+### Requirements
 1) `M` has a scalar type of the stored values, accessible with `grb::matrix_scalar_type_t<M>`
 2) `M` has an index type used to reference the indices of the stored values, accessible with `grb::matrix_index_type_t<M>`.
 3) `M` is a range with a value type that represents a matrix tuple, containing both the index and scalar value for each stored value.
@@ -163,9 +163,9 @@ concept MatrixRange = std::ranges::sized_range<M> &&
   };
 ```
 ## Mutable Matrix Range
-Some matrices and matrix-like objects are *mutable*, meaning that their stored values may be modified.  Examples of mutable matrix ranges include instantiations of `grb::matrix` and certain matrix views that allow adding new values and modifying old values, such as `grb::transpose`.  We say that a type `M` is a mutable matrix range for the scalar value `T` if the following semantic requirements are met.
+Some matrices and matrix-like objects are *mutable*, meaning that their stored values may be modified.  Examples of mutable matrix ranges include instantiations of `grb::matrix` and certain matrix views that allow adding new values and modifying old values, such as `grb::transpose`.  We say that a type `M` is a mutable matrix range for the scalar value `T` if the following requirements are met.
 
-### Semantic Requirements
+### Requirements
 1) `M` is a matrix range.
 2) The value type of `M` fulfills the requirements of `MutableMatrixEntry<T, I>`.
 3) `M` has a method `insert()` that takes a matrix entry tuple and attempts to insert the element into the matrix, returning an iterator to the new element on success and returning an iterator to the end on failure.
@@ -188,20 +188,38 @@ concept MutableMatrixRange = MatrixRange<M> &&
   }
 ```
 ## Mask Matrix Range
-Some operations require masks, which can be used to avoid computing and storing certain parts of the output.  We say that a type `M` is a mask matrix range if the following semantic requirements are met.
+Some operations require masks, which can be used to avoid computing and storing certain parts of the output.  We say that a type `M` is a mask matrix range if the following requirements are met.
 
-### Semantic Requirements
+### Requirements
 1) `M` is a matrix range.
 2) The scalar value type of `M` is convertible to `bool`.
 
 #### Concept
 
 ```cpp
-template <typename T>
+template <typename M>
 concept MaskMatrixRange = MatrixRange<M> &&
                           std::is_convertible_v<grb::matrix_scalar_type_t<M>, bool>;
 ```
 
 
+
+## Vector Entry
+Vector entries represent entries in a GraphBLAS vector, which include both an `std::integral` index storing the index of the stored scalar value, as well as the scalar value itself.  We say that a type `Entry` is a valid matrix entry for the scalar type `T` and index type `I` if the following requirements are met.
+
+### Requirements
+1) `Entry` is a tuple-like type with a size of 2.
+2) The first element stored in the tuple-like type `Entry` fulfills `std::integral`.
+3) The second element stored in the tuple-like type `Entry` holds the vector's scalar value, and is convertible to `T`.
+
+#### Concept
+_TODO: review this concept._
+
+```cpp
+template <typename Entry, typename T, typename I>
+concept VectorEntry = TupleLike<Entry, grb::any, grb::any> &&
+                      requires(Entry entry) { {grb::get<0>(entry)} -> std::integral; } &&
+                      requires(Entry entry) { {grb::get<1>(entry)} -> std::convertible_to<T>; };
+```
 
 
