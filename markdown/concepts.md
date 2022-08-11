@@ -159,7 +159,8 @@ concept MatrixRange = std::ranges::sized_range<M> &&
                      grb::matrix_index_type_t<M>>;
     {grb::shape(matrix)} -> Tuplelike<grb::matrix_index_type_t<M>,
                                   grb::matrix_index_type_t<M>>;
-    {grb::find(matrix)} -> std::convertible_to<std::ranges::iterator_t<M>>;
+    {grb::find(matrix, {grb::matrix_index_type_t<M>{}, grb::matrix_index_type_t<M>{}})}
+                 -> std::convertible_to<std::ranges::iterator_t<M>>;
   };
 ```
 ## Mutable Matrix Range
@@ -202,8 +203,6 @@ concept MaskMatrixRange = MatrixRange<M> &&
                           std::is_convertible_v<grb::matrix_scalar_type_t<M>, bool>;
 ```
 
-
-
 ## Vector Entry
 Vector entries represent entries in a GraphBLAS vector, which include both an `std::integral` index storing the index of the stored scalar value, as well as the scalar value itself.  We say that a type `Entry` is a valid matrix entry for the scalar type `T` and index type `I` if the following requirements are met.
 
@@ -222,4 +221,31 @@ concept VectorEntry = TupleLike<Entry, grb::any, grb::any> &&
                       requires(Entry entry) { {grb::get<1>(entry)} -> std::convertible_to<T>; };
 ```
 
+## Vector Range
+A vector in GraphBLAS consists of a range of values distributed over a one-dimensional domain. In addition to [`grb::vector`](#grb::vector), which directly stores a collection of values, there are other types, such as views, that fulfill the same interface.  We say that a type `V` is a vector range if the following requirements are met.
 
+_TODO: make requirements list find CPO, not method._
+
+### Requirements
+1) `V` has a scalar type of the stored values, accessible with `grb::vector_scalar_type_t<V>`
+2) `V` has an index type used to reference the indices of the stored values, accessible with `grb::vector_index_type_t<V>`.
+3) `V` is a range with a value type that represents a vector tuple, containing both the index and scalar value for each stored value.
+4) `V` has a shape, which is an integer-like object, holding the dimension of the vector, accessible by invoking the method `shape()` on an object of type `V`.
+5) `V` has a method `find()` that takes an index and returns an iterator.
+
+#### Concept
+
+_TODO: this is a bit sketchy, and needs to have some of the components fleshed out._
+```cpp
+template <typename M>
+concept VectorRange = std::ranges::sized_range<V> &&
+  requires(V vector) {
+    typename grb::vector_scalar_type_t<V>;
+    typename grb::vector_index_type_t<V>;
+    {std::declval<std::ranges::range_value_t<std::remove_cvref_t<V>>>()}
+      -> VectorEntry<grb::vector_scalar_type_t<V>,
+                     grb::vector_index_type_t<V>>;
+    {grb::shape(vector)} -> std::same_as<grb::vector_index_type_t<V>>;
+    {grb::find(vector, grb::vector_index_type_t<V>)} -> std::convertible_to<std::ranges::iterator_t<V>>;
+  };
+```
