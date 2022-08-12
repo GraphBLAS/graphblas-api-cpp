@@ -249,3 +249,18 @@ concept VectorRange = std::ranges::sized_range<V> &&
     {grb::find(vector, grb::vector_index_type_t<V>)} -> std::convertible_to<std::ranges::iterator_t<V>>;
   };
 ```
+
+## Mask Vector Range
+Some operations require vectors, which can be used to avoid computing and storing certain parts of the output.  We say that a type `M` is a mask vector range if the following requirements are met.
+
+### Requirements
+1) `M` is a vector range.
+2) The scalar value type of `M` is convertible to `bool`.
+
+#### Concept
+
+```cpp
+template <typename M>
+concept MaskVectorRange = VectorRange<M> &&
+                          std::is_convertible_v<grb::vector_scalar_type_t<M>, bool>;
+```
