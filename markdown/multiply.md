@@ -1,34 +1,20 @@
 ## Multiply
 
 ```cpp
-template <typename A,
-          typename B,
-          typename Reduce = grb::plus<>,
-          typename Combine = grb::multiplies<>,
-          typename Mask = grb::full_mask<>
->
-auto multiply(A&& a,
-              B&& b,
-              Reduce&& reduce = Reduce{},
-              Combine&& combine = Combine{},
-              Mask&& mask = Mask{});
-```
-
-```cpp
 template <MatrixRange A,
           MatrixRange B,
-          BinaryOperator<grb::matrix_scalar_type_t<A>, grb::matrix_scalar_type_t<B>> Combine,
+          BinaryOperator<grb::matrix_scalar_t<A>, grb::matrix_scalar_t<B>> Combine,
           BinaryOperator<grb::elementwise_return_type_t<A, B, Combine>,
                          grb::elementwise_return_type_t<A, B, Combine>,
                          grb::elementwise_return_type_t<A, B, Combine>> Reduce,
-          MaskMatrixRange Mask = grb::full_mask<>
+          MaskMatrixRange M = grb::full_matrix_mask<>
 >
 multiply_result_t<A, B, Reduce, Combine>
 multiply(A&& a,
          B&& b,
          Reduce&& reduce = Reduce{},
          Combine&& combine = Combine{},
-         Mask&& mask = Mask{});
+         M&& mask = M{});
 ```
 
 The behavior is non-deterministic if `reduce` is not associative or not commutative.
@@ -51,9 +37,9 @@ The behavior is non-deterministic if `reduce` is not associative or not commutat
 
 - `Reduce` must meet the requirements of `BinaryOperator<grb::elementwise_result_type_t<A, B, Combine>, grb::elementwise_result_type_t<A, B, Combine>, grb::elementwise_result_type_t<A, B, Combine>>`
 
-- `Combine` must meet the requirements of `BinaryOperator<grb::matrix_value_type_t<A>, grb::matrix_value_type_t<B>>`
+- `Combine` must meet the requirements of `BinaryOperator<grb::matrix_value_t<A>, grb::matrix_value_t<B>>`
 
-- `Mask` must meet the requirements of `MaskMatrixRange`
+- `M` must meet the requirements of `MaskMatrixRange`
 
 ### Return Value
 

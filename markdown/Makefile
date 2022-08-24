@@ -39,6 +39,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 utilities.md \
 				 concepts.md \
 				 type_traits.md \
+				 matrix_traits.md \
 				 algorithms.md \
 				 multiply.md \
 				 ewise_union.md \
@@ -72,6 +73,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       utilities.md \
 	       concepts.md \
 	       type_traits.md \
+	       matrix_traits.md \
 	       algorithms.md \
 	       multiply.md \
 	       ewise_union.md \
