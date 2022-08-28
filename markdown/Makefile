@@ -19,13 +19,13 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	#pandoc -s ops_mxm.md -o ops_mxm.html
 	pandoc -s \
 				 --toc \
-				 --top-level-division=chapter \
 				 -o graphblas.html \
 				 metadata.md \
 				 intro.md \
 				 --toc \
 				 --toc-depth=2 \
 				 -Vsecnumdepth=2 \
+				 --metadata title="GraphBLAS C++ API" \
 				 matrix.md \
 				 vector.md \
 				 index.md \
