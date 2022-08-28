@@ -29,6 +29,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 matrix.md \
 				 vector.md \
 				 index.md \
+				 hints.md \
 				 functional.md \
 				 plus.md \
 				 multiplies.md \
@@ -63,6 +64,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       matrix.md \
 	       vector.md \
 	       index.md \
+	       hints.md \
 	       views.md \
 	       functional.md \
 	       plus.md \
