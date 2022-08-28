@@ -54,9 +54,11 @@ Method | Description
 ## `grb::matrix::matrix`
 
 ```cpp
-matrix();                               (1)
-matrix(grb::index<index_type> shape);   (2)
-matrix(std::string file_path);          (3)
+matrix(const Allocator& alloc = Allocator());    (1)
+matrix(grb::index<index_type> shape,
+       const Allocator& alloc = Allocator());    (2)
+matrix(std::string file_path,
+       const Allocator& alloc = Allocator());    (3)
 ```
 
 Constructs new `grb::matrix` data structure.
@@ -192,6 +194,16 @@ If any nonzeros lie outside of the new matrix shape, they are removed from the m
 
 ### Return value
 None
+
+### Complexity
+Implementation defined
+
+## `grb::matrix::clear`
+```cpp
+void clear();
+```
+
+Clear all stored scalar values from the matrix.  The matrix maintains the same shape, but after return will now have a size of 0.
 
 ### Complexity
 Implementation defined

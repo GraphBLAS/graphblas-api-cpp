@@ -52,8 +52,10 @@ Method | Description
 ## `grb::vector::vector`
 
 ```cpp
-vector();                   (1)
-vector(index_type shape);   (2)
+vector();                                           (1)
+vector(const Allocator& alloc);                     (2)
+vector(index_type shape);                           (3)
+vector(index_type shape, const Allocator& alloc);   (4)
 ```
 
 Constructs new `grb::vector` data structure.

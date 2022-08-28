@@ -17,6 +17,8 @@ multiply(A&& a,
          M&& mask = M{});
 ```
 
+Multiplies two GraphBLAS matrix ranges using the binary operators `combine` and `reduce` as well as the mask `mask`.
+
 The behavior is non-deterministic if `reduce` is not associative or not commutative.
 
 ### Parameters

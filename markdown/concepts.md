@@ -121,10 +121,10 @@ concept MatrixEntry = TupleLike<Entry, grb::any, grb::any> &&
 
 ## Mutable Matrix Entry
 A mutable matrix entry is an entry in a matrix that fulfills all the requirements of matrix entry, but whose 
-stored scalar value can be mutated by assigning to a value of type `U`.  We say that a matrix entry `Entry` is a mutable matrix entry for scalar type `T`, index type `I`, and output type `U`, if it fulfills all the requirements of matrix entry as well as the following requirements.
+stored scalar value can be mutated by assigning to some value of type `U`.  We say that a matrix entry `Entry` is a mutable matrix entry for scalar type `T`, index type `I`, and output type `U`, if it fulfills all the requirements of matrix entry as well as the following requirements.
 
 ### Requirements
-1) The second element of the tuple `Entry`, representing the scalar value, is indirectly writable to elements of type `U`.
+1) The second element of the tuple `Entry`, representing the scalar value, is assignable to elements of type `U`.
 
 #### Concept
 _TODO: review this concept._
@@ -132,15 +132,15 @@ _TODO: review this concept._
 ```cpp
 template <typename Entry, typename T, typename I, typename U>
 concept MutableMatrixEntry = MatrixEntry<Entry, T, I> &&
-                             std::indirectly_writable<decltype(std::get<1>(std::declval<Entry>())), U>;
+                             std::is_assignable_v<decltype(std::get<1>(std::declval<Entry>())), U>;
 ```
 
 ## Matrix Range
 A matrix in GraphBLAS consists of a range of values distributed over a two-dimensional domain. In addition to [`grb::matrix`](#grb::matrix), which directly stores a collection of values, there are other types, such as views, that fulfill the same interface.  We say that a type `M` is a matrix range if the following requirements are met.
 
 ### Requirements
-1) `M` has a scalar type of the stored values, accessible with `grb::matrix_scalar_type_t<M>`
-2) `M` has an index type used to reference the indices of the stored values, accessible with `grb::matrix_index_type_t<M>`.
+1) `M` has a scalar type of the stored values, accessible with `grb::matrix_scalar_t<M>`
+2) `M` has an index type used to reference the indices of the stored values, accessible with `grb::matrix_index_t<M>`.
 3) `M` is a range with a value type that represents a matrix tuple, containing both the index and scalar value for each stored value.
 4) `M` has a shape, which is a tuple-like object of size two, holding the number of rows and the number of columns, accessible by invoking the method `shape()` on an object of type `M`.
 5) `M` has a method `find()` that takes an index tuple and returns an iterator.
@@ -152,14 +152,14 @@ _TODO: this is a bit sketchy, and needs to have some of the components fleshed o
 template <typename M>
 concept MatrixRange = std::ranges::sized_range<M> &&
   requires(M matrix) {
-    typename grb::matrix_scalar_type_t<M>;
-    typename grb::matrix_index_type_t<M>;
+    typename grb::matrix_scalar_t<M>;
+    typename grb::matrix_index_t<M>;
     {std::declval<std::ranges::range_value_t<std::remove_cvref_t<M>>>()}
-      -> MatrixEntry<grb::matrix_scalar_type_t<M>,
-                     grb::matrix_index_type_t<M>>;
-    {grb::shape(matrix)} -> Tuplelike<grb::matrix_index_type_t<M>,
-                                  grb::matrix_index_type_t<M>>;
-    {grb::find(matrix, {grb::matrix_index_type_t<M>{}, grb::matrix_index_type_t<M>{}})}
+      -> MatrixEntry<grb::matrix_scalar_t<M>,
+                     grb::matrix_index_t<M>>;
+    {grb::shape(matrix)} -> Tuplelike<grb::matrix_index_t<M>,
+                                  grb::matrix_index_t<M>>;
+    {grb::find(matrix, {grb::matrix_index_t<M>{}, grb::matrix_index_t<M>{}})}
                  -> std::convertible_to<std::ranges::iterator_t<M>>;
   };
 ```
@@ -179,15 +179,16 @@ _TODO: this is also a bit sketchy, and furthermore depends on the matrix range c
 template <typename M, typename T>
 concept MutableMatrixRange = MatrixRange<M> &&
                              MutableMatrixEntry<std::ranges::range_value_t<M>
-                                                grb::matrix_scalar_type_t<M>,
-                                                grb::matrix_index_type_t<M>,
+                                                grb::matrix_scalar_t<M>,
+                                                grb::matrix_index_t<M>,
                                                 T> &&
   requires(M matrix, T value) {
-    {grb::insert(matrix, {{grb::matrix_index_type_t<M>{}, grb::matrix_index_type_t<M>{}},
+    {grb::insert(matrix, {{grb::matrix_index_t<M>{}, grb::matrix_index_t<M>{}},
                           value}) -> std::ranges::iterator_t<M>;
     }
-  }
+  };
 ```
+
 ## Mask Matrix Range
 Some operations require masks, which can be used to avoid computing and storing certain parts of the output.  We say that a type `M` is a mask matrix range if the following requirements are met.
 
@@ -200,7 +201,7 @@ Some operations require masks, which can be used to avoid computing and storing 
 ```cpp
 template <typename M>
 concept MaskMatrixRange = MatrixRange<M> &&
-                          std::is_convertible_v<grb::matrix_scalar_type_t<M>, bool>;
+                          std::is_convertible_v<grb::matrix_scalar_t<M>, bool>;
 ```
 
 ## Vector Entry
@@ -221,14 +222,30 @@ concept VectorEntry = TupleLike<Entry, grb::any, grb::any> &&
                       requires(Entry entry) { {grb::get<1>(entry)} -> std::convertible_to<T>; };
 ```
 
+## Mutable Vector Entry
+A mutable vector entry is an entry in a vector that fulfills all the requirements of vector entry, but whose 
+stored scalar value can be mutated by assigning to some value of type `U`.  We say that a vector entry `Entry` is a mutable vector entry for scalar type `T`, index type `I`, and output type `U`, if it fulfills all the requirements of vector entry as well as the following requirements.
+
+### Requirements
+1) The second element of the tuple `Entry`, representing the scalar value, is assignable to elements of type `U`.
+
+#### Concept
+_TODO: review this concept._
+
+```cpp
+template <typename Entry, typename T, typename I, typename U>
+concept MutableVectorEntry = VectorEntry<Entry, T, I> &&
+                             std::is_assignable_v<decltype(std::get<1>(std::declval<Entry>())), U>;
+```
+
 ## Vector Range
 A vector in GraphBLAS consists of a range of values distributed over a one-dimensional domain. In addition to [`grb::vector`](#grb::vector), which directly stores a collection of values, there are other types, such as views, that fulfill the same interface.  We say that a type `V` is a vector range if the following requirements are met.
 
 _TODO: make requirements list find CPO, not method._
 
 ### Requirements
-1) `V` has a scalar type of the stored values, accessible with `grb::vector_scalar_type_t<V>`
-2) `V` has an index type used to reference the indices of the stored values, accessible with `grb::vector_index_type_t<V>`.
+1) `V` has a scalar type of the stored values, accessible with `grb::vector_scalar_t<V>`
+2) `V` has an index type used to reference the indices of the stored values, accessible with `grb::vector_index_t<V>`.
 3) `V` is a range with a value type that represents a vector tuple, containing both the index and scalar value for each stored value.
 4) `V` has a shape, which is an integer-like object, holding the dimension of the vector, accessible by invoking the method `shape()` on an object of type `V`.
 5) `V` has a method `find()` that takes an index and returns an iterator.
@@ -240,18 +257,41 @@ _TODO: this is a bit sketchy, and needs to have some of the components fleshed o
 template <typename M>
 concept VectorRange = std::ranges::sized_range<V> &&
   requires(V vector) {
-    typename grb::vector_scalar_type_t<V>;
-    typename grb::vector_index_type_t<V>;
+    typename grb::vector_scalar_t<V>;
+    typename grb::vector_index_t<V>;
     {std::declval<std::ranges::range_value_t<std::remove_cvref_t<V>>>()}
-      -> VectorEntry<grb::vector_scalar_type_t<V>,
-                     grb::vector_index_type_t<V>>;
-    {grb::shape(vector)} -> std::same_as<grb::vector_index_type_t<V>>;
-    {grb::find(vector, grb::vector_index_type_t<V>)} -> std::convertible_to<std::ranges::iterator_t<V>>;
+      -> VectorEntry<grb::vector_scalar_t<V>,
+                     grb::vector_index_t<V>>;
+    {grb::shape(vector)} -> std::same_as<grb::vector_index_t<V>>;
+    {grb::find(vector, grb::vector_index_t<V>)} -> std::convertible_to<std::ranges::iterator_t<V>>;
+  };
+```
+
+## Mutable Vector Range
+Some vectors and vector-like objects are *mutable*, meaning that their stored values may be modified.  Examples of mutable vector ranges include instantiations of `grb::vector` and certain vector views that allow adding new values and modifying old values, such as `grb::transpose`.  We say that a type `V` is a mutable vector range for the scalar value `T` if the following requirements are met.
+
+### Requirements
+1) `V` is a vector range.
+2) The value type of `M` fulfills the requirements of `MutableVectorEntry<T, I>`.
+3) `M` has a method `insert()` that takes a vector entry tuple and attempts to insert the element into the vector returning an iterator to the new element on success and returning an iterator to the end on failure.
+
+#### Concept
+
+```cpp
+template <typename V, typename T>
+concept MutableVectorRange = VectorRange<V> &&
+                             MutableVectorEntry<std::ranges::range_value_t<V>,
+                                                grb::vector_scalar_t<V>,
+                                                grb::vector_index_t<V>,
+                                                T> &&
+  requires(V vector, T value) {
+    {grb::insert(vector, {grb::vector_index_t<V>{}, value})}
+      -> std::same_as<std::ranges::iterator_t<V>>;
   };
 ```
 
 ## Mask Vector Range
-Some operations require vectors, which can be used to avoid computing and storing certain parts of the output.  We say that a type `M` is a mask vector range if the following requirements are met.
+Some operations require masks, which can be used to avoid computing and storing certain parts of the output.  We say that a type `M` is a mask vector range if the following requirements are met.
 
 ### Requirements
 1) `M` is a vector range.
@@ -262,5 +302,5 @@ Some operations require vectors, which can be used to avoid computing and storin
 ```cpp
 template <typename M>
 concept MaskVectorRange = VectorRange<M> &&
-                          std::is_convertible_v<grb::vector_scalar_type_t<M>, bool>;
+                          std::is_convertible_v<grb::vector_scalar_t<M>, bool>;
 ```
