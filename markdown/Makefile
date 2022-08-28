@@ -79,7 +79,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       multiply.md \
 	       ewise_union.md \
 	       ewise_intersection.md \
-				 assign.md \
+	       assign.md \
 	       ops_mxm.md
 
 clean:
