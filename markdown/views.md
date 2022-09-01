@@ -189,7 +189,30 @@ Returns the complement view of a matrix or vector mask.  At every index in `mask
 (2) Returns a vector view satisfying the requirements `MaskVectorRange`.
 
 
+## grb::mask
 
+```cpp
+template <MatrixRange Matrix, MaskMatrixRange M>
+grb::masked_view<Matrix, M> mask(Matrix&& matrix, M&& mask);                 (1)
+```
+
+### Parameters
+
+`matrix` - a GraphBLAS matrix
+
+`mask` - a GraphBLAS mask
+
+#### Type Requirements
+
+- `Matrix` must meet the requirements of `MatrixRange`
+
+- `M` must meet the requirements of `MaskMatrixRange`
+
+### Return Value
+
+Returns a view of the matrix `matrix` that has been masked using `mask`.  Any value in `matrix` for which `mask` does not have an entry at the corresponding location or for which `mask` has a value equal to `false` when converted to `bool` will not be visible in the returned mask view.
+
+(1) Returns a matrix view satisfying the requirements `MatrixRange`.  Any values in `matrix` for which `grb::find(mask, index) == grb::end(mask) || bool(*grb::find(mask, index)) == false` will be masked out of the returned matrix view.
 
 
 
