@@ -194,31 +194,57 @@ Returns the complement view of a matrix or vector mask.  At every index in `mask
 ```cpp
 template <MatrixRange Matrix, MaskMatrixRange M>
 grb::masked_view<Matrix, M> mask(Matrix&& matrix, M&& mask);                 (1)
+
+template <VectorRange Vector, MaskVectorRange M>
+grb::masked_view<Vector, M> mask(Vector&& vector, M&& mask);                 (2)
 ```
 
 ### Parameters
 
-`matrix` - a GraphBLAS matrix
+`matrix` - a GraphBLAS matrix or vector
 
-`mask` - a GraphBLAS mask
+`mask` - a GraphBLAS mask with the same shape as `matrix` (1) or `vector` (2)
 
 #### Type Requirements
 
 - `Matrix` must meet the requirements of `MatrixRange`
 
-- `M` must meet the requirements of `MaskMatrixRange`
+- `Vector` must meet the requirements of `VectorRange`
+
+- `M` must meet the requirements of `MaskMatrixRange` (1) or `MaskVectorRange` (2)
 
 ### Return Value
 
-Returns a view of the matrix `matrix` that has been masked using `mask`.  Any value in `matrix` for which `mask` does not have an entry at the corresponding location or for which `mask` has a value equal to `false` when converted to `bool` will not be visible in the returned mask view.
+Returns a view of the matrix `matrix` (1) or vector `vector` that has been masked using `mask`.  Any value in `matrix` for which `mask` does not have an entry at the corresponding location or for which `mask` has a value equal to `false` when converted to `bool` will not be visible in the returned mask view.
 
 (1) Returns a matrix view satisfying the requirements `MatrixRange`.  Any values in `matrix` for which `grb::find(mask, index) == grb::end(mask) || bool(*grb::find(mask, index)) == false` will be masked out of the returned matrix view.
 
+### Exceptions
 
+The exception `grb::invalid_argument` is thrown if the `mask` does not have the same shape as `matrix` (1) or `vector` (2).
 
+## grb::submatrix_view
+```cpp
+template <MatrixRange M>
+grb::submatrix_view<M> submatrix(M&& matrix, grb::index<I> rows, grb::index<I> cols);
+```
 
+#### Parameters
 
+`matrix` - a GraphBLAS matrix
 
+`rows` - the span of rows in the submatrix view
+
+`cols` - the span of columns in the submatrix view
+
+### Return Value
+
+Returns a view of the submatrix of GraphBLAS matrix `matrix` formed by the intersection of rows `rows[0]` to `rows[1]` and columns `cols[0]` to `cols[1]`.
+The returned matrix range has shape `grb::min(rows[1], grb::shape(matrix)[0]) - grb::max(rows[0], 0)` by `grb::min(cols[1], grb::shape(matrix)[1]) - grb::max(cols[0], 0)`
+and contains all stored values for whose index the expression `index[0] >= rows[0] && index[0] < rows[1] && index[1] >= cols[0] && index[1] < cols[1]` holds true.
+
+### Exceptions
+Returns the exception `grb::invalid_argument` if `rows[0] > rows[1]` or `cols[0] > cols[1]`.
 
 
 

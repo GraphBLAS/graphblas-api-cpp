@@ -43,7 +43,7 @@ Assigns every element of a GraphbLAS matrix or vector to either (1, 3) another G
 - `V` must meet the requirements of `grb::VectorRange`
 
 ### Exceptions
-The exception `grb::invalid_value` is thrown if `a` and `b` or `u` and `v` are not the same shape.
+The exception `grb::invalid_argument` is thrown if `a` and `b` or `u` and `v` are not the same shape.
 `std::bad_alloc` may be thrown if `a` or `u`'s allocator is unable to allocate memory.
 
 Other exceptions may be thrown while assigning or constructing to `a` or `u`.
