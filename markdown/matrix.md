@@ -22,6 +22,8 @@ Member Type | Definition
 ----- | -----
 `scalar_type` | `T`, the type of elements stored in the matrix
 `index_type`   | `I`, an integer type used to store matrix indices
+`key_type`     | A tuple-like type storing two `index_type` elements
+`map_type`     | `scalar_type`
 `value_type`   | `grb::matrix_entry<T, I>`, a tuple-like type storing the indices and the stored element
 `size_type`    | A large unsigned integer type, usually `std::size_t`
 `difference_type` | A large signed integer type, usually `std::ptrdiff_t`
@@ -47,6 +49,7 @@ Method | Description
 `reshape` | Modify dimensions of the matrix
 `insert` | Insert elements
 `insert_or_assign` | Inserts or assigns elements
+`erase` | Erases elements
 `find` | Finds an element
 `at` | Access element
 `operator[]` | Access or insert element
@@ -234,6 +237,30 @@ Inserts an element or number of elements into the matrix, if the matrix doesn't 
 
 ### Complexity
 Implementation defined
+
+## `grb::matrix::insert_or_assign`
+```cpp
+template <class M>
+std::pair<iterator, bool> insert_or_assign(key_type k, M&& obj);
+```
+
+Inserts an element into index `k` in the matrix and assigns to the scalar value if one already exists.
+
+If an element already exists at index location `k`, assigns `std::forward<M>(obj)` to the scalar value stored at that index.  If no element exists, inserts `obj` at the index as if by calling `insert` with `value_type(k, std::forward<M>(obj))`.
+
+### Parameters
+`k` - the index location to assign `obj`
+
+`obj` - the scalar value to be assigned
+
+### Type Requirements
+`M` must fulfill `std::is_assignable<scalar_type&, M>`
+
+### Return Value
+Returns an `std::pair` with the first element holding an iterator to the newly inserted or assigned value and the second element holding a `bool` value that is `true` if the element was inserted and `false` otherwise.
+
+### Complexity
+Implementation defined.
 
 ## `grb::matrix::find`
 ```cpp

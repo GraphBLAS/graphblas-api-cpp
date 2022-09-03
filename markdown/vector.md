@@ -22,6 +22,8 @@ Member Type | Definition
 ----- | -----
 `scalar_type` | `T`, the type of scalar elements stored in the vector
 `index_type`   | `I`, an integer type used to store vector indices
+`key_type`     | `index_type`
+`map_type`     | `scalar_type`
 `value_type`   | `grb::vector_entry<T, I>`, a tuple-like type storing the indices and the stored element
 `size_type`    | A large unsigned integer type, usually `std::size_t`
 `difference_type` | A large signed integer type, usually `std::ptrdiff_t`
@@ -217,6 +219,30 @@ Inserts an element or number of elements into the vector, if the vector doesn't 
 
 ### Complexity
 Implementation defined
+
+## `grb::vector::insert_or_assign`
+```cpp
+template <class M>
+std::pair<iterator, bool> insert_or_assign(key_type k, M&& obj);
+```
+
+Inserts an element into index `k` in the vector and assigns to the scalar value if one already exists.
+
+If an element already exists at index location `k`, assigns `std::forward<M>(obj)` to the scalar value stored at that index.  If no element exists, inserts `obj` at the index as if by calling `insert` with `value_type(k, std::forward<M>(obj))`.
+
+### Parameters
+`k` - the index location to assign `obj`
+
+`obj` - the scalar value to be assigned
+
+### Type Requirements
+`M` must fulfill `std::is_assignable<scalar_type&, M>`
+
+### Return Value
+Returns an `std::pair` with the first element holding an iterator to the newly inserted or assigned value and the second element holding a `bool` value that is `true` if the element was inserted and `false` otherwise.
+
+### Complexity
+Implementation defined.
 
 ## `grb::vector::find`
 ```cpp
