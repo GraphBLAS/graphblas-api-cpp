@@ -244,6 +244,22 @@ Returns an `std::pair` with the first element holding an iterator to the newly i
 ### Complexity
 Implementation defined.
 
+## `grb::vector::erase`
+```cpp
+size_type erase(index_type index);
+```
+
+Erases the element stored at index `index` if one exists.
+
+### Parameters
+`index` - the index of the scalar value to erase
+
+### Return Value
+Returns the number of elements erased (0 or 1).
+
+### Complexity
+Implementation defined.
+
 ## `grb::vector::find`
 ```cpp
 iterator find(index_type index);
