@@ -1,23 +1,44 @@
 ## Multiply
 
+The function `grb::multiply` in GraphBLAS is used to multiply a matrix times a matrix, a matrix times a vector, or a vector times a matrix, depending on the types of the input arguments.
+
+#### Matrix Times Matrix
 ```cpp
 template <MatrixRange A,
           MatrixRange B,
           BinaryOperator<grb::matrix_scalar_t<A>, grb::matrix_scalar_t<B>> Combine,
-          BinaryOperator<grb::elementwise_return_type_t<A, B, Combine>,
-                         grb::elementwise_return_type_t<A, B, Combine>,
-                         grb::elementwise_return_type_t<A, B, Combine>> Reduce,
+          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
+                         grb::elementwise_result_t<A, B, Combine>,
+                         grb::elementwise_result_t<A, B, Combine>> Reduce,
           MaskMatrixRange M = grb::full_matrix_mask<>
 >
 multiply_result_t<A, B, Reduce, Combine>
-multiply(A&& a,
+multiply(A&& a,                                                                         (1)
          B&& b,
          Reduce&& reduce = Reduce{},
          Combine&& combine = Combine{},
          M&& mask = M{});
-```
 
-Multiplies two GraphBLAS matrix ranges using the binary operators `combine` and `reduce` as well as the mask `mask`.
+template <MatrixRange A,
+          MatrixRange B,
+          BinaryOperator<grb::matrix_scalar_t<A>, grb::matrix_scalar_t<B>> Combine,
+          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
+                         grb::elementwise_result_t<A, B, Combine>,
+                         grb::elementwise_result_t<A, B, Combine>> Reduce,
+          MaskMatrixRange M = grb::full_matrix_mask<>,
+          BinaryOperator<grb::matrix_scalar_t<C>,
+                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_left,
+          MutableMatrixRange<grb::elementwise_result_t<A, B, Combine>> C
+>
+void multiply(C&& c,                                                                    (2)
+              A&& a,
+              B&& b,
+              Reduce&& reduce = Reduce{},
+              Combine&& combine = Combine{},
+              M&& mask = M{},
+              Accumulate&& acc = Accumulate{},
+              bool merge = false);
+```
 
 The behavior is non-deterministic if `reduce` is not associative or not commutative.
 
@@ -31,6 +52,13 @@ The behavior is non-deterministic if `reduce` is not associative or not commutat
 `combine` - a binary operator
 
 `mask` - write mask used to determine which elements of the output will be computed
+
+
+`c` - if given, the output matrix to which to write the result
+
+`acc` - the accumulator used to accumulate partial results 
+
+`merge` - whether to merge in values from `c` outside of the write area indicated by `mask`
 
 #### Type Requirements
 - `A` must meet the requirements of `MatrixRange`

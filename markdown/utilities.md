@@ -155,6 +155,13 @@ template <typename A, typename B, typename Reduce, typename Combine>
 using multiply_result_t = /* undefined */;
 ```
 
-The type of the matrix returned when multiply GraphBLAS matrix ranges of type `A` and `B` using the binary operators `Reduce` and `Combine`.
+The type returned when multiply is called on GraphBLAS matrix or vector ranges of type `A` and `B` using binary operators `Reduce` and `Combine`.
 
+## `elementwise_return_type_t`
 
+```cpp
+template <typename A, typename B, typename Combine>
+using elementwise_result_t = /* undefined */;
+```
+
+The type returned when the binary operator `Combine` is called with an element of the scalar type of `A` as the first argument and an element of the scalar type of `B` as the second argument.  `A` and `B` must be GraphBLAS matrix or vector objects.
