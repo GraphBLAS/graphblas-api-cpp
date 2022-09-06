@@ -27,7 +27,7 @@ template <MatrixRange A,
                          grb::elementwise_result_t<A, B, Combine>> Reduce,
           MaskMatrixRange M = grb::full_matrix_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_left,
+                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
           MutableMatrixRange<grb::elementwise_result_t<A, B, Combine>> C
 >
 void multiply(C&& c,                                                                    (2)
@@ -66,7 +66,7 @@ template <MatrixRange A,
                          grb::elementwise_result_t<A, B, Combine>> Reduce,
           MaskVectorRange M = grb::full_vector_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_left,
+                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
           MutableVectorRange<grb::elementwise_result_t<A, B, Combine>> C
 >
 void multiply(C&& c,                                                                    (4)
@@ -105,7 +105,7 @@ template <VectorRange A,
                          grb::elementwise_result_t<A, B, Combine>> Reduce,
           MaskVectorRange M = grb::full_vector_mask<>,
           BinaryOperator<grb::vector_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_left,
+                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
           MutableVectorRange<grb::elementwise_result_t<A, B, Combine>> C
 >
 void multiply(C&& c,                                                                    (6)
@@ -144,7 +144,7 @@ template <VectorRange A,
                          grb::elementwise_result_t<A, B, Combine>> Reduce,
           MaskVectorRange M = grb::full_vector_mask<>,
           BinaryOperator<grb::vector_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_left,
+                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
           MutableVectorRange<grb::elementwise_result_t<A, B, Combine>> C
 >
 void multiply(C&& c,                                                                    (8)
