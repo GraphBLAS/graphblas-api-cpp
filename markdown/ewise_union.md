@@ -1,6 +1,8 @@
 ## `ewise_union`
 
-#### Matrix Element-Wise Union
+Perform an element-wise union between two GraphBLAS matrices or vectors.
+
+#### Element-Wise Matrix Union
 ```cpp
 template <MatrixRange A,
           MatrixRange B,
@@ -25,7 +27,7 @@ auto ewise_union(C&& c, A&& a, B&& b,
                  bool merge = false);                                        (2)
 ```
 
-#### Vector Element-Wise Union
+#### Element-Wise Vector Union
 ```cpp
 template <VectorRange A,
           VectorRange B,
@@ -49,8 +51,6 @@ auto ewise_union(C&& c, A&& a, B&& b,
                  Accumulate&& acc = Accumulate{},
                  bool merge = false);                                        (4)
 ```
-
-Perform an element-wise union.
 
 ### Parameters
 
@@ -97,7 +97,7 @@ The arguments `a` and `b` must share the same shape.  If an output object `c` is
 The exception `grb::invalid_argument` may be thrown if any of the following conditions occur:
 
 - The dimensions of `a` and `b` incompatible, that is `a.shape() != b.shape()`.
-- The dimension of `c`, if given, does not match `a`'s shape, that is `c.shape() != a.shape()`
+- The dimensions of `c`, if given, does not match `a`'s shape, that is `c.shape() != a.shape()`
 - The dimensions of the mask are smaller than the dimensions of the output, that is `mask.shape()[0] < a.shape()[0] || mask.shape()[1] < a.shape()[1]` (1) or `mask.shape() < a.shape()`.
 
 ### Notes
