@@ -46,6 +46,8 @@ Method | Description
 `shape` | Return the dimension of the vector
 `begin` <br />`cbegin` | Returns iterator to beginning of container
 `end` <br />`cend` | Returns iterator to one past last element in container
+`reshape` | Modify the dimension of the vector
+`clear` | Clears all elements from the container
 `insert` | Insert elements
 `insert_or_assign` | Inserts or assigns elements
 `find` | Finds an element
@@ -192,6 +194,15 @@ None
 ### Complexity
 Implementation defined
 
+## `grb::vector::clear`
+```cpp
+void clear();
+```
+
+Clear all stored scalar values from the vector.  The vector maintains the same shape, but after return will now have a size of 0.
+
+### Complexity
+Implementation defined
 
 ## `grb::vector::insert`
 ```cpp

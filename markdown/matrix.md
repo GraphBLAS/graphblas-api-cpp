@@ -47,6 +47,7 @@ Method | Description
 `begin` <br />`cbegin` | Returns iterator to beginning of container
 `end` <br />`cend` | Returns iterator to one past last element in container
 `reshape` | Modify dimensions of the matrix
+`clear` | Clears all elements from the container
 `insert` | Insert elements
 `insert_or_assign` | Inserts or assigns elements
 `erase` | Erases elements
