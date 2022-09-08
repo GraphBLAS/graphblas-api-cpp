@@ -88,14 +88,12 @@ template <VectorRange A,
           BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
                          grb::elementwise_result_t<A, B, Combine>,
                          grb::elementwise_result_t<A, B, Combine>> Reduce,
-          MaskVectorRange M = grb::full_vector_mask<>
 >
 mutiply_result<A, B, Reduce, Combine>
 multiply(A&& a,                                                                         (5)
          B&& b,
          Reduce&& reduce = Reduce{},
-         Combine&& combine = Combine{},
-         M&& mask = M{});
+         Combine&& combine = Combine{});
 
 template <VectorRange A,
           VectorRange B,
@@ -103,17 +101,15 @@ template <VectorRange A,
           BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
                          grb::elementwise_result_t<A, B, Combine>,
                          grb::elementwise_result_t<A, B, Combine>> Reduce,
-          MaskVectorRange M = grb::full_vector_mask<>,
           BinaryOperator<grb::vector_scalar_t<C>,
                          grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
-          MutableVectorRange<grb::elementwise_result_t<A, B, Combine>> C
+          std::assignable_from<grb::elementwise_result_t<A, B, Combine>> C
 >
 void multiply(C&& c,                                                                    (6)
               A&& a,
               B&& b,
               Reduce&& reduce = Reduce{},
               Combine&& combine = Combine{},
-              M&& mask = M{},
               Accumulate&& acc = Accumulate{},
               bool merge = false);
 ```
@@ -157,12 +153,12 @@ void multiply(C&& c,                                                            
               bool merge = false);
 ```
 
-The behavior is non-deterministic if `reduce` is not associative or not commutative.
+Behavior is non-deterministic if `reduce` is not associative or not commutative.
 
 ### Parameters
-`a` - the left-hand side of the matrix product being computed
+`a` - the left-hand side of the product being computed
 
-`b` - the right-hand side of the matrix product being computed
+`b` - the right-hand side of the product being computed
 
 `reduce` - a binary operator
 
@@ -170,45 +166,98 @@ The behavior is non-deterministic if `reduce` is not associative or not commutat
 
 `mask` - write mask used to determine which elements of the output will be computed
 
+`c` - if given, the output object to which to write the result
 
-`c` - if given, the output matrix to which to write the result
-
-`acc` - the accumulator used to accumulate partial results 
+`acc` - the accumulator used to accumulate partial results into the output object
 
 `merge` - whether to merge in values from `c` outside of the write area indicated by `mask`
 
 #### Type Requirements
-- `A` must meet the requirements of `MatrixRange`
+- `A` must meet the requirements of `MatrixRange` (1-4) or `VectorRange` (5-8)
 
-- `B` must meet the requirements of `MatrixRange`
+- `B` must meet the requirements of `MatrixRange` (1-2,7-8) or `VectorRange` (3-6)
 
 - `Reduce` must meet the requirements of `BinaryOperator<grb::elementwise_result_type_t<A, B, Combine>, grb::elementwise_result_type_t<A, B, Combine>, grb::elementwise_result_type_t<A, B, Combine>>`
 
-- `Combine` must meet the requirements of `BinaryOperator<grb::matrix_value_t<A>, grb::matrix_value_t<B>>`
+- `Combine` must meet the requirements of `BinaryOperator<grb::container_value_t<A>, grb::container_value_t<B>>`
 
-- `M` must meet the requirements of `MaskMatrixRange`
+- `M` must meet the requirements of `MaskMatrixRange` (1-4) or `VectorMaskRange` (5-8)
 
 ### Return Value
 
-Returns a matrix of shape `a.shape()[0]` by `b.shape()[1]` with scalar type
-`elementwise_result_type_t<A, B, Combine>` and the index type equal to that of `matrix_index_type_t<A>`
-or `matrix_index_type_t<B>`, whichever has the larger `std::numeric_limits<T>::max()`.  An element `i, j`
-of the output matrix will only be computed if element `i, j` exists in `mask` and is equal to `true`
-when converted to `bool`.
+If the output matrix or vector `c` is supplied, no value is returned.
 
+__NOTE: `elementwise_result_t<A, B, Combine> is actually incorrect here. Should be result of reduction.__
+
+If `c` is not supplied as an argument, returns the result of the multiplication.
+
+(1) - A GraphBLAS matrix with shape `a.shape()[0]` by `b.shape()[1]`
+
+(3) - A GraphBLAS vector with shape `a.shape()[0]`
+
+(5) - `elementwise_result_type_t<A, B, Combine>`
+
+(7) - A GraphBLAS vector with shape `b.shape()[1]`
+
+In the case that a GraphBLAS matrix or vector is returned, its scalar type is
+`elementwise_result_type_t<A, B, Combine>`, and its index type is equal to either
+`grb::matrix_index_t<A>` or `grb::matrix_index_t<B>`, whichever one has the larger
+`std::numeric_limits<T>::max()`.
+An element of the result at index location `index` will only be computed if
+a scalar value equal to `true` when converted to `bool` exists in `mask`, that is
+`grb::find(mask, index) != grb::end(mask) && bool(grb::get<1>(*grb::find(mask, index)))`.
+
+##### Matrix Times Matrix
+A generalized matrix times matrix multiplication is performed, as defined in the
+[GraphBLAS Math Specification](https:://github.com/GraphBLAS/graphblas-api-math).
 Each element of the output is produced by combing the elements in corresponding indices of a row of `a`
-and column of `b` and using `reduce` to perform a reduction to a single values, as defined in the
-[GraphBLAS Math Specification](https://github.com/GraphBLAS/graphblas-api-math).
+and column of `b` and using `reduce` to perform a reduction to a single value.
+
+##### Matrix Times Vector
+A generalized matrix times vector multiplication is performed, as defined in the
+[GraphBLAS Math Specification](https:://github.com/GraphBLAS/graphblas-api-math).
+Each element of the output vector is produced by combining elements in each row
+of `a` with the corresponding elements of the vector `b` and using `reduce` to
+perform a reduction of these to a single value in the output vector.
+
+##### Vector Times Vector
+A generalized dot product is performed, as defined in the
+[GraphBLAS Math Specification](https:://github.com/GraphBLAS/graphblas-api-math).
+The corresponding elements of vectors `a` and `b` are combined and reduced into
+a single value using `reduce`.
+
+##### Vector Times Matrix
+A generalized matrix times vector multiplication is performed, as defined in the
+[GraphBLAS Math Specification](https:://github.com/GraphBLAS/graphblas-api-math).
+Each element of the output vector is produced by combining elements in each column
+of `b` with the corresponding elements of the vector `a` and using `reduce` to
+perform a reduction of these to a single value in the output vector.
 
 ### Complexity
-TODO: do we make any promises about complexity?
-Something along the lines of $n^3$.
+Complexity is implementation-defined.
 
 ### Exceptions
 The exception `grb::invalid_argument` may be thrown if any of the following conditions occur:
 
+##### Matrix Times Matrix
 - The dimensions of the matrices being multiplied are incompatible, that is `a.shape()[1] != b.shape()[0]`.
 - The dimensions of the mask are smaller than the dimensions of the output, that is `mask.shape()[0] < a.shape()[0] || mask.shape()[1] < b.shape()[1]`
+- The dimensions of the output matrix, if provided, are incompatible, that is `c.shape()[0] != a.shape()[0] || c.shape()[1] != b.shape()[1]`.
+
+##### Matrix Times Vector
+- The dimensions of the matrix and vector being multiplied are incompatible, that is `a.shape()[1] != b.shape()`.
+- The dimensions of the mask are smaller than the dimensions of the output, that is `mask.shape() < a.shape()[0]`
+- The dimensions of the output vector, if provided, are incompatible, that is `c.shape() != a.shape()[0]`.
+
+##### Vector Times Vector
+- The dimensions of the vectors being multiplied are incompatible, that is `a.shape() != b.shape()`.
+- The dimensions of the mask are smaller than the dimensions of the output, that is `mask.shape() < a.shape()[0]`
+- The dimensions of the output vector, if provided, are incompatible, that is `c.shape() != a.shape()[0]`.
+
+##### Vector Times Matrix
+- The dimensions of the matrix and vector being multiplied are incompatible, that is `a.shape() != b.shape()[0]`.
+- The dimensions of the mask are smaller than the dimensions of the output, that is `mask.shape() < b.shape()[1]`
+- The dimensions of the output vector, if provided, are incompatible, that is `c.shape() != b.shape()[1]`.
 
 If the algorithm fails to allocate memory, `std::bad_alloc` is thrown.
 
