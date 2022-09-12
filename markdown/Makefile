@@ -9,6 +9,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 -o graphblas.html \
 				 metadata.md \
 				 intro.md \
+				 basic_concepts.md \
 				 --toc \
 				 --toc-depth=2 \
 				 -Vsecnumdepth=2 \
@@ -44,6 +45,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       -o graphblas.pdf \
 	       metadata.md \
 	       intro.md \
+	       basic_concepts.md \
 	       --toc \
 	       --toc-depth=2 \
 	       -Vsecnumdepth=2 \
