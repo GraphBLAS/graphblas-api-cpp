@@ -37,7 +37,6 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 
 graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	pandoc -s \
-	       --toc \
 	       --top-level-division=chapter \
 	       -H preamble.tex \
 	       -B title.tex \
