@@ -17,8 +17,6 @@ jobs:
           mkdir graphblas-cpp-spec
           cp graphblas.pdf graphblas-cpp-spec
           cp graphblas.html graphblas-cpp-spec
-          mkdir github-pages
-          cp graphblas.html github-pages/index.html
       - name: Check on spec
         run: ls $GITHUB_WORKSPACE/markdown
       - name: Archive GraphBLAS C++ Spec
@@ -27,21 +25,31 @@ jobs:
           name: graphblas-cpp-spec
           path: |
             ${{ github.workspace }}/markdown/graphblas-cpp-spec
-      - name: Archive GitHub Pages
-        uses: actions/upload-artifact@v2
-        with:
-          name: github-pages
-          path: |
-            ${{ github.workspace }}/markdown/github-pages
+
   Deploy-GitHub-Pages:
-    needs: Build-GraphBLAS-Spec
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
+    needs: Build-GraphBLAS-Spec
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+    - name: Checkout gh-pages
+      uses: actions/checkout@v3
+      with:
+        ref: gh-pages
+        path: gh-pages
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: graphblas-cpp-spec
+    - name: Publish to GitHub Pages
+      run: |
+        cd $GITHUB_WORKSPACE
+        cp graphblas.html gh-pages/docs/index.html
+        cd gh-pages
+        find *
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add .
+        # Ignore errors because no updates returns an error status.
+        git commit --reset-author --amend -m "Update from github actions"
+        git push --force origin gh-pages
+
