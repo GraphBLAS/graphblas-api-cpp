@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: benbrock/graphblas-cpp:build-docs-0.2
+    if: ${{ github.ref != 'refs/heads/gh-pages' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
