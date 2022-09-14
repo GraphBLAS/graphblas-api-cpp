@@ -6,7 +6,7 @@ jobs:
   Build-GraphBLAS-Spec:
     runs-on: ubuntu-latest
     container:
-      image: benbrock/graphblas-cpp:build-docs-0.2
+      image: benbrock/graphblas-cpp:build-docs-0.3
     if: ${{ github.ref != 'refs/heads/gh-pages' }}
     steps:
       - name: Check out repository code
