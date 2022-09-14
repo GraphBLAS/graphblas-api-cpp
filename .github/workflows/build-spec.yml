@@ -1,5 +1,7 @@
 name: Build GraphBLAS C++ Specification
 on: [push]
+permissions:
+  contents: write
 jobs:
   Build-GraphBLAS-Spec:
     runs-on: ubuntu-latest
@@ -15,14 +17,22 @@ jobs:
           mkdir graphblas-cpp-spec
           cp graphblas.pdf graphblas-cpp-spec
           cp graphblas.html graphblas-cpp-spec
+          mkdir github-pages
+          cp graphblas.html github-pages/index.html
       - name: Check on spec
         run: ls $GITHUB_WORKSPACE/markdown
-      - name: Archive generated files
+      - name: Archive GraphBLAS C++ Spec
         uses: actions/upload-artifact@v2
         with:
           name: graphblas-cpp-spec
           path: |
             ${{ github.workspace }}/markdown/graphblas-cpp-spec
+      - name: Archive GitHub Pages
+        uses: actions/upload-artifact@v2
+        with:
+          name: github-pages
+          path: |
+            ${{ github.workspace }}/markdown/github-pages
   Deploy-GitHub-Pages:
     needs: Build-GraphBLAS-Spec
     runs-on: ubuntu-latest
@@ -31,11 +41,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v1
-        with:
-          artifact_name: 'graphblas-cpp-spec'
-          page_url: 'graphblas.html'
