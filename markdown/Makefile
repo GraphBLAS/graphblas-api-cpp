@@ -13,7 +13,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 --toc \
 				 --toc-depth=2 \
 				 -Vsecnumdepth=2 \
-				 --metadata title="GraphBLAS C++ API" \
+				 --metadata title="GraphBLAS C++ API Draft 0.1a" \
 				 matrix.md \
 				 vector.md \
 				 index.md \
