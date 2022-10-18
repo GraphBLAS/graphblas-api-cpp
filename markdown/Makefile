@@ -33,8 +33,8 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 multiply.md \
 				 ewise_union.md \
 				 ewise_intersection.md \
-				 assign.md \
-				 ops_mxm.md
+				 assign.md
+				 # ops_mxm.md
 
 graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	pandoc -s \
@@ -69,8 +69,8 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       multiply.md \
 	       ewise_union.md \
 	       ewise_intersection.md \
-	       assign.md \
-	       ops_mxm.md
+	       assign.md
+	       # ops_mxm.md
 
 clean:
 	rm -fv *.pdf *.html
