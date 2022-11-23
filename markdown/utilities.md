@@ -118,25 +118,6 @@ A call to `grb::insert` is expression-equivalent to:
 1) `r.insert(t)` if that expression is valid.
 2) Otherwise, any calls to `insert(r, t)` found through argument-dependent lookup.
 
-## `grb::matrix_scalar_type_t`
-_TODO: should re-write to simply use `matrix_traits` template struct._
-
-```cpp
-template <typename M>
-using matrix_scalar_type_t = std::remove_cvref_t<typename M::scalar_type>;
-```
-
-Returns the type of stored scalar values in a GraphBLAS matrix or matrix range.
-
-## `grb::matrix_index_type_t`
-
-```cpp
-template <typename M>
-using matrix_index_type_t = std::remove_cvref_t<typename M::index_type>;
-```
-
-Return the type used to store indices in a GraphBLAS matrix or matrix range.
-
 ## `scalar_result_type_t`
 
 ```cpp

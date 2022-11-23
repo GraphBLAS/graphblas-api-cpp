@@ -6,22 +6,22 @@ Perform an element-wise union between two GraphBLAS matrices or vectors.
 ```cpp
 template <MatrixRange A,
           MatrixRange B,
-          BinaryOperator<grb::matrix_scalar_type_t<A>,
-                         grb::matrix_scalar_type_t<B>> Combine,
-          MaskMatrixRange M = grb::full_mask<>
+          BinaryOperator<grb::matrix_scalar_t<A>,
+                         grb::matrix_scalar_t<B>> Combine,
+          MaskMatrixRange M = grb::full_matrix_mask<>
 >
 auto ewise_union(A&& a, B&& b, Combine&& combine, M&& mask = M{});           (1)
 
 template <MatrixRange A,
           MatrixRange B,
-          BinaryOperator<grb::matrix_scalar_type_t<A>,
-                         grb::matrix_scalar_type_t<B>> Combine,
-          MaskMatrixRange M = grb::full_mask<>,
+          BinaryOperator<grb::matrix_scalar_t<A>,
+                         grb::matrix_scalar_t<B>> Combine,
+          MaskMatrixRange M = grb::full_matrix_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
                          grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
           MutableMatrixRange<grb::elementwise_result_t<A, B, Combine>> C
 >
-auto ewise_union(C&& c, A&& a, B&& b,
+void ewise_union(C&& c, A&& a, B&& b,
                  Combine&& combine, M&& mask = M{},
                  Accumulate&& acc = Accumulate{},
                  bool merge = false);                                        (2)
@@ -31,22 +31,22 @@ auto ewise_union(C&& c, A&& a, B&& b,
 ```cpp
 template <VectorRange A,
           VectorRange B,
-          BinaryOperator<grb::vector_scalar_type_t<A>,
-                         grb::vector_scalar_type_t<B>> Combine,
-          MaskVectorRange M = grb::full_mask<>
+          BinaryOperator<grb::vector_scalar_t<A>,
+                         grb::vector_scalar_t<B>> Combine,
+          MaskVectorRange M = grb::full_vector_mask<>
 >
 auto ewise_union(A&& a, B&& b, Combine&& combine, M&& mask = M{});           (3)
 
 template <VectorRange A,
           VectorRange B,
-          BinaryOperator<grb::vector_scalar_type_t<A>,
-                         grb::vector_scalar_type_t<B>> Combine,
-          MaskVectorRange M = grb::full_mask<>,
+          BinaryOperator<grb::vector_scalar_t_t<A>,
+                         grb::vector_scalar_t_t<B>> Combine,
+          MaskVectorRange M = grb::full_vector_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
                          grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
           MutableVectorRange<grb::elementwise_result_t<A, B, Combine>> C
 >
-auto ewise_union(C&& c, A&& a, B&& b,
+void ewise_union(C&& c, A&& a, B&& b,
                  Combine&& combine, M&& mask = M{},
                  Accumulate&& acc = Accumulate{},
                  bool merge = false);                                        (4)
@@ -76,7 +76,7 @@ auto ewise_union(C&& c, A&& a, B&& b,
 
 - `C` must meet the requirements of `MutableMatrixRange<grb::elementwise_result_t<A, B, Combine>>` (2) or `MutableVectorRange<grb::elementwise_result_t<A, B, Combine>>` (4)
 
-- `Combine` must meet the requirements of `BinaryOperator<grb::matrix_scalar_type_t<A>, grb::matrix_scalar_type_t<B>>`.
+- `Combine` must meet the requirements of `BinaryOperator<grb::matrix_scalar_t<A>, grb::matrix_scalar_t<B>>`.
 
 - `M` must meet the requirements of `MaskMatrixRange` (1,2) or `MaskVectorRange` (3,4)
 
