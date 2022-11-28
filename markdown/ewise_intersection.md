@@ -105,3 +105,28 @@ The exception `grb::invalid_argument` may be thrown if any of the following cond
 ### Notes
 
 ### Example
+
+```cpp
+#include <grb/grb.hpp>
+
+int main(int argc, char** argv) {
+  grb::matrix<float> x({10, 10});
+  grb::matrix<float> y({10, 10});
+
+  x[{0, 1}] = 12;
+  x[{2, 5}] = 12;
+  x[{2, 7}] = 12;
+  x[{5, 3}] = 12;
+
+  y[{0, 1}] = 12;
+  y[{1, 5}] = 12;
+  y[{2, 7}] = 12;
+  y[{5, 3}] = 12;
+
+  auto z = grb::ewise_intersection(x, y, grb::plus{});
+
+  grb::print(z);
+
+  return 0;
+}
+```
