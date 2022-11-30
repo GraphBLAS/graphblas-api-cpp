@@ -96,7 +96,7 @@ The arguments `a` and `b` must share the same shape.  If an output object `c` is
 
 ### Postconditions
 
-In (2) and (4), and element-wise union will be performed as described in the [GraphBLAS Math Specification](https://github.com/GraphBLAS/graphblas-api-math).  In (1) and (3), none of the input arguments will be modified.
+In (2) and (4), an element-wise union is performed as described in the [GraphBLAS Math Specification](https://github.com/GraphBLAS/graphblas-api-math) and the result written to `c`.  In (1) and (3), none of the input arguments will be modified, and the result is returned as a value.
 
 ### Exceptions
 

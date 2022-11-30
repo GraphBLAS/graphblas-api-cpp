@@ -90,11 +90,15 @@ Perform an element-wise intersection.
 
 If the output matrix argument `c` is supplied, no value is returned.
 
-If `c` is not supplied as an argument, returns a GraphBLAS matrix (1) or GraphBLAS vector (3) equal to the element-wise intersection of `a` and `b`, with the binary operator `combine` used to combine scalar values and `mask` used to determine which parts of the output are computed.  For (1), the type of the return value satisfies the requirements of `MatrixRange`, and for (3) the type of the return value satisfies the requirements of `VectorRange`.  The return value has the same shape as `a` and `b`.  Index `idx` will only hold an element in the return value if an element exists at `idx` in both `a`, `b`, and `mask`.  The value at that index will be equal to the value `fn(a[idx], b[idx])`.
+If `c` is not supplied as an argument, returns a GraphBLAS matrix (1) or GraphBLAS vector (3) equal to the element-wise intersection of `a` and `b`, with the binary operator `combine` used to combine scalar values and `mask` used to determine which parts of the output are computed.  For (1), the type of the return value satisfies the requirements of `MatrixRange`, and for (3) the type of the return value satisfies the requirements of `VectorRange`.  The return value has the same shape as `a` and `b`.  Index `idx` will only hold an element in the return value if an element exists at `idx` in both `a`, `b`, and `mask`, and the element of `mask` holds a value equal to `true` when converted to `bool`.  The value at that index will be equal to the value `fn(a[idx], b[idx])`.
 
 ### Preconditions
 
 The arguments `a` and `b` must share the same shape.  If an output object `c` is given, it must also have the same shape.  For the argument `mask`, each dimension of its shape must be equal to or greater than the corresponding dimension of `a` and `b`'s shapes.  `fn` must not modify any element of `a`, `b`, or `mask`.
+
+### Postconditions
+
+In (2) and (4), an element-wise intersection is performed as described in the [GraphBLAS Math Specification](https://github.com/GraphBLAS/graphblas-api-math) and the result written to `c`.  In (1) and (3), none of the input arguments will be modified, and the result is returned as a value.
 
 ### Exceptions
 
