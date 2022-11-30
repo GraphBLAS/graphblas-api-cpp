@@ -7,9 +7,9 @@ The function `grb::multiply` in GraphBLAS is used to multiply a matrix times a m
 template <MatrixRange A,
           MatrixRange B,
           BinaryOperator<grb::matrix_scalar_t<A>, grb::matrix_scalar_t<B>> Combine,
-          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>> Reduce,
+          BinaryOperator<grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>> Reduce,
           MaskMatrixRange M = grb::full_matrix_mask<>
 >
 multiply_result_t<A, B, Reduce, Combine>
@@ -22,13 +22,13 @@ multiply(A&& a,                                                                 
 template <MatrixRange A,
           MatrixRange B,
           BinaryOperator<grb::matrix_scalar_t<A>, grb::matrix_scalar_t<B>> Combine,
-          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>> Reduce,
+          BinaryOperator<grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>> Reduce,
           MaskMatrixRange M = grb::full_matrix_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
-          MutableMatrixRange<grb::elementwise_result_t<A, B, Combine>> C
+                         grb::combine_result_t<A, B, Combine>> Accumulate = grb::take_right,
+          MutableMatrixRange<grb::combine_result_t<A, B, Combine>> C
 >
 void multiply(C&& c,                                                                    (2)
               A&& a,
@@ -46,9 +46,9 @@ void multiply(C&& c,                                                            
 template <MatrixRange A,
           VectorRange B,
           BinaryOperator<grb::matrix_scalar_t<A>, grb::vector_scalar_t<B>> Combine,
-          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>> Reduce,
+          BinaryOperator<grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>> Reduce,
           MaskVectorRange M = grb::full_vector_mask<>
 >
 mutiply_result<A, B, Reduce, Combine>
@@ -61,13 +61,13 @@ multiply(A&& a,                                                                 
 template <MatrixRange A,
           VectorRange B,
           BinaryOperator<grb::matrix_scalar_t<A>, grb::vector_scalar_t<B>> Combine,
-          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>> Reduce,
+          BinaryOperator<grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>> Reduce,
           MaskVectorRange M = grb::full_vector_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
-          MutableVectorRange<grb::elementwise_result_t<A, B, Combine>> C
+                         grb::combine_result_t<A, B, Combine>> Accumulate = grb::take_right,
+          MutableVectorRange<grb::combine_result_t<A, B, Combine>> C
 >
 void multiply(C&& c,                                                                    (4)
               A&& a,
@@ -85,9 +85,9 @@ void multiply(C&& c,                                                            
 template <VectorRange A,
           VectorRange B,
           BinaryOperator<grb::vector_scalar_t<A>, grb::vector_scalar_t<B>> Combine,
-          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>> Reduce,
+          BinaryOperator<grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>> Reduce,
 >
 mutiply_result<A, B, Reduce, Combine>
 multiply(A&& a,                                                                         (5)
@@ -98,12 +98,12 @@ multiply(A&& a,                                                                 
 template <VectorRange A,
           VectorRange B,
           BinaryOperator<grb::vector_scalar_t<A>, grb::vector_scalar_t<B>> Combine,
-          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>> Reduce,
+          BinaryOperator<grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>> Reduce,
           BinaryOperator<grb::vector_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
-          std::assignable_from<grb::elementwise_result_t<A, B, Combine>> C
+                         grb::combine_result_t<A, B, Combine>> Accumulate = grb::take_right,
+          std::assignable_from<grb::combine_result_t<A, B, Combine>> C
 >
 void multiply(C&& c,                                                                    (6)
               A&& a,
@@ -120,9 +120,9 @@ void multiply(C&& c,                                                            
 template <VectorRange A,
           MatrixRange B,
           BinaryOperator<grb::vector_scalar_t<A>, grb::matrix_scalar_t<B>> Combine,
-          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>> Reduce,
+          BinaryOperator<grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>> Reduce,
           MaskVectorRange M = grb::full_vector_mask<>
 >
 mutiply_result<A, B, Reduce, Combine>
@@ -135,13 +135,13 @@ multiply(A&& a,                                                                 
 template <VectorRange A,
           MatrixRange B,
           BinaryOperator<grb::vector_scalar_t<A>, grb::matrix_scalar_t<B>> Combine,
-          BinaryOperator<grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>,
-                         grb::elementwise_result_t<A, B, Combine>> Reduce,
+          BinaryOperator<grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>,
+                         grb::combine_result_t<A, B, Combine>> Reduce,
           MaskVectorRange M = grb::full_vector_mask<>,
           BinaryOperator<grb::vector_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
-          MutableVectorRange<grb::elementwise_result_t<A, B, Combine>> C
+                         grb::combine_result_t<A, B, Combine>> Accumulate = grb::take_right,
+          MutableVectorRange<grb::combine_result_t<A, B, Combine>> C
 >
 void multiply(C&& c,                                                                    (8)
               A&& a,
@@ -177,7 +177,7 @@ Behavior is non-deterministic if `reduce` is not associative or not commutative.
 
 - `B` must meet the requirements of `MatrixRange` (1-2,7-8) or `VectorRange` (3-6)
 
-- `Reduce` must meet the requirements of `BinaryOperator<grb::elementwise_result_type_t<A, B, Combine>, grb::elementwise_result_type_t<A, B, Combine>, grb::elementwise_result_type_t<A, B, Combine>>`
+- `Reduce` must meet the requirements of `BinaryOperator<grb::combine_result_type_t<A, B, Combine>, grb::combine_result_type_t<A, B, Combine>, grb::combine_result_type_t<A, B, Combine>>`
 
 - `Combine` must meet the requirements of `BinaryOperator<grb::container_value_t<A>, grb::container_value_t<B>>`
 
@@ -187,7 +187,7 @@ Behavior is non-deterministic if `reduce` is not associative or not commutative.
 
 If the output matrix or vector `c` is supplied, no value is returned.
 
-__NOTE: `elementwise_result_t<A, B, Combine> is actually incorrect here. Should be result of reduction.__
+__NOTE: `combine_result_t<A, B, Combine> is actually incorrect here. Should be result of reduction.__
 
 If `c` is not supplied as an argument, returns the result of the multiplication.
 
@@ -195,12 +195,12 @@ If `c` is not supplied as an argument, returns the result of the multiplication.
 
 (3) - A GraphBLAS vector with shape `a.shape()[0]`
 
-(5) - `elementwise_result_type_t<A, B, Combine>`
+(5) - `combine_result_t<A, B, Combine>`
 
 (7) - A GraphBLAS vector with shape `b.shape()[1]`
 
 In the case that a GraphBLAS matrix or vector is returned, its scalar type is
-`elementwise_result_type_t<A, B, Combine>`, and its index type is equal to either
+`combine_result_t<A, B, Combine>`, and its index type is equal to either
 `grb::matrix_index_t<A>` or `grb::matrix_index_t<B>`, whichever one has the larger
 `std::numeric_limits<T>::max()`.
 An element of the result at index location `index` will only be computed if

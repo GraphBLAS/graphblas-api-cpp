@@ -10,7 +10,8 @@ template <MatrixRange A,
                          grb::matrix_scalar_t<B>> Combine,
           MaskMatrixRange M = grb::full_matrix_mask<>
 >
-auto ewise_union(A&& a, B&& b, Combine&& combine, M&& mask = M{});           (1)
+ewise_union_result_t<A, B, Combine>
+ewise_union(A&& a, B&& b, Combine&& combine, M&& mask = M{});           (1)
 
 template <MatrixRange A,
           MatrixRange B,
@@ -18,8 +19,8 @@ template <MatrixRange A,
                          grb::matrix_scalar_t<B>> Combine,
           MaskMatrixRange M = grb::full_matrix_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
-          MutableMatrixRange<grb::elementwise_result_t<A, B, Combine>> C
+                         grb::combine_result_t<A, B, Combine>> Accumulate = grb::take_right,
+          MutableMatrixRange<grb::combine_result_t<A, B, Combine>> C
 >
 void ewise_union(C&& c, A&& a, B&& b,
                  Combine&& combine, M&& mask = M{},
@@ -35,7 +36,8 @@ template <VectorRange A,
                          grb::vector_scalar_t<B>> Combine,
           MaskVectorRange M = grb::full_vector_mask<>
 >
-auto ewise_union(A&& a, B&& b, Combine&& combine, M&& mask = M{});           (3)
+ewise_union_result_t<A, B, Combine>
+ewise_union(A&& a, B&& b, Combine&& combine, M&& mask = M{});           (3)
 
 template <VectorRange A,
           VectorRange B,
@@ -43,8 +45,8 @@ template <VectorRange A,
                          grb::vector_scalar_t_t<B>> Combine,
           MaskVectorRange M = grb::full_vector_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
-          MutableVectorRange<grb::elementwise_result_t<A, B, Combine>> C
+                         grb::combine_result_t<A, B, Combine>> Accumulate = grb::take_right,
+          MutableVectorRange<grb::combine_result_t<A, B, Combine>> C
 >
 void ewise_union(C&& c, A&& a, B&& b,
                  Combine&& combine, M&& mask = M{},
@@ -74,23 +76,27 @@ void ewise_union(C&& c, A&& a, B&& b,
 
 - `B` must meet the requirements of `MatrixRange` (1,2) or `VectorRange` (3,4)
 
-- `C` must meet the requirements of `MutableMatrixRange<grb::elementwise_result_t<A, B, Combine>>` (2) or `MutableVectorRange<grb::elementwise_result_t<A, B, Combine>>` (4)
+- `C` must meet the requirements of `MutableMatrixRange<grb::combine_result_t<A, B, Combine>>` (2) or `MutableVectorRange<grb::combine_result_t<A, B, Combine>>` (4)
 
 - `Combine` must meet the requirements of `BinaryOperator<grb::matrix_scalar_t<A>, grb::matrix_scalar_t<B>>`.
 
 - `M` must meet the requirements of `MaskMatrixRange` (1,2) or `MaskVectorRange` (3,4)
 
-- `Accumulate` must meet the requirements of `BinaryOperator<grb::matrix_scalar_t<C>, grb::elementwise_result_t<A, B, Combine>>`
+- `Accumulate` must meet the requirements of `BinaryOperator<grb::matrix_scalar_t<C>, grb::combine_result_t<A, B, Combine>>`
 
 ### Return Value
 
 If the output matrix argument `c` is supplied, no value is returned.
 
-If `c` is not supplied as an argument, returns a GraphBLAS matrix (1) or GraphBLAS vector (3) equal to the element-wise union of `a` and `b`, with the binary operator `combine` used to combine scalar values stored at the same index and `mask` used to determine which parts of the output are computed.  For (1), the type of the return value satisfies the requirements of `MatrixRange`, and for (3) the type of the return value satisfies the requirements of `VectorRange`.  The return value has the same shape as `a` and `b`.  Index `idx` in the return value only holds a stored value if an element exists at that index in both `a` and `mask` , `b` and `mask`, or `a`, `b`, and `mask`.  If a value exists at `idx` in `a` but not in `b`, the return value will hold a value equal to `a[idx]`.  If a value exists in `b` but not in `a`, it will hold a value equal to `b[idx]`.  If a value exists at `idx` in both `a` and `b`, it will hold a value equal to `fn(a[idx], b[idx])`.
+If `c` is not supplied as an argument, returns a GraphBLAS matrix (1) or GraphBLAS vector (3) equal to the element-wise union of `a` and `b`, with the binary operator `combine` used to combine scalar values stored at the same index and `mask` used to determine which parts of the output are computed.  For (1), the type of the return value satisfies the requirements of `MatrixRange`, and for (3) the type of the return value satisfies the requirements of `VectorRange`.  The return value has the same shape as `a` and `b`.  Index `idx` in the return value holds a stored value if and only if an element exists at that index in both `a` or `b` and an element equal to `true` when cast to `bool` exists at that index in `mask`. If a value exists at `idx` in `a` but not in `b`, the return value will hold a value equal to `a[idx]`.  If a value exists in `b` but not in `a`, it will hold a value equal to `b[idx]`.  If a value exists at `idx` in both `a` and `b`, it will hold a value equal to `fn(a[idx], b[idx])`.
 
 ### Preconditions
 
 The arguments `a` and `b` must share the same shape.  If an output object `c` is given, it must also have the same shape.  For the argument `mask`, each dimension of its shape must be equal to or greater than the corresponding dimension of `a` and `b`'s shapes.  `fn` must not modify any element of `a`, `b`, or `mask`.
+
+### Postconditions
+
+In (2) and (4), and element-wise union will be performed as described in the [GraphBLAS Math Specification](https://github.com/GraphBLAS/graphblas-api-math).  In (1) and (3), none of the input arguments will be modified.
 
 ### Exceptions
 

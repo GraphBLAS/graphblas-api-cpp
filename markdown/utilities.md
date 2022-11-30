@@ -132,17 +132,37 @@ The type of the scalar elements produced by combining GraphBLAS objects of type 
 ## `multiply_result_t`
 
 ```cpp
-template <typename A, typename B, typename Reduce, typename Combine>
+template <typename A, typename B, typename Reduce, typename Combine, typename Mask>
 using multiply_result_t = /* undefined */;
 ```
 
-The type returned when multiply is called on GraphBLAS matrix or vector ranges of type `A` and `B` using binary operators `Reduce` and `Combine`.
+The type returned when multiply is called on GraphBLAS matrix or vector ranges of type `A` and `B` using binary operators `Reduce` and `Combine` with mask `Mask`.
 
-## `elementwise_return_type_t`
+The scalar type of the returned matrix will be `combine_result_t<A, B, Combine>`, and the index type will be `grb::container_index_t<A>` or `grb::container_index_t<B>`, whichever is able to store the larger value.
+
+## `combine_result_t`
 
 ```cpp
 template <typename A, typename B, typename Combine>
-using elementwise_result_t = /* undefined */;
+using combine_result_t = std::invoke_result_t<Combine, A, B>;
 ```
 
 The type returned when the binary operator `Combine` is called with an element of the scalar type of `A` as the first argument and an element of the scalar type of `B` as the second argument.  `A` and `B` must be GraphBLAS matrix or vector objects.
+
+## `ewise_union_result_t`
+
+```cpp
+template <typename A, typename B, typename Combine, typename Mask>
+using ewise_union_result_t = /* undefined */;
+```
+
+The type returned when `ewise_union` is called on the GraphBLAS matrix or vector ranges of type `A` and `B` using the binary operator `Combine`.
+
+## `ewise_intersection_result_t`
+
+```cpp
+template <typename A, typename B, typename Combine, typename Mask>
+using ewise_intersection_result_t = /* undefined */;
+```
+
+The type returned when `ewise_intersection` is called on the GraphBLAS matrix or vector ranges of type `A` and `B` using the binary operator `Combine`.

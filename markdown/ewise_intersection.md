@@ -10,7 +10,8 @@ template <MatrixRange A,
                          grb::matrix_scalar_t<B>> Combine,
           MaskMatrixRange M = grb::full_matrix_mask<>
 >
-auto ewise_intersection(A&& a, B&& b, Combine&& combine, M&& mask = M{});    (1)
+ewise_intersection_result_t<A, B, Combine>
+ewise_intersection(A&& a, B&& b, Combine&& combine, M&& mask = M{});    (1)
 
 template <MatrixRange A,
           MatrixRange B,
@@ -18,8 +19,8 @@ template <MatrixRange A,
                          grb::matrix_scalar_t<B>> Combine,
           MaskMatrixRange M = grb::full_matrix_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
-          MutableMatrixRange<grb::elementwise_result_t<A, B, Combine>> C
+                         grb::combine_result_t<A, B, Combine>> Accumulate = grb::take_right,
+          MutableMatrixRange<grb::combine_result_t<A, B, Combine>> C
 >
 void ewise_intersection(C&& c, A&& a, B&& b,
                         Combine&& combine, M&& mask = M{},
@@ -35,7 +36,8 @@ template <VectorRange A,
                          grb::vector_scalar_t_t<B>> Combine,
           MaskVectorRange M = grb::full_vector_mask<>
           >
-auto ewise_intersection(A&& a, B&& b, Combine&& combine, M&& mask = M{});    (3)
+ewise_intersection_result_t<A, B, Combine, M>
+ewise_intersection(A&& a, B&& b, Combine&& combine, M&& mask = M{});    (3)
 
 template <VectorRange A,
           VectorRange B,
@@ -43,8 +45,8 @@ template <VectorRange A,
                          grb::vector_scalar_t_t<B>> Combine,
           MaskVectorRange M = grb::full_vector_mask<>,
           BinaryOperator<grb::matrix_scalar_t<C>,
-                         grb::elementwise_result_t<A, B, Combine>> Accumulate = grb::take_right,
-          MutableVectorRange<grb::elementwise_result_t<A, B, Combine>> C
+                         grb::combine_result_t<A, B, Combine>> Accumulate = grb::take_right,
+          MutableVectorRange<grb::combine_result_t<A, B, Combine>> C
 >
 void ewise_intersection(C&& c, A&& a, B&& b,
                         Combine&& combine, M&& mask = M{},
@@ -76,13 +78,13 @@ Perform an element-wise intersection.
 
 - `B` must meet the requirements of `MatrixRange` (1) or `VectorRange` (2)
 
-- `C` must meet the requirements of `MutableMatrixRange<grb::elementwise_result_t<A, B, Combine>>` (2) or `MutableVectorRange<grb::elementwise_result_t<A, B, Combine>>` (4)
+- `C` must meet the requirements of `MutableMatrixRange<grb::combine_result_t<A, B, Combine>>` (2) or `MutableVectorRange<grb::combine_result_t<A, B, Combine>>` (4)
 
 - `Combine` must meet the requirements of `BinaryOperator<grb::matrix_scalar_t<A>, grb::matrix_scalar_t<B>>`.
 
 - `M` must meet the requirements of `MaskMatrixRange` (1) or `MaskVectorRange` (2)
 
-- `Accumulate` must meet the requirements of `BinaryOperator<grb::matrix_scalar_t<C>, grb::elementwise_result_t<A, B, Combine>>`
+- `Accumulate` must meet the requirements of `BinaryOperator<grb::matrix_scalar_t<C>, grb::combine_result_t<A, B, Combine>>`
 
 ### Return Value
 
