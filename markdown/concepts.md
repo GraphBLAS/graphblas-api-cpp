@@ -71,7 +71,7 @@ Tuple-like types are types that, similar to instantiations of `std::tuple` or `s
 3) Each stored value in `T` is accessible using the customization point object `grb::get`, which will invoke either the method `get()` if it is present in the tuple type `T` or `std::get()`.  The type of the return value for the N'th element must be convertible to the N'th element of `Types`.
 
 #### Concept
-_TODO: This works fine, but is perhaps a bit sketchy._
+_TODO: this concept could refactored to be a bit more elegant.
 ```cpp
 template <typename T, std::size_t I, typename U = grb::any>
 concept TupleElementGettable = requires(T tuple) {
@@ -110,7 +110,6 @@ Matrix entries represent entries in a GraphBLAS matrix, which include both a tup
 3) The second element stored in the tuple-like type `Entry` holds the matrix entry's scalar value, and is convertible to `T`.
 
 #### Concept
-_TODO: review this concept._
 
 ```cpp
 template <typename Entry, typename T, typename I>
@@ -127,7 +126,6 @@ stored scalar value can be mutated by assigning to some value of type `U`.  We s
 1) The second element of the tuple `Entry`, representing the scalar value, is assignable to elements of type `U`.
 
 #### Concept
-_TODO: review this concept._
 
 ```cpp
 template <typename Entry, typename T, typename I, typename U>
@@ -147,7 +145,6 @@ A matrix in GraphBLAS consists of a range of values distributed over a two-dimen
 
 #### Concept
 
-_TODO: this is a bit sketchy, and needs to have some of the components fleshed out._
 ```cpp
 template <typename M>
 concept MatrixRange = std::ranges::sized_range<M> &&
@@ -172,8 +169,6 @@ Some matrices and matrix-like objects are *mutable*, meaning that their stored v
 3) `M` has a method `insert()` that takes a matrix entry tuple and attempts to insert the element into the matrix, returning an iterator to the new element on success and returning an iterator to the end on failure.
 
 #### Concept
-
-_TODO: this is also a bit sketchy, and furthermore depends on the matrix range concept above._
 
 ```cpp
 template <typename M, typename T>
@@ -213,7 +208,6 @@ Vector entries represent entries in a GraphBLAS vector, which include both an `s
 3) The second element stored in the tuple-like type `Entry` holds the vector's scalar value, and is convertible to `T`.
 
 #### Concept
-_TODO: review this concept._
 
 ```cpp
 template <typename Entry, typename T, typename I>
@@ -230,7 +224,6 @@ stored scalar value can be mutated by assigning to some value of type `U`.  We s
 1) The second element of the tuple `Entry`, representing the scalar value, is assignable to elements of type `U`.
 
 #### Concept
-_TODO: review this concept._
 
 ```cpp
 template <typename Entry, typename T, typename I, typename U>
