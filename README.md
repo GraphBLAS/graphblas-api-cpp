@@ -1,4 +1,4 @@
-# GraphBLAS C++ API
+# GraphBLAS C++ Specification
 
 Click here for the [most recent HTML draft](https://graphblas.org/graphblas-api-cpp) and [most recent PDF draft](https://github.com/GraphBLAS/graphblas-api-cpp/actions/workflows/build-spec.yml).
 
