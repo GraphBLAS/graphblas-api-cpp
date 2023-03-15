@@ -29,3 +29,18 @@ while minutes for meetings of the GraphBLAS C++ API subcommittee can be found in
 
 * [rgri](https://github.com/BenBrock/rgri) is being developed as a reference implementation alongside the API.
 * [GBTL](https://github.com/cmu-sei/gbtl) has heavily influenced the development of the C++ API, and is also being updated alongside the development of the API.
+
+## Citation
+To cite the [GraphBLAS C++ Specification](https://github.com/GraphBLAS/graphblas-api-cpp):
+
+Benjamin Brock, Scott McMillan, Aydın Buluc ̧, Timothy Mattson, and Jose ́ Moreira. GraphBLAS C++ specification. https://github.com/ GraphBLAS/graphblas-api-cpp, 2022.
+ 
+```bibtex
+@misc{graphblascppspec,
+  title={Graph{BLAS} {C}++ Specification},
+  author={Brock, Benjamin and McMillan, Scott and Bulu\c{c}, Ayd{\i}n and Mattson, Timothy and Moreira, Jos{\'e}},
+  howpublished={\url{https://github.com/GraphBLAS/graphblas-api-cpp}},
+  volume = {Draft Version 0.1a},
+  year={2022}
+}
+```
