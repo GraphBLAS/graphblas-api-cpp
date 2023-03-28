@@ -30,6 +30,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 type_traits.md \
 				 matrix_traits.md \
 				 algorithms.md \
+				 execution_policy.md \
 				 multiply.md \
 				 ewise_union.md \
 				 ewise_intersection.md \
