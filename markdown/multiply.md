@@ -337,7 +337,7 @@ Behavior is non-deterministic if `reduce` is not associative or not commutative.
 
 ### Return Value
 
-If the output matrix or vector `c` is supplied, no value is returned.
+If the output matrix or vector argument, `c`, is supplied, no value is returned.
 
 __NOTE: `combine_result_t<A, B, Combine> is actually incorrect here. Should be result of reduction.__
 
