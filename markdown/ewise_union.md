@@ -148,13 +148,13 @@ void ewise_union(ExecutionPolicy&& policy,
 
 ### Return Value
 
-If the output matrix or vector argument, `c`, is supplied, no value is returned.
+If the output matrix or vector parameter, `c`, is supplied, no value is returned.
 
-If `c` is not supplied as an argument, the function returns a GraphBLAS matrix (1,3) or GraphBLAS vector (5,7) equal to the element-wise union of `a` and `b`, with the binary operator `combine` used to combine scalar values stored at the same index and `mask` used to determine which parts of the output are computed.  For (1,3), the type of the return value satisfies the requirements of `MatrixRange`, and for (5,7) the type of the return value satisfies the requirements of `VectorRange`.  The return value has the same shape as `a` and `b`.  Index `idx` in the return value holds a stored value if and only if an element exists at that index in both `a` or `b` and an element equal to `true` when cast to `bool` exists at that index in `mask`. If a value exists at `idx` in `a` but not in `b`, the return value will hold a value equal to `a[idx]`.  If a value exists in `b` but not in `a`, it will hold a value equal to `b[idx]`.  If a value exists at `idx` in both `a` and `b`, it will hold a value equal to `fn(a[idx], b[idx])`.
+If the parameter `c` is not supplied, the function returns a GraphBLAS matrix (1,3) or GraphBLAS vector (5,7) equal to the element-wise union of `a` and `b`, with the binary operator `combine` used to combine scalar values stored at the same index and `mask` used to determine which parts of the output are computed.  For (1,3), the type of the return value satisfies the requirements of `MatrixRange`, and for (5,7) the type of the return value satisfies the requirements of `VectorRange`.  The return value has the same shape as `a` and `b`.  Index `idx` in the return value holds a stored value if and only if an element exists at that index in both `a` or `b` and an element equal to `true` when cast to `bool` exists at that index in `mask`. If a value exists at `idx` in `a` but not in `b`, the return value will hold a value equal to `a[idx]`.  If a value exists in `b` but not in `a`, it will hold a value equal to `b[idx]`.  If a value exists at `idx` in both `a` and `b`, it will hold a value equal to `fn(a[idx], b[idx])`.
 
 ### Preconditions
 
-The arguments `a` and `b` must share the same shape.  If an output object `c` is given, it must also have the same shape.  For the argument `mask`, each dimension of its shape must be equal to or greater than the corresponding dimension of `a` and `b`'s shapes.  `fn` must not modify any element of `a`, `b`, or `mask`.
+The parameters `a` and `b` must share the same shape.  If an output object `c` is given, it must also have the same shape.  For the parameter `mask`, each dimension of its shape must be equal to or greater than the corresponding dimension of `a` and `b`'s shapes.  `fn` must not modify any element of `a`, `b`, or `mask`.
 
 ### Postconditions
 
