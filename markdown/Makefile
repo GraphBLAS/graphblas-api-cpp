@@ -68,6 +68,8 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       type_traits.md \
 	       matrix_traits.md \
 	       algorithms.md \
+	       execution_policy.md \
+	       exceptions.md \
 	       multiply.md \
 	       ewise_union.md \
 	       ewise_intersection.md \
