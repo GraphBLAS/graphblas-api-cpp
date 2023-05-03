@@ -61,29 +61,30 @@ Method | Description
 matrix(const Allocator& alloc = Allocator());    (1)
 matrix(grb::index<index_type> shape,
        const Allocator& alloc = Allocator());    (2)
-matrix(std::string file_path,
-       const Allocator& alloc = Allocator());    (3)
+matrix(const matrix& other);                     (3)
+matrix(matrix&& other);                          (4)
 ```
 
 Constructs new `grb::matrix` data structure.
 
 1) Constructs an empty matrix of dimension `0 x 0`.
 2) Constructs an empty matrix of dimension `shape[0] x shape[1]`.
-3) Constructs a matrix with the dimensions and contents of the Matrix Market file at file path `file_path`.
+3) Copy constructor. Constructs a matrix with the dimensions and contents of `other`.
+4) Move constructor. Constructs a matrix with the dimensions and contents of `other` using move semantics.  After the move, `other` is guaranteed to be empty.
 
 ### Parameters
 `shape` - shape of the matrix to be constructed
 
-`file_path` - string containing the file path of the file to be loaded.
+`other` - another matrix to construct the new matrix from
 
 ### Complexity
 1) Constant
 2) Implementation defined
 3) Implementation defined
+4) Implementation defined
 
 ### Exceptions
-(1), (2), and (3) may all throw `std::bad_alloc`.  (3) may also throw the exception `grb::matrix_io::file_error`
-in the case that there is an error opening the file at path `file_path` or reading the file.
+Calls to `Allocator::allocate` may throw.
 
 ## `grb::matrix::size`
 ```cpp
