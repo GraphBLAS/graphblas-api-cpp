@@ -1,7 +1,6 @@
 ## `read_matrix`
 
 
-#### Matrix Times Matrix
 ```cpp
 
 template <typename T,
