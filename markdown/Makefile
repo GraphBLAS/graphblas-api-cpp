@@ -26,6 +26,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 max.md \
 				 min.md \
 				 utilities.md \
+				 read_matrix.md \
 				 concepts.md \
 				 type_traits.md \
 				 matrix_traits.md \
@@ -64,6 +65,7 @@ graphblas.pdf: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 	       max.md \
 	       min.md \
 	       utilities.md \
+	       read_matrix.md \
 	       concepts.md \
 	       type_traits.md \
 	       matrix_traits.md \
