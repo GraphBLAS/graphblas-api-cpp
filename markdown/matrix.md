@@ -262,7 +262,7 @@ std::pair<iterator, bool> insert(value_type&& value);        (3)
 
 Inserts an element or number of elements into the matrix, if the matrix doesn't already contain a stored element at the corresponding index.
 
-(1) Insert elements in the range `[first, last)` if an element does not already exist in the matrix at the corresponding index.  If multiple elements in `[first, last)` have the same indices, it is undefined which element is inserted.
+(1) Insert each element in the range `[first, last)` if an element does not already exist in the matrix at the corresponding index.  If multiple elements in `[first, last)` have the same indices, it is undefined which element is inserted.
 
 (2) and (3) Insert the element `value` if an element does not already exist at the corresponding index in the matrix.
 
@@ -311,7 +311,7 @@ size_type erase(grb::index<I> index);
 Erases the element stored at index `index` if one exists.
 
 ### Parameters
-`index` - the index of the scalar value to erase
+`index` - the index of element to erase
 
 ### Return Value
 Returns the number of elements erased (0 or 1).
