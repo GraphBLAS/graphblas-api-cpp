@@ -40,6 +40,8 @@ Member Type | Definition
 Method | Description
 ----- | -----
 `(constructor)` | Constructs matrix
+`(destructor)` | Destructs matrix
+`operator=` | Assigns matrix
 `size` | Number of stored elements in matrix
 `max_size` | Returns the maximum possible number of elements
 `empty` | Return whether the matrix is empty
@@ -86,6 +88,40 @@ Constructs new `grb::matrix` data structure.
 ### Exceptions
 Calls to `Allocator::allocate` may throw.
 
+## `grb::matrix::~matrix`
+
+```cpp
+~matrix();
+```
+
+Destroys the `grb::matrix`.  The destructors of the elements are called and
+storage is deallocated.
+
+### Complexity
+Linear in the size of the vector.
+
+## `grb::matrix::operator=`
+
+```cpp
+matrix& operator=(const matrix& other);          (1)
+matrix& operator=(matrix&& other);               (2)
+```
+
+Replaces the matrix with the contents and shape of another matrix.
+
+1) Copy assignment operator.  Modifies the shape of the matrix to be equal to that of `other` and copies the stored values to be the same as `other`.
+2) Move constructor.  Replaces the contents of the matrix with those of `other` with move semantics.  After the move assignment operation completes, `other` will be empty with shape `0 x 0`.
+
+### Parameters
+`other` - another matrix to assign the matrix to
+
+### Complexity
+1) Implementation defined
+2) Constant
+
+### Exceptions
+1) Calls to `Allocator::allocate` may throw.
+
 ## `grb::matrix::size`
 ```cpp
 size_type size() noexcept;
@@ -104,10 +140,10 @@ Constant
 
 ## `grb::matrix::max_size`
 ```cpp
-size_type max_size() noexcept;
+size_type max_size() const noexcept;
 ```
 
-Returns the maximum possible number of elements that could be stored in the matrix due to platform or implementation limitations.
+Returns the maximum possible number of elements that could be stored in the matrix due to system or implementation limitations.
 
 ### Parameters
 (none)
@@ -188,7 +224,7 @@ Constant
 
 ## `grb::matrix::reshape`
 ```cpp
-void reshape(grb::index<I> shape);
+void reshape(grb::index<I> shape) noexcept;
 ```
 
 Reshape the matrix.  That is, modify the matrix dimensions such that matrix shape is now `shape[0]` x `shape[1]`.
@@ -203,9 +239,12 @@ None
 ### Complexity
 Implementation defined
 
+### Exceptions
+Calls to `Allocator::allocate` may throw.
+
 ## `grb::matrix::clear`
 ```cpp
-void clear();
+void clear() noexcept;
 ```
 
 Clear all stored scalar values from the matrix.  The matrix maintains the same shape, but after return will now have a size of 0.
