@@ -110,7 +110,7 @@ matrix& operator=(matrix&& other);               (2)
 Replaces the matrix with the contents and shape of another matrix.
 
 1) Copy assignment operator.  Modifies the shape of the matrix to be equal to that of `other` and copies the stored values to be the same as `other`.
-2) Move constructor.  Replaces the contents of the matrix with those of `other` with move semantics.  After the move assignment operation completes, `other` will be empty with shape `0 x 0`.
+2) Move constructor.  Replaces the contents of the matrix with those of `other` using move semantics.  After the move assignment operation completes, `other` is in a valid but indeterminate state.
 
 ### Parameters
 `other` - another matrix to assign the matrix to
