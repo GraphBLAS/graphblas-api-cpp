@@ -1,10 +1,18 @@
 # Views
 
-## grb::transpose
+## grb::views::transpose
+
+```cpp
+namespace views {
+  inline constexpr /* unspecified */ transpose = /* unspecified */;
+}
+```
+
+##### Call signature
 
 ```cpp
 template <MatrixRange M>
-grb::transpose_view<M> transpose(M&& matrix);
+MatrixRange auto transpose(M&& matrix);
 ```
 
 ### Parameters
@@ -16,21 +24,25 @@ grb::transpose_view<M> transpose(M&& matrix);
 - `M` must meet the requirements of `MatrixRange`
 
 ### Return Value
-_TODO: Discuss issues with allowing transpose view in output_
 Returns a matrix view that is equal to the transpose of `matrix`, satisfying `MatrixRange`.
-If `M` meets the requirements of `MutableMatrixRange`, then the return value will also meet the
-requirements of `MutableMatrixRange`.
 
 If the value returned by `transpose` outlives the lifetime of `matrix`, then the behavior is undefined.
 
-## grb::transform
+## grb::views::transform
 
 ```cpp
-template <MatrixRange M, typename Fn>
-grb::transform_view<M, Fn> transform(M&& matrix, Fn&& fn);    (1)
+namespace views {
+  inline constexpr /* unspecified */ transform = /* unspecified */;
+}
+```
 
-template <VectorRange V, typename Fn>
-grb::transform_view<V, Fn> transform(V&& vector, Fn&& fn);    (2)
+##### Call signature
+```cpp
+template <MatrixRange M, std::copy_constructible Fn>
+MatrixRange auto transform (M&& matrix, Fn&& fn);             (1)
+
+template <VectorRange V, std::copy_constructible Fn>
+VectorRange auto transform(V&& vector, Fn&& fn);              (2)
 ```
 
 (1) `fn` must accept an argument of type `std::ranges::range_value_t<M>` and return a value of some type.  The return type of `fn` will be the scalar type of the transform view.
@@ -53,9 +65,9 @@ grb::transform_view<V, Fn> transform(V&& vector, Fn&& fn);    (2)
 
 ### Return Value
 
-(1) Returns a view of the matrix `matrix` in which every stored scalar value has been transformed using the function `fn`.
+(1) Returns a view of `matrix` satisfying `MatrixRange`.  The stored scalar values will correspond to every stored scalar value in `matrix` transformed using the function `fn`.
 
-(2) Returns a view of the vector `vector` in which every stored scalar value has been transformed using the function `fn`.
+(2) Returns a view of `vector` satisfying `VectorRange`.  The stored scalar values will correspond to every stored scalar value in `vector` transformed using the function `fn`.
 
 ### Example
 
@@ -73,11 +85,11 @@ int main(int argc, char** argv) {
 
   // Transform each scalar value based on its
   // row and column index.
-  auto idx_view = grb::transform(a, [](auto&& entry) {
-  	                                  auto&& [idx, v] = entry;
-  	                                  auto&& [i, j] = idx;
-  	                                  return i + j;
-  	                                });
+  auto idx_view = grb::views::transform(a, [](auto&& entry) {
+  	                                          auto&& [idx, v] = entry;
+  	                                          auto&& [i, j] = idx;
+  	                                          return i + j;
+  	                                       });
 
   grb::print(idx_view, "index transformed view");
 
