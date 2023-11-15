@@ -18,6 +18,7 @@ graphblas.html: $(TEX_SOURCES) $(MD_SOURCES) Makefile
 				 vector.md \
 				 index.md \
 				 hints.md \
+				 views.md \
 				 functional.md \
 				 plus.md \
 				 multiplies.md \

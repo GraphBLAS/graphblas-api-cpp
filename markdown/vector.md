@@ -60,12 +60,16 @@ vector();                                           (1)
 vector(const Allocator& alloc);                     (2)
 vector(index_type shape);                           (3)
 vector(index_type shape, const Allocator& alloc);   (4)
+vector(const vector& other);                        (5)
+vector(vector&& other);                             (6)
 ```
 
 Constructs new `grb::vector` data structure.
 
-1) Constructs an empty vector of dimension 0.
-2) Constructs an empty vector of dimension `shape`.
+1) and 2) Constructs an empty vector of dimension 0.
+3) and 4) Constructs an empty vector of dimension `shape`.
+5) Copy constructor
+6) Move constructor
 
 ### Parameters
 `shape` - shape of the vector to be constructed
